@@ -1,0 +1,323 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import questionsData from '../../content/quien-es.json';
+
+// Pasamos los datos al cliente de forma segura
+const questions = questionsData;
+---
+
+<Layout title="¿Quién es más probable? | Juntapp">
+  <div class="min-h-screen bg-transparent flex flex-col font-sans overflow-x-hidden">
+    <div class="relative z-10 flex flex-col flex-grow w-full max-w-5xl mx-auto p-4 md:p-8">
+      <!-- HEADER UNIVERSAL -->
+      <header class="relative flex justify-between items-center mb-8 md:mb-12 w-full z-20">
+        <a href="/play" id="back-btn" class="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors text-sm font-medium z-10" title="Volver al Catálogo">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          <span class="hidden sm:inline">Volver</span>
+        </a>
+        
+        <div class="absolute left-1/2 -translate-x-1/2 flex flex-col items-center w-full pointer-events-none">
+          <h1 class="text-xl md:text-2xl font-geist font-bold text-transparent bg-clip-text bg-gradient-to-r from-vybe-secondary to-vybe-primary uppercase tracking-tighter text-center">
+            Quién Es Más
+          </h1>
+        </div>
+
+        <button id="btn-info" class="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors text-sm font-medium z-10" title="Cómo jugar">
+          <span class="hidden sm:inline">Cómo jugar</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        </button>
+      </header>
+
+      <main class="flex-grow flex flex-col items-center justify-start pt-4 md:pt-8 w-full">
+        <div class="w-full max-w-2xl z-10">
+
+      <!-- Card Principal -->
+      <div id="game-card" class="glass-panel relative rounded-[40px] p-8 md:p-16 text-center border border-white/10 shadow-2xl backdrop-blur-xl bg-white/5 min-h-[400px] flex flex-col items-center justify-center transition-all duration-700">
+        
+        <!-- Badge de Categoría -->
+        <div class="mb-8">
+           <span class="px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border border-primary text-primary bg-primary/5">
+              ¿Quién es más probable?
+           </span>
+        </div>
+        <div id="content-area" class="space-y-12 w-full">
+          <!-- Pantalla Inicial -->
+          <div id="start-screen" class="space-y-8 animate-in fade-in zoom-in duration-700">
+            <h1 class="text-4xl md:text-6xl font-black text-white italic leading-tight">
+              ¿Quién es más <span class="text-primary">probable</span>?
+            </h1>
+            <p class="text-zinc-400 text-lg max-w-xs mx-auto">Reúne a tus amigos y prepárate para señalar.</p>
+            <button 
+              id="btn-start-game" 
+              class="group flex items-center justify-center gap-3 mx-auto px-12 py-5 bg-gradient-to-br from-primary to-secondary text-black rounded-2xl font-black text-xl hover:scale-105 active:scale-95 transition-all shadow-[0_10px_40px_-10px_rgba(0,234,255,0.5)]"
+            >
+              ¡Empezar a jugar!
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="group-hover:translate-x-1 transition-transform">
+                <path d="m9 18 6-6-6-6"/>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Área de Juego (Oculta al inicio) -->
+          <div id="game-area" class="hidden space-y-12 w-full">
+            <h1 id="question-text" class="text-3xl md:text-5xl font-black text-white leading-tight italic">
+              Cargando pregunta...
+            </h1>
+
+            <!-- Timer Display -->
+            <div id="timer-container" class="hidden flex flex-col items-center gap-6 animate-in fade-in zoom-in duration-500">
+              <div class="flex flex-col md:flex-row items-center gap-4 md:gap-8">
+                <span id="timer-label" class="text-white/30 font-black text-2xl md:text-4xl uppercase italic tracking-tighter">Apunten en</span>
+                <div class="relative min-w-[120px] flex items-center justify-center">
+                  <span id="timer-text" class="text-7xl md:text-9xl font-black text-white drop-shadow-[0_0_30px_rgba(255,180,170,0.3)] transition-all">5</span>
+                </div>
+              </div>
+              <p class="text-primary text-[10px] uppercase font-bold tracking-[0.3em] animate-pulse">¡Prepárate!</p>
+            </div>
+            
+            <div id="action-area" class="pt-8">
+               <button 
+                  id="btn-next" 
+                  class="group flex items-center justify-center gap-3 mx-auto px-12 py-5 bg-gradient-to-br from-primary to-secondary text-black rounded-2xl font-black text-xl hover:scale-105 active:scale-95 transition-all shadow-[0_10px_40px_-10px_rgba(0,234,255,0.5)]"
+                >
+                  Siguiente
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="group-hover:translate-x-1 transition-transform">
+                    <path d="m9 18 6-6-6-6"/>
+                  </svg>
+                </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Modal Instrucciones -->
+    <div id="info-modal" class="hidden fixed inset-0 z-50 items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
+      <div class="glass-panel relative w-full max-w-md rounded-[32px] p-8 border border-white/10 shadow-2xl bg-[#121215] text-left">
+        <button id="btn-close-info" class="absolute top-6 right-6 text-zinc-400 hover:text-white transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+        
+        <h3 class="text-2xl font-black text-white mb-6 flex items-center gap-3">
+          <span class="text-primary">ℹ️</span> Cómo Jugar
+        </h3>
+        
+        <div class="space-y-5 text-sm text-zinc-300 leading-relaxed">
+          <p><strong>1. La Pregunta:</strong> Alguien del grupo lee en voz alta la pregunta en pantalla que empieza con "¿Quién es más probable que...?"</p>
+          
+          <p><strong>2. La Tensión:</strong> Todos deben pensar a quién del grupo le queda mejor esa frase. Un temporizador iniciará su cuenta regresiva.</p>
+          
+          <p><strong>3. ¡Apunten!:</strong> Cuando el contador llegue a "¡YA!", todos deben apuntar al mismo tiempo con el dedo a la persona que escogieron.</p>
+          
+          <p><strong>4. Debate:</strong> La persona más votada debe defenderse. Ríanse de las justificaciones y luego presionen <span class="text-white font-bold">"Siguiente"</span>.</p>
+          
+          <div class="bg-primary/10 border border-primary/20 rounded-xl p-4 mt-6 text-xs text-primary/90 italic">
+            El sistema inteligente garantiza que no se repetirán preguntas del mazo de 300 cartas.
+          </div>
+        </div>
+        
+        <button id="btn-understood" class="mt-8 w-full py-4 rounded-2xl bg-white/10 border border-white/20 text-white font-bold hover:bg-white/20 transition-all active:scale-95">
+          ¡Entendido!
+        </button>
+      </div>
+    </div>
+
+    <!-- Hidden Data for JS -->
+    <template id="questions-data">{JSON.stringify(questions)}</template>
+        </div>
+        <!-- SEO & Contenido Largo (Below the fold) -->
+        <article class="w-full max-w-4xl mx-auto px-4 py-12 mt-12 md:mt-16 border-t border-white/10 text-zinc-300 text-left">
+          <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">Juego "¿Quién Es Más Probable Que...?"</h2>
+          <div class="prose prose-invert prose-lg max-w-none">
+            <p class="mb-4">
+              Si quieres conocer qué opinan tus amigos secretamente de ti o descubrir dinámicas grupales súper divertidas, el juego de <strong>¿Quién es más probable que...? (Most Likely To)</strong> es tu mejor opción. Aquí encontrarás decenas de escenarios absurdos, comprometedores y graciosos.
+            </p>
+            <h3 class="text-2xl font-bold text-white mt-8 mb-4">Reglas del Juego</h3>
+            <ul class="list-disc pl-6 space-y-2 mb-6">
+              <li>Léan en voz alta la premisa que aparece en la tarjeta (ej. "¿Quién es más probable que termine preso?").</li>
+              <li>Cuenten hasta tres: ¡Uno, dos, tres!</li>
+              <li>Todos deben señalar a la persona del grupo que creen que encaja mejor en esa descripción.</li>
+              <li>La persona que reciba más votos debe tomar un trago o cumplir una penitencia.</li>
+            </ul>
+            <h3 class="text-2xl font-bold text-white mt-8 mb-4">Preguntas Frecuentes (FAQ)</h3>
+            <div class="space-y-4 mb-8">
+              <div class="bg-white/5 border border-white/10 rounded-xl p-4">
+                <h4 class="font-bold text-white mb-1">¿Puedo votar por mí mismo?</h4>
+                <p class="text-sm">¡Absolutamente! Si la tarjeta dice "¿Quién es más probable que gaste todo su sueldo en comida?" y tú sabes que eres culpable, señalarte a ti mismo demuestra mucha honestidad y diversión.</p>
+              </div>
+              <div class="bg-white/5 border border-white/10 rounded-xl p-4">
+                <h4 class="font-bold text-white mb-1">¿Hay categorías o filtros para este juego?</h4>
+                <p class="text-sm">Sí, puedes cambiar de la categoría Clásica a la Picante si estás en una fiesta y quieres que las tarjetas suban un poco de tono.</p>
+              </div>
+            </div>
+          </div>
+        </article>
+      </main>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  import { createSeededRandom, seededShuffle } from '../../utils/random';
+
+  // Elementos UI
+  const startScreen = document.getElementById('start-screen');
+  const gameArea = document.getElementById('game-area');
+  const btnStartGame = document.getElementById('btn-start-game');
+  const btnNext = document.getElementById('btn-next');
+  const questionText = document.getElementById('question-text');
+  const timerContainer = document.getElementById('timer-container');
+  const timerCircle = document.getElementById('timer-circle') as any;
+  const timerText = document.getElementById('timer-text');
+  const timerLabel = document.getElementById('timer-label');
+  const actionArea = document.getElementById('action-area');
+
+  // Modal logic
+  const infoModal = document.getElementById('info-modal');
+  const btnInfo = document.getElementById('btn-info');
+  const btnCloseInfo = document.getElementById('btn-close-info');
+  const btnUnderstood = document.getElementById('btn-understood');
+
+  function openInfo() {
+    infoModal?.classList.remove('hidden');
+    infoModal?.classList.add('flex');
+  }
+
+  function closeInfo() {
+    infoModal?.classList.add('hidden');
+    infoModal?.classList.remove('flex');
+  }
+
+  btnInfo?.addEventListener('click', openInfo);
+  btnCloseInfo?.addEventListener('click', closeInfo);
+  btnUnderstood?.addEventListener('click', closeInfo);
+
+  // Obtener datos del template
+  const templateElement = document.getElementById('questions-data') as HTMLTemplateElement;
+  const rawData = templateElement?.content?.textContent;
+  const questions = rawData ? JSON.parse(rawData) : [];
+
+  const seed = localStorage.getItem('juntapp_local_seed') || Math.random().toString(36).substring(7);
+  localStorage.setItem('juntapp_local_seed', seed);
+  
+  let turnIndex = parseInt(localStorage.getItem(`quien_turn_${seed}`) || '0');
+
+  // Shuffle deterministic
+  const randomFunc = createSeededRandom(seed + '_quien_shuffle');
+  const shuffledQuestions = seededShuffle(questions, randomFunc);
+
+  let countdownInterval: any;
+
+  const showQuestion = () => {
+    if (turnIndex >= shuffledQuestions.length) {
+      if(questionText) questionText.innerText = "¡Se acabaron las preguntas!";
+      if(actionArea) {
+        actionArea.innerHTML = `
+          <button 
+            id="btn-restart" 
+            class="flex items-center justify-center gap-3 mx-auto px-12 py-5 bg-white/10 text-white border border-white/20 rounded-2xl font-black text-xl hover:bg-white/20 active:scale-95 transition-all"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+              <path d="M3 3v5h5"/>
+            </svg>
+            Reiniciar Juego
+          </button>
+        `;
+        document.getElementById('btn-restart')?.addEventListener('click', () => {
+          localStorage.setItem(`quien_turn_${seed}`, '0');
+          window.location.reload();
+        });
+      }
+      return;
+    }
+
+    const currentQuestion = shuffledQuestions[turnIndex];
+    // Limpiamos el prefijo si ya viene en el JSON para que no sea redundante
+    const cleanText = currentQuestion.replace('¿Quién es más probable que ', '').replace('?', '') + '?';
+
+    if (questionText) {
+      questionText.classList.remove('animate-in', 'fade-in', 'slide-in-from-bottom-4', 'opacity-20');
+      void questionText.offsetWidth; // Trigger reflow
+      questionText.innerText = cleanText;
+      questionText.classList.add('animate-in', 'fade-in', 'slide-in-from-bottom-4', 'duration-500');
+    }
+
+  // Lógica del Temporizador
+    if (timerContainer && timerText && actionArea) {
+      actionArea.classList.add('hidden');
+      timerContainer.classList.remove('hidden');
+      if (timerLabel) timerLabel.classList.remove('invisible');
+      
+      let timeLeft = 5;
+      timerText.innerText = timeLeft.toString();
+      
+      const triggerPop = () => {
+        timerText.classList.remove('animate-pop');
+        void timerText.offsetWidth; 
+        timerText.classList.add('animate-pop');
+      };
+
+      triggerPop();
+      
+      clearInterval(countdownInterval);
+      countdownInterval = setInterval(() => {
+        timeLeft--;
+        if (timeLeft > 0) {
+          timerText.innerText = timeLeft.toString();
+          triggerPop();
+        }
+        
+        if (timeLeft === 0) {
+          clearInterval(countdownInterval);
+          timerText.innerText = "¡YA!";
+          timerText.classList.add('text-primary');
+          if (timerLabel) timerLabel.classList.add('invisible');
+          
+          // Oscurecer la pregunta al terminar
+          if (questionText) questionText.classList.add('opacity-20', 'transition-opacity', 'duration-1000');
+          
+          setTimeout(() => {
+            timerContainer.classList.add('hidden');
+            timerText.classList.remove('text-primary');
+            actionArea.classList.remove('hidden');
+          }, 1200);
+        }
+      }, 1000);
+    }
+  };
+
+  // Eventos
+  btnStartGame?.addEventListener('click', () => {
+    startScreen?.classList.add('hidden');
+    gameArea?.classList.remove('hidden');
+    showQuestion();
+  });
+
+  btnNext?.addEventListener('click', () => {
+    turnIndex++;
+    localStorage.setItem(`quien_turn_${seed}`, turnIndex.toString());
+    showQuestion();
+  });
+</script>
+
+<style>
+  .glass-panel {
+    box-shadow: 0 0 80px -20px rgba(0,0,0,0.5);
+  }
+  
+  #question-text {
+    text-wrap: balance;
+  }
+
+  .animate-pop {
+    animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  @keyframes pop {
+    0% { transform: scale(0.5); opacity: 0; filter: blur(10px); }
+    50% { transform: scale(1.1); opacity: 1; filter: blur(0); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+</style>

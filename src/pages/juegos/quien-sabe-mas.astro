@@ -1,0 +1,673 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import questions from '../../data/quien-sabe-mas-questions.json';
+---
+
+<Layout title="Quién Sabe Más | Juntapp">
+  <div class="min-h-screen bg-transparent flex flex-col font-sans overflow-x-hidden">
+    <div class="relative z-10 flex flex-col flex-grow w-full max-w-5xl mx-auto p-4 md:p-8">
+      <!-- HEADER UNIVERSAL -->
+      <header class="relative flex justify-between items-center mb-8 md:mb-12 w-full z-20">
+        <a href="/play" id="back-btn" class="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors text-sm font-medium z-10" title="Volver al Catálogo">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          <span class="hidden sm:inline">Volver</span>
+        </a>
+        
+        <div class="absolute left-1/2 -translate-x-1/2 flex flex-col items-center w-full pointer-events-none">
+          <h1 class="text-xl md:text-2xl font-geist font-bold text-transparent bg-clip-text bg-gradient-to-r from-vybe-secondary to-vybe-primary uppercase tracking-tighter text-center">
+            Quién Sabe Más
+          </h1>
+        </div>
+
+        <button id="btn-info" class="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors text-sm font-medium z-10" title="Cómo jugar">
+          <span class="hidden sm:inline">Cómo jugar</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        </button>
+      </header>
+
+      <main class="relative z-10 flex-grow flex flex-col w-full">
+        <!-- ÁREA DE JUEGO Y ESCALERA -->
+        <div class="flex flex-col md:flex-row gap-8 w-full">
+          <!-- Lado Izquierdo: Juego -->
+          <div class="flex-grow flex flex-col justify-start pt-2 gap-4 md:gap-12 lg:pr-8 relative">
+            
+            <!-- Líneas de Conexión Estilo TV (SVG de fondo) -->
+            <div class="absolute inset-0 pointer-events-none z-0 flex items-center justify-center opacity-[0.03]">
+              <svg width="100%" height="100%" viewBox="0 0 800 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0 600 L400 300 L800 600 M0 0 L400 300 L800 0" stroke="#1e40af" stroke-width="0.5"/>
+              </svg>
+            </div>
+
+            <!-- Marcador Móvil (Sólo visible en móviles) -->
+            <div class="md:hidden flex justify-between items-center bg-[#050a18]/80 border border-vybe-primary/30 rounded-xl px-5 py-3 mb-0 z-10 shadow-lg">
+              <div class="text-xs text-zinc-400 font-bold uppercase tracking-widest">Nivel <span id="mobile-level" class="text-white text-sm">1</span><span class="opacity-50">/12</span></div>
+              <div class="text-base font-mono text-vybe-secondary font-bold tracking-tight text-right drop-shadow-[0_0_8px_rgba(255,42,109,0.5)]">◆ <span id="mobile-prize">10.000</span></div>
+            </div>
+
+            <!-- Área de Pregunta -->
+            <div class="relative group z-10">
+              <div class="absolute -inset-1 bg-gradient-to-r from-secondary/20 to-primary/20 rounded-xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
+              <div class="relative bg-[#050a18]/80 border border-primary/30 rounded-xl p-6 md:p-12 text-center shadow-2xl min-h-[120px] md:min-h-[160px] flex items-center justify-center overflow-hidden">
+                 <!-- Forma Diamante Decorativa -->
+                 <div class="absolute inset-0 opacity-10 pointer-events-none">
+                    <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
+                      <path d="M0 50 L5 0 L95 0 L100 50 L95 100 L5 100 Z" fill="none" stroke="white" stroke-width="0.5"/>
+                    </svg>
+                 </div>
+                 <h2 id="question-text" class="text-xl md:text-3xl font-bold leading-tight">
+                    Cargando pregunta...
+                 </h2>
+              </div>
+            </div>
+
+            <!-- Área de Respuestas -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-x-12 md:gap-y-6 max-w-4xl mx-auto w-full">
+              <button class="answer-btn group relative h-16 md:h-20" data-index="0">
+                <div class="absolute inset-0 bg-blue-500/10 border border-blue-400/40 clip-diamond group-hover:bg-blue-400/20 transition-all diamond-bg"></div>
+                <div class="absolute inset-0 border-2 border-orange-400/0 clip-diamond selected-border transition-all"></div>
+                <div class="relative flex items-center px-8 h-full gap-4">
+                  <span class="text-primary font-black italic">A:</span>
+                  <span class="option-text font-bold text-sm md:text-base">--</span>
+                </div>
+              </button>
+
+              <button class="answer-btn group relative h-16 md:h-20" data-index="1">
+                <div class="absolute inset-0 bg-blue-500/10 border border-blue-400/40 clip-diamond group-hover:bg-blue-400/20 transition-all diamond-bg"></div>
+                <div class="absolute inset-0 border-2 border-orange-400/0 clip-diamond selected-border transition-all"></div>
+                <div class="relative flex items-center px-8 h-full gap-4">
+                  <span class="text-primary font-black italic">B:</span>
+                  <span class="option-text font-bold text-sm md:text-base">--</span>
+                </div>
+              </button>
+
+              <button class="answer-btn group relative h-16 md:h-20" data-index="2">
+                <div class="absolute inset-0 bg-blue-500/10 border border-blue-400/40 clip-diamond group-hover:bg-blue-400/20 transition-all diamond-bg"></div>
+                <div class="absolute inset-0 border-2 border-orange-400/0 clip-diamond selected-border transition-all"></div>
+                <div class="relative flex items-center px-8 h-full gap-4">
+                  <span class="text-primary font-black italic">C:</span>
+                  <span class="option-text font-bold text-sm md:text-base">--</span>
+                </div>
+              </button>
+
+              <button class="answer-btn group relative h-16 md:h-20" data-index="3">
+                <div class="absolute inset-0 bg-blue-500/10 border border-blue-400/40 clip-diamond group-hover:bg-blue-400/20 transition-all diamond-bg"></div>
+                <div class="absolute inset-0 border-2 border-orange-400/0 clip-diamond selected-border transition-all"></div>
+                <div class="relative flex items-center px-8 h-full gap-4">
+                  <span class="text-primary font-black italic">D:</span>
+                  <span class="option-text font-bold text-sm md:text-base">--</span>
+                </div>
+              </button>
+            </div>
+
+            <!-- Comodines (Lifelines) -->
+            <div class="flex justify-center gap-6 mt-2 md:mt-4">
+              <button id="lifeline-5050" class="lifeline-btn w-16 h-12 md:w-20 md:h-14 bg-indigo-900/40 border-2 border-primary/50 rounded-full flex items-center justify-center hover:scale-110 transition-transform hover:border-primary/80 disabled:opacity-20 disabled:grayscale">
+                <span class="font-black italic text-primary/80">50:50</span>
+              </button>
+              <button id="lifeline-public" class="lifeline-btn w-16 h-12 md:w-20 md:h-14 bg-indigo-900/40 border-2 border-primary/50 rounded-full flex items-center justify-center hover:scale-110 transition-transform hover:border-primary/80 disabled:opacity-20 disabled:grayscale">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-primary/80"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+              </button>
+              <button id="lifeline-phone" class="lifeline-btn w-16 h-12 md:w-20 md:h-14 bg-indigo-900/40 border-2 border-primary/50 rounded-full flex items-center justify-center hover:scale-110 transition-transform hover:border-primary/80 disabled:opacity-20 disabled:grayscale">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-primary/80"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Lado Derecho: Escalera de Puntos -->
+          <aside class="w-full md:w-64 shrink-0 flex flex-col gap-4 bg-[#050a18]/50 border-l border-primary/20 p-4 md:p-6 overflow-y-auto hidden md:flex">
+            <h3 class="text-xs uppercase tracking-widest text-primary/60 font-bold mb-2">Premios Acumulados</h3>
+            <div id="ladder" class="flex flex-col-reverse gap-1">
+              <!-- Se genera dinámicamente -->
+            </div>
+          </aside>
+        </div>
+
+        <!-- SEO & Contenido Largo (Below the fold) -->
+        <article class="w-full max-w-4xl mx-auto px-4 py-12 mt-12 md:mt-16 border-t border-white/10 text-zinc-300 text-left">
+          <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">Juego de Trivia: ¿Quién Sabe Más?</h2>
+          <div class="prose prose-invert prose-lg max-w-none">
+            <p class="mb-4">
+              Pon a prueba tus conocimientos generales y compite por alcanzar el premio máximo en <strong>¿Quién Sabe Más?</strong>. Responde correctamente 12 preguntas de dificultad incremental al estilo de los grandes concursos de televisión.
+            </p>
+            <h3 class="text-2xl font-bold text-white mt-8 mb-4">¿Cómo se juega?</h3>
+            <ul class="list-disc pl-6 space-y-2 mb-6">
+              <li>Selecciona la opción correcta entre las 4 alternativas (A, B, C o D) antes de responder.</li>
+              <li>Usa tus 3 comodines (50:50, Consulta al Público y Llamada a un Amigo) en momentos críticos.</li>
+              <li>Alcanza las zonas seguras (niveles 4 y 8) para asegurar tu premio acumulado en caso de fallar.</li>
+              <li>¡Un error sin comodines te dejará fuera con lo acumulado en tu última zona segura!</li>
+            </ul>
+            <h3 class="text-2xl font-bold text-white mt-8 mb-4">Preguntas Frecuentes (FAQ)</h3>
+            <div class="space-y-4 mb-8">
+              <div class="bg-white/5 border border-white/10 rounded-xl p-4">
+                <h4 class="font-bold text-white mb-1">¿Cómo funcionan los comodines?</h4>
+                <p class="text-sm">El comodín 50:50 elimina dos alternativas incorrectas; la Consulta al Público muestra la votación estimada de la audiencia; y la Llamada te da 60 segundos para hablar con un amigo.</p>
+              </div>
+              <div class="bg-white/5 border border-white/10 rounded-xl p-4">
+                <h4 class="font-bold text-white mb-1">¿Qué son las Zonas Seguras?</h4>
+                <p class="text-sm">Las preguntas 4 y 8 son niveles de hito. Si respondes correctamente la pregunta 4 u 8, no perderás lo acumulado en esa zona aunque te equivoques en preguntas posteriores.</p>
+              </div>
+            </div>
+          </div>
+        </article>
+      </main>
+
+    <!-- Modal Instrucciones -->
+    <div id="info-modal" class="hidden fixed inset-0 z-[150] items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
+      <div class="glass-panel relative w-full max-w-md rounded-[32px] p-8 border border-white/10 shadow-2xl bg-[#050a18] text-left">
+        <button id="btn-close-info" class="absolute top-6 right-6 text-zinc-400 hover:text-white transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+        
+        <h3 class="text-2xl font-black text-white mb-6 flex items-center gap-3">
+          <span class="text-vybe-primary">ℹ️</span> Cómo Jugar
+        </h3>
+        
+        <div class="space-y-5 text-sm text-zinc-300 leading-relaxed">
+          <p><strong>1. El Objetivo:</strong> Contestar las 12 preguntas correctamente para ganar el premio mayor, al estilo "¿Quién quiere ser millonario?".</p>
+          
+          <p><strong>2. Opciones:</strong> Tienes 4 alternativas. Haz clic en la que creas correcta. ¡Cuidado, un error y termina el juego!</p>
+          
+          <p><strong>3. Comodines:</strong> Tienes 3 salvavidas para usar durante el juego:</p>
+          <ul class="list-disc pl-5 space-y-1 text-white/80">
+             <li><strong>50:50</strong> Elimina dos opciones incorrectas.</li>
+             <li><strong>Público:</strong> Pregunta a la audiencia virtual.</li>
+             <li><strong>Llamada:</strong> Tienes 60 segundos para consultar con alguien.</li>
+          </ul>
+          
+          <p><strong>4. Zonas Seguras:</strong> Las preguntas 4 y 8 son zonas seguras. Si pierdes después, te llevas ese premio acumulado.</p>
+        </div>
+        
+        <button id="btn-understood" class="mt-8 w-full py-4 rounded-2xl bg-white/10 border border-white/20 text-white font-bold hover:bg-white/20 transition-all active:scale-95">
+          ¡Entendido!
+        </button>
+      </div>
+    </div>
+
+    <!-- Overlay Comodín Telefónico -->
+    <div id="phone-overlay" class="fixed inset-0 z-[100] bg-black/95 flex flex-col items-center justify-center hidden animate-in fade-in duration-300">
+      <div class="text-blue-400 mb-8 animate-pulse">
+        <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+      </div>
+      <h3 class="text-2xl font-bold mb-4 uppercase tracking-tighter text-blue-100">Llamada en curso...</h3>
+      <div id="phone-timer" class="text-8xl md:text-[12rem] font-black text-orange-500 tabular-nums drop-shadow-[0_0_30px_rgba(249,115,22,0.4)]">
+        60
+      </div>
+      <p class="text-white/40 mt-12 text-sm max-w-xs text-center leading-relaxed">
+        Consulta con tu experto. Tienes 1 minuto antes de que la llamada se corte automáticamente.
+      </p>
+      <button id="close-phone" class="mt-12 px-8 py-3 bg-red-600/20 border border-red-500/50 rounded-full text-red-500 font-bold hover:bg-red-600 hover:text-white transition-all uppercase text-xs tracking-widest">
+        Finalizar Llamada
+      </button>
+    </div>
+
+    <!-- Overlay Game Over / Win -->
+    <div id="game-over-overlay" class="fixed inset-0 z-[100] bg-[#020205]/95 backdrop-blur-sm flex flex-col items-center justify-center hidden animate-in zoom-in-95 duration-300">
+      <div id="game-over-icon" class="mb-6"></div>
+      <h3 id="game-over-title" class="text-3xl md:text-5xl font-bold mb-2 uppercase tracking-tighter"></h3>
+      <p id="game-over-message" class="text-white/60 mb-8 text-lg text-center max-w-md px-4"></p>
+      
+      <div class="bg-[#050a18] border border-vybe-primary/30 rounded-xl p-8 text-center mb-10 shadow-[0_0_30px_rgba(139,92,246,0.15)] relative overflow-hidden group">
+        <div class="absolute inset-0 bg-gradient-to-br from-vybe-secondary/10 to-vybe-primary/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        <p class="text-vybe-text-muted text-xs uppercase tracking-widest font-bold mb-2 relative z-10">Puntos Obtenidos</p>
+        <div class="flex items-start justify-center gap-1 relative z-10">
+          <span id="game-over-prize" class="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-vybe-secondary to-vybe-primary font-mono tabular-nums tracking-tighter"></span>
+        </div>
+      </div>
+      
+      <div class="flex flex-col sm:flex-row gap-4 w-full max-w-xs sm:max-w-md px-4">
+        <a href="/play" class="flex-1 px-8 py-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-white font-bold transition-all uppercase text-xs tracking-widest text-center">
+          Salir
+        </a>
+        <button id="restart-btn" class="flex-1 px-8 py-4 bg-gradient-to-r from-vybe-secondary to-vybe-primary hover:opacity-90 text-white rounded-full font-bold transition-all uppercase text-xs tracking-widest shadow-[0_0_20px_rgba(139,92,246,0.4)]">
+          Volver a Jugar
+        </button>
+      </div>
+    </div>
+
+    <!-- Overlay Comodín del Público -->
+    <div id="public-overlay" class="fixed inset-0 z-[100] bg-[#020205]/95 backdrop-blur-sm flex flex-col items-center justify-center hidden animate-in zoom-in-95 duration-300">
+      <div class="text-vybe-secondary mb-6">
+        <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="drop-shadow-[0_0_20px_rgba(139,92,246,0.5)]"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+      </div>
+      <h3 class="text-3xl md:text-5xl font-bold mb-4 uppercase tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-vybe-secondary to-vybe-primary text-center px-4">Opinión del Público</h3>
+      
+      <div class="bg-[#050a18] border border-vybe-primary/30 rounded-xl p-8 text-center mb-10 shadow-[0_0_30px_rgba(139,92,246,0.15)] max-w-sm sm:max-w-md w-full mx-4 relative overflow-hidden group">
+        <div class="absolute inset-0 bg-gradient-to-br from-vybe-secondary/10 to-vybe-primary/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        <p class="text-white/80 text-lg mb-6 leading-relaxed relative z-10">
+          El público ha votado. La gran mayoría cree que la respuesta correcta es la opción:
+        </p>
+        <div class="flex items-center justify-center gap-4 relative z-10">
+          <span id="public-answer" class="text-7xl font-black text-primary drop-shadow-[0_0_20px_rgba(168,85,247,0.4)]">A</span>
+          <span class="text-4xl text-vybe-text-muted font-bold">(72%)</span>
+        </div>
+      </div>
+      
+      <button id="close-public" class="px-10 py-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-white font-bold transition-all uppercase text-sm tracking-widest text-center shadow-[0_0_20px_rgba(255,255,255,0.05)]">
+        Entendido
+      </button>
+    </div>
+  </div>
+  </div>
+</Layout>
+
+<style>
+  .clip-diamond {
+    clip-path: polygon(4% 0%, 96% 0%, 100% 50%, 96% 100%, 4% 100%, 0% 50%);
+  }
+  
+  .ladder-item {
+    font-size: 11px;
+    color: #00eaff;
+    opacity: 0.6;
+  }
+
+  .ladder-item.safe-row {
+    color: #ffffff;
+    opacity: 1;
+    font-weight: 800;
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .ladder-item.active {
+    background: #00eaff !important;
+    color: #000 !important;
+    opacity: 1;
+    font-weight: 900;
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.6);
+    transform: scale(1.05) translateX(4px);
+    border-radius: 4px;
+    position: relative;
+    z-index: 50;
+  }
+  
+  .ladder-item.active::before {
+    content: "▶";
+    position: absolute;
+    left: -20px;
+    color: #00eaff;
+    font-size: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    animation: bounce-right 0.6s infinite alternate;
+  }
+
+  @keyframes bounce-right {
+    from { transform: translateY(-50%) translateX(0); }
+    to { transform: translateY(-50%) translateX(6px); }
+  }
+  
+  .ladder-item.completed {
+    color: #00eaff;
+    opacity: 0.4;
+    text-decoration: line-through;
+  }
+
+  .ladder-item.safe {
+    border-left: 3px solid white;
+    padding-left: 10px;
+    color: white !important;
+    font-weight: 900;
+  }
+
+  /* Estados de respuesta */
+  .answer-btn.correct .diamond-bg {
+    background: #10b981 !important;
+    border-color: #34d399 !important;
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+  }
+  
+  .answer-btn.wrong .diamond-bg {
+    background: #ef4444 !important;
+    border-color: #f87171 !important;
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+  }
+  
+  .answer-btn.selected .diamond-bg {
+    background: #f97316 !important;
+    border-color: #fb923c !important;
+    box-shadow: 0 0 20px rgba(249, 115, 22, 0.4);
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+  .animate-blink {
+    animation: blink 0.2s ease-in-out infinite;
+  }
+</style>
+
+<script>
+  // Banco de preguntas masivo inyectado desde el servidor
+  const allQuestions = JSON.parse(JSON.stringify(await import('../../data/quien-sabe-mas-questions.json')));
+  const questionPools = allQuestions.default || allQuestions;
+  
+  let usedQuestions = new Set();
+
+  // Sintetizador de Sonidos (Garantizado para localhost y offline)
+  const audioCtx = typeof window !== 'undefined' ? new (window.AudioContext || (window as any).webkitAudioContext)() : null;
+
+  function playTone(freq: number, type: OscillatorType, duration: number, volume = 0.1) {
+    if (!audioCtx) return;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    gain.gain.setValueAtTime(volume, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + duration);
+  }
+
+  const sounds = {
+    select: () => playTone(600, 'sine', 0.1),
+    correct: () => { 
+      playTone(800, 'sine', 0.1); 
+      setTimeout(() => playTone(1200, 'sine', 0.2), 100); 
+    },
+    wrong: () => { 
+      playTone(150, 'sawtooth', 0.4, 0.2); 
+    },
+    win: () => {
+      [523.25, 659.25, 783.99, 1046.50].forEach((f, i) => {
+        setTimeout(() => playTone(f, 'sine', 0.4, 0.1), i * 150);
+      });
+    },
+    lifeline: () => playTone(1000, 'square', 0.05, 0.05)
+  };
+
+  function playSound(name: keyof typeof sounds) {
+    if (!audioCtx) return;
+    try {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      sounds[name]();
+      console.log(`🔊 Sonido sintetizado: ${name}`);
+    } catch (e) {
+      console.warn("Audio bloqueado por el navegador", e);
+    }
+  }
+
+  const prizes = [
+    "100", "200", "300", "500", 
+    "1.000", "2.000", "4.000", "8.000", 
+    "16.000", "32.000", "64.000", "125.000"
+  ];
+
+  let currentLevel = 0;
+  let canAnswer = true;
+  let phoneCountdown: any = null;
+
+  // DOM Elements
+  const questionEl = document.getElementById('question-text');
+  const answerBtns = document.querySelectorAll('.answer-btn');
+  const ladderEl = document.getElementById('ladder');
+  const phoneOverlay = document.getElementById('phone-overlay');
+  const phoneTimerEl = document.getElementById('phone-timer');
+  const closePhoneBtn = document.getElementById('close-phone');
+  const backBtn = document.getElementById('back-btn');
+
+  // Game Over Modal Elements
+  const gameOverOverlay = document.getElementById('game-over-overlay');
+  const gameOverTitle = document.getElementById('game-over-title');
+  const gameOverMessage = document.getElementById('game-over-message');
+  const gameOverPrize = document.getElementById('game-over-prize');
+  const gameOverIcon = document.getElementById('game-over-icon');
+  const restartBtn = document.getElementById('restart-btn');
+
+  // Public Lifeline Modal Elements
+  const publicOverlay = document.getElementById('public-overlay');
+  const publicAnswer = document.getElementById('public-answer');
+  const closePublicBtn = document.getElementById('close-public');
+
+  // Info Modal Elements
+  const infoModal = document.getElementById('info-modal');
+  const btnInfo = document.getElementById('btn-info');
+  const btnCloseInfo = document.getElementById('btn-close-info');
+  const btnUnderstood = document.getElementById('btn-understood');
+
+  function openInfo() {
+    infoModal?.classList.remove('hidden');
+    infoModal?.classList.add('flex');
+  }
+
+  function closeInfo() {
+    infoModal?.classList.add('hidden');
+    infoModal?.classList.remove('flex');
+  }
+
+  btnInfo?.addEventListener('click', openInfo);
+  btnCloseInfo?.addEventListener('click', closeInfo);
+  btnUnderstood?.addEventListener('click', closeInfo);
+
+  // Lifelines
+  const btn5050 = document.getElementById('lifeline-5050') as HTMLButtonElement;
+  const btnPublic = document.getElementById('lifeline-public') as HTMLButtonElement;
+  const btnPhone = document.getElementById('lifeline-phone') as HTMLButtonElement;
+
+  function initLadder() {
+    if (!ladderEl) return;
+    ladderEl.innerHTML = prizes.map((prize, i) => {
+      return `
+        <div class="ladder-item flex justify-between px-3 py-1 rounded transition-all duration-300 border border-transparent text-xs" data-level="${i}">
+          <span class="level-num font-bold w-5 text-center">${i + 1}</span>
+          <span class="level-prize font-mono">${prize}</span>
+        </div>
+      `;
+    }).join('');
+    updateLadder();
+  }
+
+  function updateLadder() {
+    const items = document.querySelectorAll('.ladder-item');
+    items.forEach((item, i) => {
+      const idx = parseInt(item.getAttribute('data-level') || '0');
+      const isSafe = (idx + 1) % 4 === 0;
+      
+      // Estilo Base (Niveles futuros)
+      item.style.backgroundColor = isSafe ? 'rgba(255,255,255,0.05)' : 'transparent';
+      item.style.color = isSafe ? '#ffffff' : '#64748b'; // Slate-500 para lo que viene
+      item.style.transform = 'scale(1)';
+      item.style.opacity = '1';
+      item.style.borderColor = 'transparent';
+      item.style.boxShadow = 'none';
+      item.style.fontWeight = isSafe ? '700' : '500';
+
+      if (idx === currentLevel) {
+        // NIVEL ACTUAL - Resaltado elegante
+        item.style.backgroundColor = '#f97316';
+        item.style.color = '#000000';
+        item.style.transform = 'scale(1.02) translateX(4px)';
+        item.style.boxShadow = '0 0 15px rgba(249, 115, 22, 0.4)';
+        item.style.zIndex = '50';
+        item.style.fontWeight = '900';
+      } else if (idx < currentLevel) {
+        // NIVELES SUPERADOS
+        item.style.color = '#f97316';
+        item.style.opacity = '0.5';
+        item.style.textDecoration = 'none';
+      }
+    });
+
+    const mobileLevel = document.getElementById('mobile-level');
+    const mobilePrize = document.getElementById('mobile-prize');
+    if (mobileLevel) mobileLevel.textContent = (currentLevel + 1).toString();
+    if (mobilePrize && prizes[currentLevel]) mobilePrize.textContent = prizes[currentLevel];
+  }
+
+  function showGameOver(isWin: boolean, prizeAmount: string) {
+    if (!gameOverOverlay || !gameOverTitle || !gameOverMessage || !gameOverPrize || !gameOverIcon) return;
+    
+    if (isWin) {
+      playSound('win');
+      gameOverTitle.innerText = "¡ERES UN EXPERTO!";
+      gameOverTitle.className = "text-3xl md:text-5xl font-bold mb-2 uppercase tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-[#10b981] to-[#059669]";
+      gameOverMessage.innerText = "¡Increíble! Has respondido todas las preguntas correctamente y te llevas el premio máximo.";
+      gameOverIcon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="drop-shadow-[0_0_15px_rgba(16,185,129,0.5)]"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`;
+    } else {
+      gameOverTitle.innerText = "¡FIN DEL JUEGO!";
+      gameOverTitle.className = "text-3xl md:text-5xl font-bold mb-2 uppercase tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-[#ef4444] to-[#be123c]";
+      gameOverMessage.innerText = "Te equivocaste en esta pregunta, pero no te preocupes, puedes volver a intentarlo.";
+      gameOverIcon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="drop-shadow-[0_0_15px_rgba(239,68,68,0.5)]"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>`;
+    }
+    
+    gameOverPrize.innerText = prizeAmount;
+    gameOverOverlay.classList.remove('hidden');
+  }
+
+  function loadQuestion() {
+    if (currentLevel >= 12) {
+      showGameOver(true, prizes[prizes.length - 1]);
+      return;
+    }
+
+    canAnswer = true;
+    
+    // Seleccionar pozo según nivel
+    let pool = [];
+    if (currentLevel < 4) pool = questionPools.easy;
+    else if (currentLevel < 8) pool = questionPools.medium;
+    else pool = questionPools.hard;
+
+    // Filtrar preguntas ya usadas
+    const available = pool.filter((q: any) => !usedQuestions.has(q.q));
+    
+    // Selección aleatoria
+    const randomIndex = Math.floor(Math.random() * available.length);
+    const qData = available[randomIndex];
+    
+    // Registrar como usada
+    usedQuestions.add(qData.q);
+    
+    // Guardar para uso de comodines
+    (window as any).currentQuestionData = qData;
+
+    if (questionEl) questionEl.innerText = qData.q;
+    
+    answerBtns.forEach((btn, i) => {
+      btn.classList.remove('selected', 'correct', 'wrong', 'hidden');
+      const textEl = btn.querySelector('.option-text');
+      if (textEl) textEl.textContent = qData.a[i];
+    });
+    updateLadder();
+  }
+
+  function handleAnswer(index: number) {
+    if (!canAnswer) return;
+    canAnswer = false;
+    playSound('select');
+
+    const qData = (window as any).currentQuestionData;
+    const correctIndex = qData.c;
+    const btn = answerBtns[index];
+    btn.classList.add('selected');
+
+    // Efecto de tensión (1.5 segundos)
+    setTimeout(() => {
+      if (index === correctIndex) {
+        playSound('correct');
+        btn.classList.remove('selected');
+        btn.classList.add('correct');
+        btn.classList.add('animate-blink');
+        
+        // Siguiente nivel tras 2 segundos
+        setTimeout(() => {
+          btn.classList.remove('animate-blink');
+          currentLevel++;
+          loadQuestion();
+        }, 2000);
+      } else {
+        playSound('wrong');
+        btn.classList.remove('selected');
+        btn.classList.add('wrong');
+        answerBtns[correctIndex].classList.add('correct');
+        
+        setTimeout(() => {
+          const lastSafeLevel = Math.floor(currentLevel / 4) * 4;
+          const prize = lastSafeLevel > 0 ? prizes[lastSafeLevel - 1] : "0";
+          showGameOver(false, prize);
+        }, 2000);
+      }
+    }, 1500);
+  }
+
+  // Event Listeners
+  answerBtns.forEach((btn, i) => {
+    btn.addEventListener('click', () => handleAnswer(i));
+  });
+
+  // Lifeline 50:50
+  btn5050?.addEventListener('click', () => {
+    playSound('lifeline');
+    const qData = (window as any).currentQuestionData;
+    const correctIndex = qData.c;
+    const indices = [0, 1, 2, 3].filter(idx => idx !== correctIndex);
+    
+    // Mezclar y ocultar 2 incorrectas
+    indices.sort(() => Math.random() - 0.5);
+    answerBtns[indices[0]].classList.add('hidden');
+    answerBtns[indices[1]].classList.add('hidden');
+    
+    btn5050.disabled = true;
+  });
+
+  // Lifeline Público (Simulado)
+  btnPublic?.addEventListener('click', () => {
+    if (!publicOverlay || !publicAnswer) return;
+    playSound('lifeline');
+    const qData = (window as any).currentQuestionData;
+    const correct = String.fromCharCode(65 + qData.c);
+    publicAnswer.innerText = correct;
+    publicOverlay.classList.remove('hidden');
+    btnPublic.disabled = true;
+  });
+
+  closePublicBtn?.addEventListener('click', () => {
+    publicOverlay?.classList.add('hidden');
+  });
+
+  // Lifeline Llamada (Reloj 60s)
+  btnPhone?.addEventListener('click', () => {
+    if (!phoneOverlay || !phoneTimerEl) return;
+    playSound('lifeline');
+    
+    phoneOverlay.classList.remove('hidden');
+    let timeLeft = 60;
+    phoneTimerEl.innerText = timeLeft.toString();
+    
+    phoneCountdown = setInterval(() => {
+      timeLeft--;
+      phoneTimerEl.innerText = timeLeft.toString();
+      if (timeLeft <= 0) {
+        clearInterval(phoneCountdown);
+        phoneOverlay.classList.add('hidden');
+      }
+    }, 1000);
+    
+    btnPhone.disabled = true;
+  });
+
+  closePhoneBtn?.addEventListener('click', () => {
+    if (phoneCountdown) clearInterval(phoneCountdown);
+    phoneOverlay?.classList.add('hidden');
+  });
+
+  // Reset Game
+  restartBtn?.addEventListener('click', () => {
+    currentLevel = 0;
+    usedQuestions.clear();
+    
+    // Reset Comodines
+    if (btn5050) btn5050.disabled = false;
+    if (btnPublic) btnPublic.disabled = false;
+    if (btnPhone) btnPhone.disabled = false;
+    
+    gameOverOverlay?.classList.add('hidden');
+    loadQuestion();
+  });
+
+  // Init
+  initLadder();
+  loadQuestion();
+</script>

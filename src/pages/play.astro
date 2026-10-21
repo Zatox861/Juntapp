@@ -1,0 +1,139 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Catálogo de Juegos | Juntapp">
+  <div class="min-h-screen flex flex-col items-center p-6 relative">
+    <!-- Glow -->
+    <div class="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+      <div class="absolute bottom-0 right-0 w-[30rem] h-[30rem] bg-vybe-secondary/10 rounded-full blur-[150px]"></div>
+    </div>
+
+    <div class="relative z-10 w-full max-w-4xl mt-8">
+      
+      <div class="flex justify-between items-center mb-8">
+        <a href="/" class="text-vybe-text-muted hover:text-white transition-colors">← Volver al inicio</a>
+      </div>
+
+      <h1 class="text-3xl font-geist font-bold text-white text-center mb-2">Catálogo de Juegos</h1>
+      <p class="text-center text-vybe-text-muted mb-8">Selecciona a qué quieres jugar ahora.</p>
+
+      <div class="flex flex-col gap-6 w-full max-w-4xl mx-auto" id="games-list">
+
+        <!-- Bingo -->
+        <a href="/bingo-lobby" class="group relative bg-surface-container rounded-[24px] border border-white/5 overflow-hidden hover:border-vybe-primary/50 transition-all duration-500 cursor-pointer flex flex-col md:flex-row w-full">
+          <div class="w-full md:w-[300px] aspect-square relative overflow-hidden shrink-0 bg-surface">
+            <img alt="Bingo" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="/img/cover_bingo.png">
+          </div>
+          <div class="p-6 md:p-8 flex flex-col justify-center flex-1">
+            <div class="bg-vybe-primary/20 text-vybe-primary w-max px-3 py-1 rounded-full font-label-sm text-[10px] mb-3 backdrop-blur-md border border-vybe-primary/30 uppercase tracking-widest font-bold">Multi-Jugador</div>
+            <h3 class="font-headline-md text-2xl font-bold text-white mb-2">Bingo</h3>
+            <p class="font-body-md text-vybe-text-muted mb-4">El clásico juego de Bingo para jugar con todos tus amigos. Uno canta los números y el resto marca en sus cartones virtuales.</p>
+            <div class="mt-auto">
+              <h4 class="text-sm font-bold text-white/80 mb-1 uppercase tracking-wider">¿Cómo se juega?</h4>
+              <p class="text-sm text-vybe-text-muted leading-relaxed">Cada jugador necesita entrar desde su celular. El anfitrión canta los números y los demás marcan su cartón. ¡El primero en llenarlo grita Bingo y gana!</p>
+            </div>
+          </div>
+        </a>
+
+        <!-- Verdad o Reto -->
+        <a href="/juegos/verdad-reto" class="group relative bg-surface-container rounded-[24px] border border-white/5 overflow-hidden hover:border-vybe-primary/50 transition-all duration-500 cursor-pointer flex flex-col md:flex-row w-full">
+          <div class="w-full md:w-[300px] aspect-square relative overflow-hidden shrink-0 bg-surface">
+            <img alt="Verdad o Reto" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="/img/cover_verdad_reto.png">
+          </div>
+          <div class="p-6 md:p-8 flex flex-col justify-center flex-1">
+            <div class="bg-vybe-tertiary/20 text-vybe-tertiary w-max px-3 py-1 rounded-full font-label-sm text-[10px] mb-3 backdrop-blur-md border border-vybe-tertiary/30 uppercase tracking-widest font-bold">1 Dispositivo</div>
+            <h3 class="font-headline-md text-2xl font-bold text-white mb-2">Verdad o Reto</h3>
+            <p class="font-body-md text-vybe-text-muted mb-4">Preguntas que no te atreverías a hacer en público. Preparate para las confesiones y las penitencias más extremas.</p>
+            <div class="mt-auto">
+              <h4 class="text-sm font-bold text-white/80 mb-1 uppercase tracking-wider">¿Cómo se juega?</h4>
+              <p class="text-sm text-vybe-text-muted leading-relaxed">Gira la botella virtual en la app. A quien apunte, deberá elegir entre decir una verdad incómoda o cumplir un reto ridículo. Si no cumple, ¡castigo!</p>
+            </div>
+          </div>
+        </a>
+
+        <!-- Ruleta -->
+        <a href="/juegos/ruleta" class="group relative bg-surface-container rounded-[24px] border border-white/5 overflow-hidden hover:border-vybe-secondary/50 transition-all duration-500 cursor-pointer flex flex-col md:flex-row w-full">
+          <div class="w-full md:w-[300px] aspect-square relative overflow-hidden shrink-0 bg-surface">
+            <img alt="Ruleta" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="/img/cover_ruleta.png">
+          </div>
+          <div class="p-6 md:p-8 flex flex-col justify-center flex-1">
+            <div class="bg-vybe-secondary/20 text-vybe-secondary w-max px-3 py-1 rounded-full font-label-sm text-[10px] mb-3 backdrop-blur-md border border-vybe-secondary/30 uppercase tracking-widest font-bold">1 Dispositivo</div>
+            <h3 class="font-headline-md text-2xl font-bold text-white mb-2">Ruleta del Azar</h3>
+            <p class="font-body-md text-vybe-text-muted mb-4">Deja que el azar decida el destino de la noche. Castigos, tragos regalados y reglas grupales.</p>
+            <div class="mt-auto">
+              <h4 class="text-sm font-bold text-white/80 mb-1 uppercase tracking-wider">¿Cómo se juega?</h4>
+              <p class="text-sm text-vybe-text-muted leading-relaxed">Por turnos, cada jugador presiona la ruleta. Al detenerse, indica una acción o castigo que la persona o el grupo deberá cumplir de inmediato.</p>
+            </div>
+          </div>
+        </a>
+
+        <!-- Quién es más -->
+        <a href="/juegos/quien-es" class="group relative bg-surface-container rounded-[24px] border border-white/5 overflow-hidden hover:border-vybe-primary/50 transition-all duration-500 cursor-pointer flex flex-col md:flex-row w-full">
+          <div class="w-full md:w-[300px] aspect-square relative overflow-hidden shrink-0 bg-surface">
+            <img alt="Quién es más" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="/img/cover_quien_es.png">
+          </div>
+          <div class="p-6 md:p-8 flex flex-col justify-center flex-1">
+            <div class="bg-vybe-primary/20 text-vybe-primary w-max px-3 py-1 rounded-full font-label-sm text-[10px] mb-3 backdrop-blur-md border border-vybe-primary/30 uppercase tracking-widest font-bold">1 Dispositivo</div>
+            <h3 class="font-headline-md text-2xl font-bold text-white mb-2">¿Quién es más...?</h3>
+            <p class="font-body-md text-vybe-text-muted mb-4">Apunta al amigo que más calce con la descripción. Ideal para sacar trapitos al sol y descubrir qué piensan de ti.</p>
+            <div class="mt-auto">
+              <h4 class="text-sm font-bold text-white/80 mb-1 uppercase tracking-wider">¿Cómo se juega?</h4>
+              <p class="text-sm text-vybe-text-muted leading-relaxed">Se lee una pregunta del tipo "¿Quién es más probable que...?" en voz alta. A la cuenta de 3, todos apuntan a alguien del grupo. El más votado, pierde.</p>
+            </div>
+          </div>
+        </a>
+
+        <!-- Yo Nunca -->
+        <a href="/juegos/yo-nunca" class="group relative bg-surface-container rounded-[24px] border border-white/5 overflow-hidden hover:border-vybe-secondary/50 transition-all duration-500 cursor-pointer flex flex-col md:flex-row w-full">
+          <div class="w-full md:w-[300px] aspect-square relative overflow-hidden shrink-0 bg-surface">
+            <img alt="Yo Nunca" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="/img/cover_yo_nunca.png">
+          </div>
+          <div class="p-6 md:p-8 flex flex-col justify-center flex-1">
+            <div class="bg-vybe-secondary/20 text-vybe-secondary w-max px-3 py-1 rounded-full font-label-sm text-[10px] mb-3 backdrop-blur-md border border-vybe-secondary/30 uppercase tracking-widest font-bold">1 Dispositivo</div>
+            <h3 class="font-headline-md text-2xl font-bold text-white mb-2">Yo Nunca</h3>
+            <p class="font-body-md text-vybe-text-muted mb-4">El clásico juego de previas. Descubre los secretos más oscuros y divertidos de tus amigos mientras todos toman.</p>
+            <div class="mt-auto">
+              <h4 class="text-sm font-bold text-white/80 mb-1 uppercase tracking-wider">¿Cómo se juega?</h4>
+              <p class="text-sm text-vybe-text-muted leading-relaxed">Aparece una frase que empieza con "Yo nunca...". Todos los del grupo que SÍ hayan hecho la acción mencionada, deben tomar un sorbo de su trago.</p>
+            </div>
+          </div>
+        </a>
+
+        <!-- Mímica -->
+        <a href="/juegos/mimica" class="group relative bg-surface-container rounded-[24px] border border-white/5 overflow-hidden hover:border-vybe-tertiary/50 transition-all duration-500 cursor-pointer flex flex-col md:flex-row w-full">
+          <div class="w-full md:w-[300px] aspect-square relative overflow-hidden shrink-0 bg-surface">
+            <img alt="Mímica Extrema" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="/img/cover_mimica.png">
+          </div>
+          <div class="p-6 md:p-8 flex flex-col justify-center flex-1">
+            <div class="bg-vybe-tertiary/20 text-vybe-tertiary w-max px-3 py-1 rounded-full font-label-sm text-[10px] mb-3 backdrop-blur-md border border-vybe-tertiary/30 uppercase tracking-widest font-bold">1 Dispositivo</div>
+            <h3 class="font-headline-md text-2xl font-bold text-white mb-2">Mímica Extrema</h3>
+            <p class="font-body-md text-vybe-text-muted mb-4">Adivina la palabra oculta en la frente de tu amigo. Las actuaciones vergonzosas y las risas están aseguradas.</p>
+            <div class="mt-auto">
+              <h4 class="text-sm font-bold text-white/80 mb-1 uppercase tracking-wider">¿Cómo se juega?</h4>
+              <p class="text-sm text-vybe-text-muted leading-relaxed">Un jugador se pone el celular en la frente. Los demás deben hacer gestos (sin hablar) para que adivine la palabra. Si adivina inclina hacia abajo, si pasa, hacia arriba.</p>
+            </div>
+          </div>
+        </a>
+
+        <!-- Quién Sabe Más -->
+        <a href="/juegos/quien-sabe-mas" class="group relative bg-surface-container rounded-[24px] border border-white/5 overflow-hidden hover:border-orange-400/50 transition-all duration-500 cursor-pointer flex flex-col md:flex-row w-full">
+          <div class="w-full md:w-[300px] aspect-square relative overflow-hidden shrink-0 bg-surface">
+            <img alt="Quién Sabe Más" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="/img/cover_quien_sabe_mas.png">
+          </div>
+          <div class="p-6 md:p-8 flex flex-col justify-center flex-1">
+            <div class="bg-orange-400/20 text-orange-400 w-max px-3 py-1 rounded-full font-label-sm text-[10px] mb-3 backdrop-blur-md border border-orange-400/30 uppercase tracking-widest font-bold">1 Dispositivo</div>
+            <h3 class="font-headline-md text-2xl font-bold text-white mb-2">¿Quién Sabe Más?</h3>
+            <p class="font-body-md text-vybe-text-muted mb-4">Pon a prueba a tus amigos en rondas de trivia. Cultura general, cultura pop, datos curiosos y más.</p>
+            <div class="mt-auto">
+              <h4 class="text-sm font-bold text-white/80 mb-1 uppercase tracking-wider">¿Cómo se juega?</h4>
+              <p class="text-sm text-vybe-text-muted leading-relaxed">Alguien lee la pregunta en voz alta con sus opciones. El primer jugador del grupo en gritar la respuesta correcta suma puntos. El resto debe pagar una penitencia.</p>
+            </div>
+          </div>
+        </a>
+
+      </div>
+
+    </div>
+  </div>
+</Layout>

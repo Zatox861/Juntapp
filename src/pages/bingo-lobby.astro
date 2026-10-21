@@ -1,0 +1,135 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Lobby de Bingo | Juntapp">
+  <div class="min-h-screen flex flex-col items-center justify-center p-6 relative">
+    <!-- Glow -->
+    <div class="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+      <div class="absolute bottom-0 right-0 w-[30rem] h-[30rem] bg-vybe-secondary/10 rounded-full blur-[150px]"></div>
+    </div>
+
+    <div class="relative z-10 w-full max-w-md">
+      
+      <div class="flex justify-between items-center mb-8">
+        <a href="/play" class="text-vybe-text-muted hover:text-white transition-colors">← Volver al catálogo</a>
+      </div>
+
+      <!-- Paso Opciones (Si no hay código) -->
+      <div id="step-options" class="glass-panel p-8 rounded-3xl flex flex-col items-center text-center hidden">
+        <span class="text-4xl mb-4">🔢</span>
+        <h2 class="text-2xl font-geist font-bold text-white mb-2">Bingo</h2>
+        <p class="text-vybe-text-muted mb-8">Este juego requiere estar conectado con tus amigos.</p>
+        
+        <div class="flex flex-col gap-4 w-full">
+          <a href="/host" class="w-full bg-vybe-primary text-white py-4 rounded-xl font-semibold hover:bg-blue-500 transition-colors shadow-lg shadow-vybe-primary/20">
+            Crear Sala (Soy Host)
+          </a>
+          <button id="btn-show-code" class="w-full bg-vybe-surface-highlight border border-white/10 text-white py-4 rounded-xl font-semibold hover:bg-white/10 transition-colors">
+            Tengo un código
+          </button>
+        </div>
+      </div>
+
+      <!-- Paso Ingreso Código (Manual) -->
+      <div id="step-code" class="glass-panel p-8 rounded-3xl flex flex-col items-center text-center hidden">
+        <h2 class="text-2xl font-geist font-bold text-white mb-2">Código de Sala</h2>
+        <p class="text-vybe-text-muted mb-6">Pídele las 4 letras al host.</p>
+        
+        <input type="text" id="room-code" placeholder="Ej: ABCD" class="w-full bg-vybe-bg border border-white/10 rounded-xl px-4 py-4 text-white text-center text-2xl font-mono uppercase tracking-widest focus:outline-none focus:neon-border-primary transition-all mb-4" maxlength="4" />
+        
+        <button id="btn-verify-code" class="w-full bg-vybe-primary text-white py-4 rounded-xl font-semibold hover:bg-blue-500 transition-colors">
+          Continuar
+        </button>
+      </div>
+
+      <!-- Paso Ingreso Nombre (Obligatorio para jugar) -->
+      <div id="step-name" class="glass-panel p-8 rounded-3xl flex flex-col items-center text-center hidden">
+        <div class="w-16 h-16 bg-vybe-surface-highlight rounded-full flex items-center justify-center mb-6">
+          <span class="text-2xl">👋</span>
+        </div>
+        <h2 class="text-2xl font-geist font-bold text-white mb-2">¡Casi listo!</h2>
+        <p class="text-vybe-text-muted mb-6">¿Cómo te llamas para el Bingo?</p>
+        
+        <input type="text" id="player-name" placeholder="Tu apodo" class="w-full bg-vybe-bg border border-white/10 rounded-xl px-4 py-4 text-white text-center text-xl font-inter focus:outline-none focus:neon-border-primary transition-all mb-4" />
+        
+        <button id="btn-enter-bingo" class="w-full bg-vybe-secondary text-white py-4 rounded-xl font-semibold hover:bg-pink-500 transition-colors shadow-lg shadow-vybe-secondary/20">
+          Entrar a Jugar
+        </button>
+      </div>
+
+    </div>
+  </div>
+</Layout>
+
+<script>
+  const urlParams = new URLSearchParams(window.location.search);
+  let seed = urlParams.get('seed');
+  let mode = urlParams.get('m');
+
+  const stepOptions = document.getElementById('step-options');
+  const stepCode = document.getElementById('step-code');
+  const stepName = document.getElementById('step-name');
+
+  const btnShowCode = document.getElementById('btn-show-code');
+  const btnVerifyCode = document.getElementById('btn-verify-code');
+  const btnEnterBingo = document.getElementById('btn-enter-bingo');
+
+  const roomCodeInput = document.getElementById('room-code') as HTMLInputElement;
+  const nameInput = document.getElementById('player-name') as HTMLInputElement;
+
+  // Lógica de Player ID
+  let playerId = localStorage.getItem('juntapp_player_id');
+  if (!playerId) {
+    playerId = Math.random().toString(36).substring(2, 9);
+    localStorage.setItem('juntapp_player_id', playerId);
+  }
+
+  let playerName = localStorage.getItem('juntapp_player_name');
+  if (playerName) {
+    nameInput.value = playerName;
+  }
+
+  // Flujo Inicial
+  if (seed && seed.length === 4) {
+    // Si ya viene con seed (ej. escaneó el QR)
+    if(stepName) stepName.classList.remove('hidden');
+  } else {
+    // Si vino desde el catálogo sin código
+    if(stepOptions) stepOptions.classList.remove('hidden');
+  }
+
+  // Interacciones
+  btnShowCode?.addEventListener('click', () => {
+    if(stepOptions) stepOptions.classList.add('hidden');
+    if(stepCode) stepCode.classList.remove('hidden');
+    roomCodeInput?.focus();
+  });
+
+  btnVerifyCode?.addEventListener('click', () => {
+    const code = roomCodeInput.value.trim().toUpperCase();
+    if (code.length === 4) {
+      seed = code;
+      if(stepCode) stepCode.classList.add('hidden');
+      if(stepName) stepName.classList.remove('hidden');
+      nameInput?.focus();
+    }
+  });
+
+  btnEnterBingo?.addEventListener('click', () => {
+    if (nameInput.value.trim() && seed) {
+      playerName = nameInput.value.trim();
+      localStorage.setItem('juntapp_player_name', playerName);
+      const modeParam = mode ? `&m=${mode}` : '';
+      window.location.href = `/juegos/bingo?seed=${seed}&p=${playerId}${modeParam}`;
+    }
+  });
+
+  roomCodeInput?.addEventListener('keyup', (e) => {
+    if(e.key === 'Enter') btnVerifyCode?.click();
+  });
+
+  nameInput?.addEventListener('keyup', (e) => {
+    if(e.key === 'Enter') btnEnterBingo?.click();
+  });
+</script>

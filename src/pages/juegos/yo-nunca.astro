@@ -1,0 +1,290 @@
+---
+import Layout from '../../layouts/Layout.astro';
+// Importamos solo para que Astro sepa que el archivo existe y lo procese si es necesario, 
+// pero usaremos la técnica del template para los datos del script.
+import phrasesRaw from '../../content/yo-nunca.json';
+---
+
+<Layout title="Yo Nunca | Juntapp">
+  <div class="min-h-screen bg-transparent flex flex-col font-sans overflow-x-hidden">
+    <!-- Fondo decorativo -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+      <div class="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-primary/20 rounded-full blur-[120px] animate-pulse"></div>
+      <div class="absolute top-[20%] -right-[5%] w-[30%] h-[50%] bg-secondary/10 rounded-full blur-[100px]"></div>
+      <div class="absolute -bottom-[10%] left-[20%] w-[50%] h-[30%] bg-primary/15 rounded-full blur-[120px] animate-pulse" style="animation-delay: 2s;"></div>
+    </div>
+
+    <div class="relative z-10 flex flex-col flex-grow w-full max-w-5xl mx-auto p-4 md:p-8">
+      <!-- HEADER UNIVERSAL -->
+      <header class="relative flex justify-between items-center mb-8 md:mb-12 w-full z-20">
+        <a href="/play" id="back-btn" class="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors text-sm font-medium z-10" title="Volver al Catálogo">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          <span class="hidden sm:inline">Volver</span>
+        </a>
+        
+        <div class="absolute left-1/2 -translate-x-1/2 flex flex-col items-center w-full pointer-events-none">
+          <h1 class="text-xl md:text-2xl font-geist font-bold text-transparent bg-clip-text bg-gradient-to-r from-vybe-secondary to-vybe-primary uppercase tracking-tighter text-center">
+            Yo Nunca
+          </h1>
+        </div>
+
+        <button id="btn-info" class="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors text-sm font-medium z-10" title="Cómo jugar">
+          <span class="hidden sm:inline">Cómo jugar</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        </button>
+      </header>
+
+      <main class="flex-grow flex flex-col items-center justify-start pt-4 md:pt-8 pb-12 w-full">
+        <!-- Pantalla de Inicio -->
+        <div id="start-screen" class="w-full max-w-md text-center animate-in fade-in zoom-in duration-700">
+          <div class="glass-panel p-12 rounded-[40px] border border-white/10 shadow-2xl relative overflow-hidden group">
+            <div class="absolute inset-0 bg-gradient-to-br from-vybe-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+            
+            <div class="relative z-10">
+              <div class="w-20 h-20 bg-gradient-to-tr from-primary to-secondary rounded-3xl mx-auto mb-8 flex items-center justify-center shadow-lg rotate-3 group-hover:rotate-6 transition-transform">
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-white"><path d="M6 9h12v12H6z"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/></svg>
+              </div>
+              <h2 class="text-4xl font-black italic uppercase tracking-tighter text-white mb-4">¿Están listos?</h2>
+              <p class="text-white/60 text-sm mb-10 leading-relaxed">
+                Prepara tu trago, sé honesto y prepárate para las confesiones.
+              </p>
+
+              <!-- Selector de Dificultad -->
+              <div class="flex bg-black/40 p-1.5 rounded-2xl border border-white/10 mb-8 max-w-[280px] mx-auto">
+                <button id="btn-select-soft" class="flex-1 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all bg-white text-black shadow-xl">Soft</button>
+                <button id="btn-select-hard" class="flex-1 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all text-white/40 hover:text-white">Picante</button>
+              </div>
+
+              <button 
+                id="btn-start-game" 
+                class="w-full py-6 bg-gradient-to-r from-primary to-secondary rounded-2xl font-black uppercase tracking-[0.2em] text-sm shadow-[0_10px_30px_-10px_rgba(0,234,255,0.5)] hover:shadow-[0_15px_40px_-10px_rgba(0,234,255,0.6)] active:scale-95 transition-all text-black"
+              >
+                ¡Empezar a jugar!
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Área de Juego -->
+        <div id="game-area" class="hidden w-full max-w-2xl flex flex-col items-center">
+          <div class="w-full glass-panel p-10 md:p-16 rounded-[40px] border border-white/10 shadow-2xl relative overflow-hidden mb-12 min-h-[300px] flex flex-col justify-center text-center">
+            <div id="card-tag" class="absolute top-8 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-primary/20 rounded-full border border-primary/30 text-[10px] font-black uppercase tracking-[0.2em] text-primary mb-6">
+              Modo Soft
+            </div>
+
+            <h2 id="phrase-text" class="text-3xl md:text-5xl font-black italic leading-[1.1] tracking-tighter text-white animate-in fade-in slide-in-from-bottom-6 duration-700">
+              Cargando frase...
+            </h2>
+          </div>
+
+          <div id="action-area" class="w-full flex flex-col items-center gap-6">
+            <button 
+              id="btn-next" 
+              class="group relative flex items-center justify-center gap-4 bg-white text-black px-12 py-6 rounded-2xl font-black uppercase tracking-[0.2em] text-sm hover:scale-105 active:scale-95 transition-all shadow-2xl overflow-hidden w-full max-w-sm"
+            >
+              <span class="relative z-10">Siguiente frase</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="relative z-10 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </button>
+
+            <button 
+              id="btn-back-to-modes"
+              class="flex items-center gap-2 text-white/40 hover:text-white transition-all text-[10px] font-black uppercase tracking-[0.2em]"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+              Cambiar Modo
+            </button>
+          </div>
+        </div>
+        <!-- SEO & Contenido Largo (Below the fold) -->
+        <article class="w-full max-w-4xl mx-auto px-4 py-12 mt-12 md:mt-16 border-t border-white/10 text-zinc-300 text-left">
+          <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">El Clásico "Yo Nunca Nunca" (Never Have I Ever)</h2>
+          <div class="prose prose-invert prose-lg max-w-none">
+            <p class="mb-4">
+              <strong>Yo Nunca Nunca</strong> es, sin duda, el rey de los juegos para romper el hielo y descubrir secretos en las fiestas. Con nuestra versión interactiva, no tendrás que pensar en premisas porque nuestro algoritmo te entregará tarjetas garantizadas para sorprenderte a ti y a tus amigos.
+            </p>
+            <h3 class="text-2xl font-bold text-white mt-8 mb-4">Instrucciones Básicas</h3>
+            <ul class="list-disc pl-6 space-y-2 mb-6">
+              <li>Un jugador lee en voz alta la premisa de la pantalla, que siempre comienza con "Yo nunca nunca..." (ej. "...he robado algo de una tienda").</li>
+              <li>Todos los jugadores en la ronda que <strong>SÍ</strong> hayan hecho esa acción en el pasado, deben tomar un sorbo de su bebida (o bajar un dedo si juegan a la versión limpia).</li>
+              <li>Presionen "Siguiente" para revelar una nueva confesión y repitan.</li>
+            </ul>
+            <h3 class="text-2xl font-bold text-white mt-8 mb-4">Preguntas Frecuentes (FAQ)</h3>
+            <div class="space-y-4 mb-8">
+              <div class="bg-white/5 border border-white/10 rounded-xl p-4">
+                <h4 class="font-bold text-white mb-1">¿Qué pasa si miento en Yo Nunca?</h4>
+                <p class="text-sm">El objetivo del juego es reírse y conocerse. Si mientes y alguien del grupo sabe la verdad, estás expuesto a que te delaten públicamente y debas cumplir penitencias peores.</p>
+              </div>
+              <div class="bg-white/5 border border-white/10 rounded-xl p-4">
+                <h4 class="font-bold text-white mb-1">¿Hay filtros Picantes?</h4>
+                <p class="text-sm">Sí, nuestra versión de "Yo Nunca" incluye filtros clásicos y picantes. El modo picante sube el tono con tarjetas enfocadas en situaciones íntimas, locuras de fiesta y anécdotas vergonzosas.</p>
+              </div>
+            </div>
+          </div>
+        </article>
+      </main>
+
+    </div>
+
+    <!-- Modal Instrucciones -->
+    <div id="info-modal" class="hidden fixed inset-0 z-50 items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
+      <div class="glass-panel relative w-full max-w-md rounded-[32px] p-8 border border-white/10 shadow-2xl bg-[#121215] text-left">
+        <button id="btn-close-info" class="absolute top-6 right-6 text-zinc-400 hover:text-white transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+        
+        <h3 class="text-2xl font-black text-white mb-6 flex items-center gap-3">
+          <span class="text-primary">ℹ️</span> Cómo Jugar
+        </h3>
+        
+        <div class="space-y-5 text-sm text-zinc-300 leading-relaxed">
+          <p><strong>1. Preparación:</strong> Cada jugador debe tener su vaso con bebida. Elijan la intensidad en la pantalla inicial (Soft o Picante).</p>
+          
+          <p><strong>2. La Dinámica:</strong> Alguien lee la frase "Yo nunca..." en voz alta.</p>
+          
+          <p><strong>3. Confesión:</strong> Todos los participantes que <strong>SÍ HAYAN HECHO</strong> lo que dice la frase, deben tomar un trago (o bajar un dedo).</p>
+          
+          <p><strong>4. Honestidad:</strong> No vale mentir. Si todo el grupo sabe que lo hiciste y te niegas a beber, el castigo es doble.</p>
+        </div>
+        
+        <button id="btn-understood" class="mt-8 w-full py-4 rounded-2xl bg-white/10 border border-white/20 text-white font-bold hover:bg-white/20 transition-all active:scale-95">
+          ¡Entendido!
+        </button>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<!-- Template para datos -->
+<template id="phrases-data">{JSON.stringify(phrasesRaw)}</template>
+
+<script>
+  import { createSeededRandom, seededShuffle } from '../../utils/random';
+
+  const startScreen = document.getElementById('start-screen');
+  const gameArea = document.getElementById('game-area');
+  const btnStartGame = document.getElementById('btn-start-game');
+  const btnNext = document.getElementById('btn-next');
+  const btnBackToModes = document.getElementById('btn-back-to-modes');
+  const phraseText = document.getElementById('phrase-text');
+  const cardTag = document.getElementById('card-tag');
+  
+  const btnSelectSoft = document.getElementById('btn-select-soft');
+  const btnSelectHard = document.getElementById('btn-select-hard');
+
+  // Modal logic
+  const infoModal = document.getElementById('info-modal');
+  const btnInfo = document.getElementById('btn-info');
+  const btnCloseInfo = document.getElementById('btn-close-info');
+  const btnUnderstood = document.getElementById('btn-understood');
+
+  function openInfo() {
+    infoModal?.classList.remove('hidden');
+    infoModal?.classList.add('flex');
+  }
+
+  function closeInfo() {
+    infoModal?.classList.add('hidden');
+    infoModal?.classList.remove('flex');
+  }
+
+  btnInfo?.addEventListener('click', openInfo);
+  btnCloseInfo?.addEventListener('click', closeInfo);
+  btnUnderstood?.addEventListener('click', closeInfo);
+
+  let currentMode = 'Soft';
+
+  // Obtener datos
+  const templateElement = document.getElementById('phrases-data') as HTMLTemplateElement;
+  const rawData = templateElement?.content?.textContent;
+  const allPhrases = rawData ? JSON.parse(rawData) : [];
+
+  const seed = localStorage.getItem('juntapp_local_seed') || Math.random().toString(36).substring(7);
+  localStorage.setItem('juntapp_local_seed', seed);
+  
+  let turnIndex = 0;
+  let shuffledPhrases: any[] = [];
+
+  const updateModeSelectors = () => {
+    if (currentMode === 'Soft') {
+      btnSelectSoft?.classList.add('bg-white', 'text-black');
+      btnSelectSoft?.classList.remove('text-white/40');
+      btnSelectHard?.classList.remove('bg-white', 'text-black');
+      btnSelectHard?.classList.add('text-white/40');
+    } else {
+      btnSelectHard?.classList.add('bg-white', 'text-black');
+      btnSelectHard?.classList.remove('text-white/40');
+      btnSelectSoft?.classList.remove('bg-white', 'text-black');
+      btnSelectSoft?.classList.add('text-white/40');
+    }
+  };
+
+  btnSelectSoft?.addEventListener('click', () => { currentMode = 'Soft'; updateModeSelectors(); });
+  btnSelectHard?.addEventListener('click', () => { currentMode = 'Picante'; updateModeSelectors(); });
+
+  const showNextPhrase = () => {
+    if (turnIndex >= shuffledPhrases.length) {
+      if (phraseText) phraseText.innerText = "¡Se acabaron las frases! Reinicia para volver a jugar.";
+      if (btnNext) btnNext.classList.add('hidden');
+      if (btnBackToModes) btnBackToModes.classList.add('hidden');
+      
+      const actionArea = document.getElementById('action-area');
+      if (actionArea) {
+        const btnRestart = document.createElement('button');
+        btnRestart.className = "flex items-center justify-center gap-3 px-12 py-6 bg-white/10 text-white border border-white/20 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-white/20 transition-all";
+        btnRestart.innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+          Reiniciar
+        `;
+        btnRestart.onclick = () => window.location.reload();
+        actionArea.appendChild(btnRestart);
+      }
+      return;
+    }
+
+    const current = shuffledPhrases[turnIndex];
+    if (phraseText) {
+      phraseText.classList.remove('animate-in', 'fade-in', 'slide-in-from-bottom-6');
+      void phraseText.offsetWidth;
+      phraseText.innerText = current.text;
+      phraseText.classList.add('animate-in', 'fade-in', 'slide-in-from-bottom-6', 'duration-700');
+    }
+    
+    if (cardTag) {
+      cardTag.innerText = `Modo ${currentMode}`;
+    }
+  };
+
+  btnStartGame?.addEventListener('click', () => {
+    // Filtrar y mezclar al iniciar
+    const filtered = allPhrases.filter((p: any) => currentMode === 'Soft' ? p.category === 'Soft' : true);
+    const randomFunc = createSeededRandom(seed + '_yonunca_' + currentMode);
+    shuffledPhrases = seededShuffle(filtered, randomFunc);
+    
+    startScreen?.classList.add('hidden');
+    gameArea?.classList.remove('hidden');
+    showNextPhrase();
+  });
+
+  btnNext?.addEventListener('click', () => {
+    turnIndex++;
+    showNextPhrase();
+  });
+
+  btnBackToModes?.addEventListener('click', () => {
+    gameArea?.classList.add('hidden');
+    startScreen?.classList.remove('hidden');
+    turnIndex = 0; // Reiniciar progreso al volver
+  });
+</script>
+
+<style>
+  .glass-panel {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+  
+  #phrase-text {
+    text-wrap: balance;
+  }
+</style>

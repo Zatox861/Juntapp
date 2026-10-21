@@ -1,0 +1,85 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = "Juntapp - La plataforma definitiva de juegos de fiesta sin complicaciones. Escanea y juega." } = Astro.props;
+---
+
+<!doctype html>
+<html lang="es" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content={description} />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#020617" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    
+    <!-- Open Graph / Redes Sociales -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content="/img/hero-party.jpg" />
+    <meta property="og:site_name" content="Juntapp" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content="/img/hero-party.jpg" />
+
+    <!-- Google Fonts: Geist & Material Symbols -->
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    
+    <!-- Placeholder para AdSense -->
+    <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script> -->
+  </head>
+  <body class="bg-[#020617] text-on-background font-body-md antialiased min-h-screen flex flex-col noise-bg overflow-x-hidden"
+    style="background-image: radial-gradient(at 0% 0%, rgba(30, 58, 138, 0.15) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(30, 58, 138, 0.05) 0px, transparent 50%) !important;">
+    
+    <!-- Background Ambient Glows globales (Sutiles Cian) -->
+    <div class="fixed top-[-10%] left-[-10%] w-1/2 h-1/2 bg-[#00eaff]/5 rounded-full blur-[120px] pointer-events-none -z-10"></div>
+    <div class="fixed bottom-[-10%] right-[-10%] w-1/2 h-1/2 bg-[#00eaff]/5 rounded-full blur-[120px] pointer-events-none -z-10"></div>
+
+    <!-- TopNavBar Component -->
+    <nav class="bg-background/80 backdrop-blur-xl docked full-width top-0 sticky z-40 border-b border-white/10 shadow-lg shadow-primary/5">
+      <div class="flex justify-between items-center px-4 md:px-12 py-4 w-full max-w-[1280px] mx-auto">
+        <!-- Brand -->
+        <a href="/" class="font-display-lg text-3xl font-bold tracking-tighter text-primary">
+          JUNTAPP
+        </a>
+        
+        <!-- Navigation Links (Web) -->
+        <ul class="hidden md:flex gap-6 font-body-md text-base">
+          <li>
+            <a class="text-primary border-b-2 border-primary pb-1 block hover:bg-white/5 transition-all duration-300" href="/play">Juegos</a>
+          </li>
+          <li>
+            <a class="text-on-surface-variant hover:text-on-surface transition-colors block hover:bg-white/5 transition-all duration-300" href="/bingo-lobby">Bingo</a>
+          </li>
+        </ul>
+        
+        <!-- Trailing Actions -->
+        <div class="flex items-center gap-4 text-primary">
+          <button class="hover:bg-white/5 transition-all duration-300 p-2 rounded-full scale-95 active:scale-90" aria-label="Comunidad">
+            <span class="material-symbols-outlined text-xl">forum</span>
+          </button>
+          <div class="w-10 h-10 rounded-full border-2 border-primary/20 overflow-hidden ml-2 cursor-pointer hover:border-primary transition-colors">
+            <img alt="Gamer profile avatar" class="w-full h-full object-cover" src="/img/avatar.png">
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <main class="flex-grow flex flex-col relative w-full max-w-[1280px] mx-auto">
+      <slot />
+    </main>
+
+  </body>
+</html>

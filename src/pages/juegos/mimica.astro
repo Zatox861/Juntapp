@@ -1,0 +1,370 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import wordsRaw from '../../content/mimica.json';
+---
+
+<Layout title="Mímica | Juntapp">
+  <div class="min-h-screen bg-transparent flex flex-col font-sans overflow-x-hidden">
+    <!-- Fondo decorativo -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+      <div class="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-secondary/20 rounded-full blur-[120px] animate-pulse"></div>
+      <div class="absolute top-[20%] -right-[5%] w-[30%] h-[50%] bg-primary/10 rounded-full blur-[100px]"></div>
+      <div class="absolute -bottom-[10%] left-[20%] w-[50%] h-[30%] bg-primary/15 rounded-full blur-[120px] animate-pulse" style="animation-delay: 2s;"></div>
+    </div>
+
+    <div class="relative z-10 flex flex-col flex-grow w-full max-w-5xl mx-auto p-4 md:p-8">
+      <!-- HEADER UNIVERSAL -->
+      <header class="relative flex justify-between items-center mb-8 md:mb-12 w-full z-20">
+        <a href="/play" id="back-btn" class="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors text-sm font-medium z-10" title="Volver al Catálogo">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          <span class="hidden sm:inline">Volver</span>
+        </a>
+        
+        <div class="absolute left-1/2 -translate-x-1/2 flex flex-col items-center w-full pointer-events-none">
+          <h1 class="text-xl md:text-2xl font-geist font-bold text-transparent bg-clip-text bg-gradient-to-r from-vybe-secondary to-vybe-primary uppercase tracking-tighter text-center">
+            Mímica
+          </h1>
+        </div>
+
+        <button id="btn-info" class="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors text-sm font-medium z-10" title="Cómo jugar">
+          <span class="hidden sm:inline">Cómo jugar</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        </button>
+      </header>
+
+      <main class="flex-grow flex flex-col items-center justify-start pt-4 md:pt-8 pb-6 w-full">
+        <!-- Pantalla de Inicio -->
+        <div id="start-screen" class="w-full max-w-md text-center animate-in fade-in zoom-in duration-700">
+          <div class="glass-panel p-8 md:p-12 rounded-[40px] border border-white/10 shadow-2xl relative overflow-hidden group">
+            <div class="absolute inset-0 bg-gradient-to-br from-vybe-tertiary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+            
+            <div class="relative z-10">
+              <div class="w-20 h-20 bg-gradient-to-tr from-secondary to-primary rounded-3xl mx-auto mb-8 flex items-center justify-center shadow-lg -rotate-3 group-hover:rotate-0 transition-transform">
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-white"><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg>
+              </div>
+              <h2 class="text-4xl font-black italic uppercase tracking-tighter text-white mb-4">¿Quién actúa?</h2>
+              <p class="text-white/60 text-sm mb-8 leading-relaxed">
+                Elige una categoría y prepárate para actuar. Tienes 60 segundos para que adivinen el máximo posible.
+              </p>
+
+              <!-- Selector de Categoría -->
+              <div class="grid grid-cols-2 gap-3 mb-8">
+                <button class="cat-btn active" data-category="Objetos">Objetos</button>
+                <button class="cat-btn" data-category="Acciones">Acciones</button>
+                <button class="cat-btn" data-category="Películas">Cine</button>
+                <button class="cat-btn" data-category="Personajes">Famosos</button>
+                <button class="cat-btn col-span-2" data-category="Todas">Todas</button>
+              </div>
+
+              <button 
+                id="btn-start-game" 
+                class="w-full py-6 bg-gradient-to-r from-secondary to-primary rounded-2xl font-black uppercase tracking-[0.2em] text-sm shadow-[0_10px_30px_-10px_rgba(0,234,255,0.5)] hover:shadow-[0_15px_40px_-10px_rgba(0,234,255,0.6)] active:scale-95 transition-all text-black"
+              >
+                ¡Empezar Ronda!
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Área de Juego -->
+        <div id="game-area" class="hidden w-full max-w-2xl flex flex-col items-center">
+          <!-- Stats bar -->
+          <div class="w-full flex justify-between items-center mb-6 px-4">
+            <div class="flex flex-col">
+              <span class="text-[10px] font-black uppercase tracking-widest text-white/40">Puntos</span>
+              <span id="score-display" class="text-2xl font-black text-primary">0</span>
+            </div>
+            <div class="flex flex-col items-center">
+              <div id="timer-ring" class="w-16 h-16 rounded-full border-4 border-white/10 flex items-center justify-center relative">
+                <span id="timer-display" class="text-2xl font-black">60</span>
+              </div>
+            </div>
+            <div class="flex flex-col items-end">
+              <span id="current-cat-display" class="text-[10px] font-black uppercase tracking-widest text-secondary">Acciones</span>
+              <span class="text-xs font-medium text-white/40">Categoría</span>
+            </div>
+          </div>
+
+          <!-- Card -->
+          <div class="w-full glass-panel p-10 md:p-16 rounded-[40px] border border-white/10 shadow-2xl relative overflow-hidden mb-8 min-h-[350px] flex flex-col justify-center text-center">
+            <div class="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
+            <h2 id="word-display" class="text-4xl md:text-6xl font-black italic leading-[1.1] tracking-tighter text-white">
+              Cargando...
+            </h2>
+          </div>
+
+          <!-- Controls -->
+          <div class="w-full grid grid-cols-2 gap-4">
+            <button 
+              id="btn-pass" 
+              class="py-6 bg-white/5 border border-white/10 text-white/60 rounded-2xl font-black uppercase tracking-[0.2em] text-xs hover:bg-white/10 hover:text-white transition-all active:scale-95"
+            >
+              Pasar
+            </button>
+            <button 
+              id="btn-correct" 
+              class="py-6 bg-primary text-black rounded-2xl font-black uppercase tracking-[0.2em] text-sm shadow-[0_10px_25px_-5px_rgba(0,234,255,0.4)] hover:scale-[1.02] active:scale-95 transition-all"
+            >
+              ¡Correcto!
+            </button>
+          </div>
+        </div>
+
+        <!-- Pantalla Final -->
+        <div id="end-screen" class="hidden w-full max-w-md text-center animate-in fade-in zoom-in duration-700">
+          <div class="glass-panel p-12 rounded-[40px] border border-white/10 shadow-2xl relative overflow-hidden">
+            <h2 class="text-2xl font-black uppercase tracking-widest text-white/40 mb-2">¡Tiempo agotado!</h2>
+            <div class="text-8xl font-black italic text-primary mb-6" id="final-score">0</div>
+            <p class="text-white/60 text-sm mb-8">Palabras adivinadas con éxito.</p>
+
+            <div class="w-full bg-black/40 rounded-2xl p-6 mb-8 max-h-40 overflow-y-auto border border-white/5">
+              <div id="guessed-list" class="flex flex-wrap justify-center gap-2 text-xs font-bold uppercase tracking-wider text-white/40">
+                <!-- List -->
+              </div>
+            </div>
+
+            <button 
+              id="btn-restart" 
+              class="w-full py-6 bg-white text-black rounded-2xl font-black uppercase tracking-[0.2em] text-sm hover:scale-[1.02] active:scale-95 transition-all"
+            >
+              Jugar otra vez
+            </button>
+          </div>
+        </div>
+        <!-- SEO & Contenido Largo (Below the fold) -->
+        <article class="w-full max-w-4xl mx-auto px-4 py-12 mt-12 md:mt-16 border-t border-white/10 text-zinc-300 text-left">
+          <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">El Mejor Generador de Mímica y Charadas</h2>
+          <div class="prose prose-invert prose-lg max-w-none">
+            <p class="mb-4">
+              Si buscas un juego que levante la energía de cualquier junta al instante, la <strong>Mímica (también conocida como Charadas o Dígalo con Mímica)</strong> es la respuesta absoluta. Esta versión digital te ahorra la lata de escribir papelitos: aquí tienes cientos de tarjetas automáticas listas para ser actuadas.
+            </p>
+            <h3 class="text-2xl font-bold text-white mt-8 mb-4">¿Cómo jugar al Dígalo con Mímica?</h3>
+            <ul class="list-disc pl-6 space-y-2 mb-6">
+              <li>Separen al grupo en dos equipos (Ej: Equipo A y Equipo B).</li>
+              <li>En el turno del Equipo A, uno de sus jugadores se pone frente al grupo y mira la pantalla para revelar su palabra o frase secreta.</li>
+              <li>A partir de ese momento, cuenta con un temporizador (pueden usar cronómetro) para hacer que su equipo adivine mediante pura actuación corporal. <strong>¡Cero palabras o ruidos permitidos!</strong></li>
+            </ul>
+            <h3 class="text-2xl font-bold text-white mt-8 mb-4">Preguntas Frecuentes (FAQ)</h3>
+            <div class="space-y-4 mb-8">
+              <div class="bg-white/5 border border-white/10 rounded-xl p-4">
+                <h4 class="font-bold text-white mb-1">¿Puedo señalar objetos del entorno durante la mímica?</h4>
+                <p class="text-sm">Esto depende de las "reglas de casa" que acuerden. La mímica tradicional suele prohibir interactuar con el entorno (hacer trampa señalando una mesa real), obligando a actuar cada concepto con el cuerpo.</p>
+              </div>
+              <div class="bg-white/5 border border-white/10 rounded-xl p-4">
+                <h4 class="font-bold text-white mb-1">¿Qué diferencia tiene el modo "Difícil" o "Cine"?</h4>
+                <p class="text-sm">Nuestra app filtra tarjetas por dificultad. El modo Difícil arroja conceptos abstractos y refranes extraños, mientras que el modo Cine se centra exclusivamente en títulos de películas populares que requieren mucha creatividad actoral.</p>
+              </div>
+            </div>
+          </div>
+        </article>
+      </main>
+
+    </div>
+
+    <!-- Modal Instrucciones -->
+    <div id="info-modal" class="hidden fixed inset-0 z-50 items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
+      <div class="glass-panel relative w-full max-w-md rounded-[32px] p-8 border border-white/10 shadow-2xl bg-[#121215] text-left">
+        <button id="btn-close-info" class="absolute top-6 right-6 text-zinc-400 hover:text-white transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+        
+        <h3 class="text-2xl font-black text-white mb-6 flex items-center gap-3">
+          <span class="text-primary">ℹ️</span> Cómo Jugar
+        </h3>
+        
+        <div class="space-y-5 text-sm text-zinc-300 leading-relaxed">
+          <p><strong>1. El Actor:</strong> Un jugador pasará al frente a actuar la palabra en pantalla. No puede hablar, hacer ruidos ni señalar objetos reales. ¡Solo su cuerpo!</p>
+          
+          <p><strong>2. El Tiempo:</strong> Tienes 60 segundos para que tu equipo adivine tantas palabras como sea posible. ¡Cada acierto suma 1 punto!</p>
+          
+          <p><strong>3. Estrategia:</strong> Si una palabra es demasiado difícil, puedes <span class="text-white">"Pasar"</span>, pero no obtendrás punto para tu equipo.</p>
+          
+          <p><strong>4. Ganador:</strong> El equipo con más puntos al finalizar el número acordado de rondas, gana.</p>
+        </div>
+        
+        <button id="btn-understood" class="mt-8 w-full py-4 rounded-2xl bg-white/10 border border-white/20 text-white font-bold hover:bg-white/20 transition-all active:scale-95">
+          ¡Entendido!
+        </button>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<!-- Template para datos -->
+<template id="words-data">{JSON.stringify(wordsRaw)}</template>
+
+<script>
+  import { createSeededRandom, seededShuffle } from '../../utils/random';
+
+  // Elementos UI
+  const startScreen = document.getElementById('start-screen');
+  const gameArea = document.getElementById('game-area');
+  const endScreen = document.getElementById('end-screen');
+  
+  const btnStartGame = document.getElementById('btn-start-game');
+  const btnCorrect = document.getElementById('btn-correct');
+  const btnPass = document.getElementById('btn-pass');
+  const btnRestart = document.getElementById('btn-restart');
+  const catButtons = document.querySelectorAll('.cat-btn');
+
+  const wordDisplay = document.getElementById('word-display');
+  const timerDisplay = document.getElementById('timer-display');
+  const timerRing = document.getElementById('timer-ring');
+  const scoreDisplay = document.getElementById('score-display');
+  const finalScore = document.getElementById('final-score');
+  const guessedList = document.getElementById('guessed-list');
+  const currentCatDisplay = document.getElementById('current-cat-display');
+
+  // Modal logic
+  const infoModal = document.getElementById('info-modal');
+  const btnInfo = document.getElementById('btn-info');
+  const btnCloseInfo = document.getElementById('btn-close-info');
+  const btnUnderstood = document.getElementById('btn-understood');
+
+  function openInfo() {
+    infoModal?.classList.remove('hidden');
+    infoModal?.classList.add('flex');
+  }
+
+  function closeInfo() {
+    infoModal?.classList.add('hidden');
+    infoModal?.classList.remove('flex');
+  }
+
+  btnInfo?.addEventListener('click', openInfo);
+  btnCloseInfo?.addEventListener('click', closeInfo);
+  btnUnderstood?.addEventListener('click', closeInfo);
+
+  // Estado del juego
+  let currentCategory = 'Objetos';
+  let shuffledWords: any[] = [];
+  let currentIndex = 0;
+  let score = 0;
+  let timeLeft = 60;
+  let timerId: any = null;
+  let guessedWords: string[] = [];
+
+  // Datos
+  const templateElement = document.getElementById('words-data') as HTMLTemplateElement;
+  const rawData = templateElement?.content?.textContent;
+  const allWords = rawData ? JSON.parse(rawData) : [];
+
+  const seed = localStorage.getItem('juntapp_local_seed') || Math.random().toString(36).substring(7);
+
+  // Selector de categoría
+  catButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      catButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentCategory = btn.getAttribute('data-category') || 'Todas';
+    });
+  });
+
+  const updateUI = () => {
+    if (currentIndex < shuffledWords.length) {
+      if (wordDisplay) {
+        wordDisplay.classList.remove('animate-in', 'fade-in', 'zoom-in');
+        void wordDisplay.offsetWidth;
+        wordDisplay.innerText = shuffledWords[currentIndex].text;
+        wordDisplay.classList.add('animate-in', 'fade-in', 'zoom-in', 'duration-500');
+      }
+      if (currentCatDisplay) currentCatDisplay.innerText = shuffledWords[currentIndex].category;
+    } else {
+      endGame();
+    }
+    if (scoreDisplay) scoreDisplay.innerText = score.toString();
+  };
+
+  const startTimer = () => {
+    timeLeft = 60;
+    if (timerDisplay) timerDisplay.innerText = timeLeft.toString();
+    if (timerRing) timerRing.classList.remove('border-vybe-primary', 'animate-pulse');
+
+    timerId = setInterval(() => {
+      timeLeft--;
+      if (timerDisplay) timerDisplay.innerText = timeLeft.toString();
+
+      if (timeLeft <= 10) {
+        if (timerRing) timerRing.classList.add('border-primary', 'animate-pulse');
+      }
+
+      if (timeLeft <= 0) {
+        endGame();
+      }
+    }, 1000);
+  };
+
+  const endGame = () => {
+    clearInterval(timerId);
+    gameArea?.classList.add('hidden');
+    endScreen?.classList.remove('hidden');
+    if (finalScore) finalScore.innerText = score.toString();
+    if (guessedList) {
+      guessedList.innerHTML = guessedWords.map(w => `<span class="px-2 py-1 bg-white/5 rounded-lg border border-white/10 text-white/60">${w}</span>`).join('');
+    }
+  };
+
+  btnStartGame?.addEventListener('click', () => {
+    // Filtrar y mezclar
+    const filtered = currentCategory === 'Todas' 
+      ? allWords 
+      : allWords.filter((w: any) => w.category === currentCategory);
+    
+    const randomFunc = createSeededRandom(seed + '_mimica_' + Date.now());
+    shuffledWords = seededShuffle(filtered, randomFunc);
+    
+    currentIndex = 0;
+    score = 0;
+    guessedWords = [];
+    
+    startScreen?.classList.add('hidden');
+    gameArea?.classList.remove('hidden');
+    
+    updateUI();
+    startTimer();
+  });
+
+  btnCorrect?.addEventListener('click', () => {
+    guessedWords.push(shuffledWords[currentIndex].text);
+    score++;
+    currentIndex++;
+    updateUI();
+  });
+
+  btnPass?.addEventListener('click', () => {
+    currentIndex++;
+    updateUI();
+  });
+
+  btnRestart?.addEventListener('click', () => {
+    endScreen?.classList.add('hidden');
+    startScreen?.classList.remove('hidden');
+  });
+</script>
+
+<style>
+  .glass-panel {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+
+  .cat-btn {
+    padding: 0.75rem 1rem;
+    border-radius: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 10px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.02);
+    color: rgba(255, 255, 255, 0.4);
+  }
+
+  .cat-btn.active {
+    border-color: var(--color-primary); /* primary */
+    color: var(--color-primary);
+    background: rgba(0, 234, 255, 0.1);
+  }
+</style>

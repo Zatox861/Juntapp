@@ -1,0 +1,349 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="Bingo | Juntapp">
+  <div class="min-h-screen bg-transparent flex flex-col font-sans overflow-x-hidden">
+    <div class="relative z-10 flex flex-col flex-grow w-full max-w-5xl mx-auto p-4 md:p-8">
+      <!-- HEADER UNIVERSAL -->
+      <header class="relative flex justify-between items-center mb-8 md:mb-12 w-full z-20">
+        <a href="/play" id="back-btn" class="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors text-sm font-medium z-10" title="Volver al Catálogo">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          <span class="hidden sm:inline">Volver</span>
+        </a>
+        
+        <div class="absolute left-1/2 -translate-x-1/2 flex flex-col items-center w-full pointer-events-none">
+          <h1 class="text-xl md:text-2xl font-geist font-bold text-transparent bg-clip-text bg-gradient-to-r from-vybe-secondary to-vybe-primary uppercase tracking-tighter text-center">
+            BINGO
+          </h1>
+          <span class="text-[10px] font-mono bg-white/10 px-2 py-0.5 mt-1 rounded text-vybe-primary pointer-events-auto" id="display-room"></span>
+        </div>
+
+        <button id="btn-info" class="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors text-sm font-medium z-10" title="Cómo jugar">
+          <span class="hidden sm:inline">Cómo jugar</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        </button>
+      </header>
+
+      <main class="flex-grow flex flex-col items-center justify-start w-full max-w-4xl mx-auto">
+
+    <!-- Host Controls (Only visible to host) -->
+    <div id="host-controls" class="hidden mb-8 p-6 glass-panel rounded-2xl flex-col items-center text-center">
+      <h2 class="text-lg text-vybe-text-muted mb-2">Modo Host: Cantar Números</h2>
+      <div class="text-6xl font-geist font-bold text-white mb-4 h-20 flex items-center justify-center neon-text-secondary" id="current-called-number">
+        --
+      </div>
+      <button id="btn-call-number" class="px-8 py-3 bg-vybe-secondary text-white rounded-xl font-bold hover:bg-vybe-secondary/80 transition-colors shadow-lg shadow-vybe-secondary/20">
+        Siguiente Número
+      </button>
+      <div class="mt-4 w-full">
+        <p class="text-xs text-vybe-text-muted mb-2 text-left">Números Anteriores:</p>
+        <div id="called-numbers-list" class="flex flex-wrap gap-2 text-sm text-white/70 justify-start"></div>
+      </div>
+    </div>
+
+    <!-- Bingo Card -->
+    <div class="glass-panel p-4 sm:p-8 rounded-3xl w-full mx-auto max-w-lg shadow-[0_0_50px_rgba(59,130,246,0.1)]">
+      <div id="bingo-header-letters" class="grid gap-2 sm:gap-4 mb-4">
+        <!-- Generado por JS -->
+      </div>
+      <div id="bingo-grid" class="grid gap-2 sm:gap-4">
+        <!-- Generado por JS -->
+      </div>
+    </div>
+
+    <!-- Modal Instrucciones -->
+    <div id="info-modal" class="hidden fixed inset-0 z-50 items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
+      <div class="glass-panel relative w-full max-w-md rounded-[32px] p-8 border border-white/10 shadow-2xl bg-[#121215] text-left">
+        <button id="btn-close-info" class="absolute top-6 right-6 text-zinc-400 hover:text-white transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+        
+        <h3 class="text-2xl font-black text-white mb-6 flex items-center gap-3">
+          <span class="text-vybe-primary">ℹ️</span> Cómo Jugar
+        </h3>
+        
+        <div class="space-y-5 text-sm text-zinc-300 leading-relaxed">
+          <p><strong>1. El Cartón:</strong> Cada jugador tiene un cartón único generado para la sala. Toca los números que van saliendo para marcarlos.</p>
+          
+          <p><strong>2. El Host:</strong> Una persona debe encargarse de "Cantar Números". Él presionará el botón para sacar la siguiente bolita al azar.</p>
+          
+          <p><strong>3. Express vs Clásico:</strong> Juega Express (3x3, 30 números) para partidas rápidas o Clásico (5x5, 75 números) para la experiencia completa.</p>
+          
+          <p><strong>4. ¡BINGO!:</strong> Sé el primero en completar el cartón y grita ¡BINGO! para ganar.</p>
+        </div>
+        
+        <button id="btn-understood" class="mt-8 w-full py-4 rounded-2xl bg-white/10 border border-white/20 text-white font-bold hover:bg-white/20 transition-all active:scale-95">
+          ¡Entendido!
+        </button>
+      </div>
+        </div>
+        <!-- SEO & Contenido Largo (Below the fold) -->
+        <article class="w-full max-w-4xl mx-auto px-4 py-12 mt-12 md:mt-16 border-t border-white/10 text-zinc-300 text-left">
+          <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">Bingo Digital Interactivo para Grupos</h2>
+          <div class="prose prose-invert prose-lg max-w-none">
+            <p class="mb-4">
+              Jugar al <strong>Bingo en casa o con amigos</strong> nunca había sido tan fácil ni tan ecológico. Ya no necesitas imprimir cientos de cartones ni tener una tómbola física que se trabe. Con el Bingo Digital de Juntapp, puedes organizar partidas en cualquier pantalla, compartiendo la emoción en tiempo real.
+            </p>
+            <h3 class="text-2xl font-bold text-white mt-8 mb-4">¿Cómo organizar una partida de Bingo Móvil?</h3>
+            <ul class="list-disc pl-6 space-y-2 mb-6">
+              <li>Designen a un <strong>Anfitrión (Host)</strong>. Esta persona será dueña del marcador principal, cantará los números presionando el botón "Siguiente Número" y llevará el historial visual en una pantalla o tablet que todos puedan ver.</li>
+              <li>El resto de los participantes se conectan y entran como <strong>Jugadores</strong>. El sistema les asignará automáticamente un cartón inteligente en su teléfono.</li>
+              <li>Si aparece el número, lo marcas. ¡El primero en llenar el patrón correcto o la tabla entera grita BINGO!</li>
+            </ul>
+            <h3 class="text-2xl font-bold text-white mt-8 mb-4">Preguntas Frecuentes (FAQ)</h3>
+            <div class="space-y-4 mb-8">
+              <div class="bg-white/5 border border-white/10 rounded-xl p-4">
+                <h4 class="font-bold text-white mb-1">¿Cómo evito que dos jugadores tengan el mismo cartón?</h4>
+                <p class="text-sm">Nuestro sistema de generación usa "Semillas Aleatorias" (Seeds) para fabricar en vivo cartones únicos, garantizando que nadie en tu grupo tenga las mismas combinaciones de números.</p>
+              </div>
+              <div class="bg-white/5 border border-white/10 rounded-xl p-4">
+                <h4 class="font-bold text-white mb-1">¿Qué diferencia hay entre el Bingo Rápido y el Clásico?</h4>
+                <p class="text-sm">El Bingo Rápido utiliza una matriz pequeña (3x3) y sortea entre 30 números, ideal para previas intensas o poco tiempo. El Clásico es la modalidad tradicional de 5x5 con 75 números, perfecta para jugar relajados con premios de por medio.</p>
+              </div>
+            </div>
+          </div>
+        </article>
+      </main>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  import { createSeededRandom, seededShuffle } from '../../utils/random';
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const seed = urlParams.get('seed') || 'TEST';
+  const playerId = urlParams.get('p') || localStorage.getItem('juntapp_player_id') || 'guest';
+  const isFastMode = urlParams.get('m') === 'fast';
+  
+  const totalNumbers = isFastMode ? 30 : 75;
+  const gridSize = isFastMode ? 3 : 5;
+  const letters = isFastMode ? ['B', 'I', 'N'] : ['B', 'I', 'N', 'G', 'O'];
+
+  // Modal logic
+  const infoModal = document.getElementById('info-modal');
+  const btnInfo = document.getElementById('btn-info');
+  const btnCloseInfo = document.getElementById('btn-close-info');
+  const btnUnderstood = document.getElementById('btn-understood');
+
+  function openInfo() {
+    infoModal?.classList.remove('hidden');
+    infoModal?.classList.add('flex');
+  }
+
+  function closeInfo() {
+    infoModal?.classList.add('hidden');
+    infoModal?.classList.remove('flex');
+  }
+
+  btnInfo?.addEventListener('click', openInfo);
+  btnCloseInfo?.addEventListener('click', closeInfo);
+  btnUnderstood?.addEventListener('click', closeInfo);
+
+  // Setup UI
+  const grid = document.getElementById('bingo-grid')!;
+  const headerLetters = document.getElementById('bingo-header-letters')!;
+  
+  grid.style.gridTemplateColumns = `repeat(${gridSize}, minmax(0, 1fr))`;
+  headerLetters.style.gridTemplateColumns = `repeat(${gridSize}, minmax(0, 1fr))`;
+  
+  headerLetters.innerHTML = letters.map(letter => 
+    `<div class="text-center font-geist font-bold text-xl sm:text-2xl text-vybe-primary neon-text-primary">${letter}</div>`
+  ).join('');
+
+  document.getElementById('display-room')!.innerText = `Sala: ${seed}${isFastMode ? ' (Express)' : ''}`;
+
+  // Host Logic
+  if (playerId === 'host') {
+    const backBtn = document.getElementById('back-btn');
+    if (backBtn) backBtn.setAttribute('href', `/host?seed=${seed}`);
+    
+    document.getElementById('host-controls')!.style.display = 'flex';
+    
+    // Generar secuencia determinista según el modo
+    const hostRandom = createSeededRandom(seed + '_host');
+    const allNumbers = Array.from({length: totalNumbers}, (_, i) => i + 1);
+    const shuffledSequence = seededShuffle(allNumbers, hostRandom);
+    
+    let currentIndex = parseInt(localStorage.getItem(`bingo_host_index_${seed}`) || '0');
+    
+    const currentNumEl = document.getElementById('current-called-number')!;
+    const listEl = document.getElementById('called-numbers-list')!;
+    
+    const renderHostState = () => {
+      if (currentIndex > 0) {
+        currentNumEl.innerText = shuffledSequence[currentIndex - 1].toString();
+        const prev = shuffledSequence.slice(0, currentIndex - 1).reverse();
+        listEl.innerHTML = prev.map(n => `<span class="bg-white/10 px-2 py-1 rounded">${n}</span>`).join('');
+      }
+    };
+    
+    renderHostState();
+    
+    // Sintetizador de Sonidos para Bingo
+    const audioCtx = typeof window !== 'undefined' ? new (window.AudioContext || (window as any).webkitAudioContext)() : null;
+
+    function playTick() {
+      if (!audioCtx) return;
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.05);
+      gain.gain.setValueAtTime(0.03, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.05);
+    }
+
+    function playReveal() {
+      if (!audioCtx) return;
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      
+      // Primer tono (Campanada A5)
+      const osc1 = audioCtx.createOscillator();
+      const gain1 = audioCtx.createGain();
+      osc1.type = 'triangle';
+      osc1.frequency.setValueAtTime(880, audioCtx.currentTime);
+      gain1.gain.setValueAtTime(0.3, audioCtx.currentTime);
+      gain1.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.8);
+      osc1.connect(gain1);
+      gain1.connect(audioCtx.destination);
+      osc1.start();
+      osc1.stop(audioCtx.currentTime + 0.8);
+      
+      // Segundo tono más alto (Campanada E6)
+      setTimeout(() => {
+        const osc2 = audioCtx.createOscillator();
+        const gain2 = audioCtx.createGain();
+        osc2.type = 'sine';
+        osc2.frequency.setValueAtTime(1318.51, audioCtx.currentTime);
+        gain2.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain2.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1.2);
+        osc2.connect(gain2);
+        gain2.connect(audioCtx.destination);
+        osc2.start();
+        osc2.stop(audioCtx.currentTime + 1.2);
+      }, 120);
+    }
+    
+    let isDrawing = false;
+    
+    document.getElementById('btn-call-number')!.addEventListener('click', () => {
+      if (currentIndex >= totalNumbers || isDrawing) return;
+      
+      isDrawing = true;
+      const btn = document.getElementById('btn-call-number')!;
+      btn.style.opacity = '0.5';
+      btn.style.pointerEvents = 'none';
+      
+      // Animación de números digitales pasando rápidamente
+      const flashInterval = setInterval(() => {
+        currentNumEl.innerText = Math.floor(Math.random() * totalNumbers + 1).toString();
+        playTick();
+      }, 50);
+
+      // Finalizar después de 2 segundos
+      setTimeout(() => {
+        clearInterval(flashInterval);
+        playReveal();
+        
+        currentIndex++;
+        localStorage.setItem(`bingo_host_index_${seed}`, currentIndex.toString());
+        renderHostState();
+        
+        isDrawing = false;
+        
+        if (currentIndex < totalNumbers) {
+          btn.style.opacity = '1';
+          btn.style.pointerEvents = 'auto';
+        } else {
+          currentNumEl.innerText = 'FIN';
+          btn.innerText = 'JUEGO TERMINADO';
+        }
+      }, 2000);
+    });
+  }
+
+  // Player Bingo Card Generation
+  // Usar seed + playerId para generar el cartón único
+  const cardRandom = createSeededRandom(seed + '_' + playerId);
+  
+  const ranges = isFastMode ? [
+    { min: 1, max: 10 },
+    { min: 11, max: 20 },
+    { min: 21, max: 30 }
+  ] : [
+    { min: 1, max: 15 },
+    { min: 16, max: 30 },
+    { min: 31, max: 45 },
+    { min: 46, max: 60 },
+    { min: 61, max: 75 }
+  ];
+
+  const cardColumns: number[][] = [];
+  
+  ranges.forEach((range, colIndex) => {
+    const rangeSize = range.max - range.min + 1;
+    const nums = Array.from({ length: rangeSize }, (_, i) => range.min + i);
+    const shuffled = seededShuffle(nums, cardRandom);
+    cardColumns.push(shuffled.slice(0, gridSize));
+  });
+
+  // Reorganizar en rows
+  const cells: (number | 'FREE')[] = [];
+  for (let row = 0; row < gridSize; row++) {
+    for (let col = 0; col < gridSize; col++) {
+      const isMiddle = isFastMode 
+        ? (col === 1 && row === 1) 
+        : (col === 2 && row === 2);
+
+      if (isMiddle) {
+        cells.push('FREE');
+      } else {
+        cells.push(cardColumns[col][row]);
+      }
+    }
+  }
+
+  // Cargar estado local
+  const localKey = `bingo_state_${seed}_${playerId}`;
+  let markedCells: string[] = JSON.parse(localStorage.getItem(localKey) || '[]');
+
+  cells.forEach((val, index) => {
+    const btn = document.createElement('button');
+    const isFree = val === 'FREE';
+    const cellId = isFree ? 'free' : val.toString();
+    const isMarked = isFree || markedCells.includes(cellId);
+    
+    btn.className = `aspect-square flex items-center justify-center rounded-lg sm:rounded-xl font-bold text-sm sm:text-lg transition-all duration-300 ${
+      isMarked 
+      ? 'bg-vybe-primary text-white neon-border-primary scale-95 shadow-[inset_0_0_20px_rgba(0,0,0,0.5)]' 
+      : 'bg-white/5 text-white hover:bg-white/10 border border-white/10'
+    }`;
+    btn.innerText = isFree ? '★' : val.toString();
+    
+    if (!isFree) {
+      btn.addEventListener('click', () => {
+        if (markedCells.includes(cellId)) {
+          markedCells = markedCells.filter(id => id !== cellId);
+          btn.classList.remove('bg-vybe-primary', 'neon-border-primary', 'scale-95', 'shadow-[inset_0_0_20px_rgba(0,0,0,0.5)]');
+          btn.classList.add('bg-white/5', 'border', 'border-white/10');
+        } else {
+          markedCells.push(cellId);
+          btn.classList.add('bg-vybe-primary', 'neon-border-primary', 'scale-95', 'shadow-[inset_0_0_20px_rgba(0,0,0,0.5)]');
+          btn.classList.remove('bg-white/5', 'border', 'border-white/10');
+        }
+        localStorage.setItem(localKey, JSON.stringify(markedCells));
+      });
+    }
+    grid.appendChild(btn);
+  });
+</script>
+
+
+

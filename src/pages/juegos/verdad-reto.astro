@@ -1,0 +1,560 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import truthDareData from '../../content/truth-dare.json';
+
+// No necesitamos lógica de servidor compleja aquí, todo se maneja en el cliente para velocidad
+---
+
+<Layout title="Verdad o Reto - Juntapp">
+  <div class="min-h-screen bg-transparent flex flex-col font-sans overflow-x-hidden">
+    <div class="relative z-10 flex flex-col flex-grow w-full max-w-5xl mx-auto p-4 md:p-8">
+      <!-- HEADER UNIVERSAL -->
+      <header class="relative flex justify-between items-center mb-8 md:mb-12 w-full z-20">
+        <a href="/play" id="back-btn" class="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors text-sm font-medium z-10" title="Volver al Catálogo">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          <span class="hidden sm:inline">Volver</span>
+        </a>
+        
+        <div class="absolute left-1/2 -translate-x-1/2 flex flex-col items-center w-full pointer-events-none">
+          <h1 class="text-xl md:text-2xl font-geist font-bold text-transparent bg-clip-text bg-gradient-to-r from-vybe-secondary to-vybe-primary uppercase tracking-tighter text-center">
+            Verdad o Reto
+          </h1>
+        </div>
+
+        <button id="btn-info" class="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors text-sm font-medium z-10" title="Cómo jugar">
+          <span class="hidden sm:inline">Cómo jugar</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        </button>
+      </header>
+
+      <main class="flex-grow flex flex-col items-center justify-start pt-4 md:pt-8 w-full">
+        <div class="w-full max-w-lg z-10">
+          <!-- Card Principal estilo Premium -->
+          <div class="glass-panel relative rounded-[40px] p-8 md:p-12 text-center border border-white/10 shadow-2xl backdrop-blur-xl bg-white/5">
+        
+        <!-- Pantalla 0: Configuración -->
+        <div id="setup-container" class="flex flex-col items-center justify-center space-y-8 animate-in fade-in duration-300">
+          <div class="flex flex-col items-center mb-2">
+            <h2 class="text-3xl font-black text-white leading-tight text-center">Participantes</h2>
+            <p class="text-zinc-400 text-sm mt-2">¿Cuántos van a jugar?</p>
+          </div>
+          
+          <div class="flex items-center gap-6">
+            <button id="btn-minus" class="w-14 h-14 rounded-full bg-white/5 border border-white/10 text-white font-bold text-2xl hover:bg-white/10 transition-colors flex items-center justify-center">-</button>
+            <div class="w-16 text-center">
+              <span id="player-count" class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">5</span>
+            </div>
+            <button id="btn-plus" class="w-14 h-14 rounded-full bg-white/5 border border-white/10 text-white font-bold text-2xl hover:bg-white/10 transition-colors flex items-center justify-center">+</button>
+          </div>
+          
+          <button 
+            id="btn-start"
+            class="mt-8 py-4 px-12 rounded-2xl bg-gradient-to-br from-primary to-secondary text-black font-black text-lg hover:brightness-110 transition-all active:scale-95 shadow-[0_0_20px_rgba(0,234,255,0.3)] w-full"
+          >
+            Comenzar
+          </button>
+        </div>
+
+        <!-- Pantalla 1: Girar Botella -->
+        <div id="spin-container" class="hidden flex-col items-center justify-center space-y-6 animate-in fade-in zoom-in duration-300">
+          <div class="flex flex-col items-center mb-2">
+            <span class="text-[10px] uppercase tracking-[0.2em] text-primary font-bold mb-2">Paso 1</span>
+            <h2 class="text-2xl md:text-3xl font-black text-white leading-tight text-center">¿A quién le toca?</h2>
+          </div>
+          
+          <div class="relative w-72 h-72 md:w-80 md:h-80 flex items-center justify-center rounded-full bg-black/20 border border-white/5 shadow-inner overflow-hidden">
+            <!-- SVG para las líneas divisorias -->
+            <svg id="wheel-lines" class="absolute inset-0 w-full h-full pointer-events-none opacity-40" viewBox="0 0 100 100">
+              <!-- Las líneas se inyectan por JS -->
+            </svg>
+
+            <!-- Indicadores de personas (decorativo perimetral) -->
+            <div class="absolute inset-2 border-2 border-dashed border-white/10 rounded-full pointer-events-none"></div>
+            
+            <!-- Botella -->
+            <div id="bottle" class="relative w-14 h-56 md:h-64 z-10 origin-center drop-shadow-2xl" style="transition: transform 3s cubic-bezier(0.25, 1, 0.5, 1);">
+               <!-- Cuello -->
+               <div class="absolute top-0 left-1/2 -translate-x-1/2 w-4 h-16 bg-emerald-900/90 rounded-t-sm z-0"></div>
+               <!-- Tapa -->
+               <div class="absolute -top-1 left-1/2 -translate-x-1/2 w-6 h-3 bg-zinc-300 rounded-sm z-10"></div>
+               <!-- Cuerpo -->
+               <div class="absolute top-14 left-0 w-full h-[calc(100%-3.5rem)] bg-emerald-800/90 rounded-b-xl rounded-t-[20px] shadow-inner border border-emerald-500/30 overflow-hidden backdrop-blur-sm">
+                 <!-- Reflejo -->
+                 <div class="absolute inset-y-0 left-2.5 w-2.5 bg-gradient-to-b from-white/40 to-transparent rounded-full"></div>
+               </div>
+            </div>
+          </div>
+          
+          <div class="flex flex-col items-center mt-6 gap-3">
+            <button 
+              id="btn-spin"
+              class="py-4 px-10 rounded-2xl bg-white/10 border border-white/20 text-white font-black text-lg hover:bg-white/20 transition-all active:scale-95"
+            >
+              Girar Botella
+            </button>
+            <button id="btn-restart" class="text-xs text-zinc-500 hover:text-white transition-colors underline">Reiniciar Juego</button>
+          </div>
+        </div>
+
+        <!-- Pantalla 2: Elección (Verdad o Reto) -->
+        <div id="choice-container" class="hidden space-y-8 animate-in fade-in zoom-in duration-300">
+          <div class="flex flex-col items-center mb-4">
+             <span class="text-[10px] uppercase tracking-[0.2em] text-primary font-bold mb-2">Paso 2</span>
+          </div>
+
+          <h1 class="text-4xl md:text-5xl font-black text-white leading-tight">
+            ¿Verdad o <br/> <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Reto?</span>
+          </h1>
+          
+          <p class="text-zinc-400 text-sm md:text-base max-w-[280px] mx-auto leading-relaxed">
+            Elige tu destino. Los demás están esperando tu decisión...
+          </p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-10">
+            <!-- Botón Verdad -->
+            <button 
+              id="btn-truth"
+              class="flex items-center justify-center gap-3 py-4 px-6 rounded-2xl bg-[#1a1a20] border border-white/10 text-white font-bold hover:bg-[#25252d] transition-all active:scale-95 group shadow-lg"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-zinc-400 group-hover:text-white transition-colors">
+                <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>
+              </svg>
+              Verdad
+            </button>
+
+            <!-- Botón Reto -->
+            <button 
+              id="btn-dare"
+              class="flex items-center justify-center gap-3 py-4 px-6 rounded-2xl bg-gradient-to-br from-primary to-secondary text-black font-black hover:brightness-110 transition-all active:scale-95 shadow-[0_0_20px_rgba(0,234,255,0.3)]"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.256 1.181-3.127.145.15.343.344.536.473.18.121.517.291.783.654Z"/>
+              </svg>
+              Reto
+            </button>
+          </div>
+        </div>
+
+        <!-- Pantalla 3: Resultado -->
+        <div id="result-container" class="hidden animate-in fade-in zoom-in duration-300">
+          <div class="mb-6">
+            <span id="card-type" class="px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border border-current"></span>
+          </div>
+          
+          <div class="min-h-[120px] flex items-center justify-center">
+            <p id="card-text" class="text-2xl md:text-3xl font-bold text-white leading-tight px-2 italic">
+              ...
+            </p>
+          </div>
+
+          <p id="card-category" class="mt-6 text-primary/60 text-[10px] uppercase font-bold tracking-widest"></p>
+
+          <button 
+            id="btn-next"
+            class="mt-10 w-full py-4 bg-white/5 border border-white/10 text-white rounded-2xl font-bold hover:bg-white/10 transition-all active:scale-95"
+          >
+            Siguiente Turno
+          </button>
+        </div>
+      </div>
+
+      <!-- Filtros de Intensidad (Minimalistas abajo) -->
+      <div class="mt-8 flex flex-wrap justify-center gap-3">
+        {[
+          { name: 'Clásico', icon: '🃏' },
+          { name: 'Picante', icon: '🔥' }
+        ].map((mode) => (
+          <button 
+            class={`mode-btn flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all border ${mode.name === 'Clásico' ? 'active-mode' : 'inactive-mode'}`}
+            data-mode={mode.name}
+          >
+            <span class="text-base">{mode.icon}</span>
+            {mode.name}
+          </button>
+        ))}
+      </div>
+      </div>
+    <!-- Modal Instrucciones -->
+    <div id="info-modal" class="hidden fixed inset-0 z-50 items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
+      <div class="glass-panel relative w-full max-w-md rounded-[32px] p-8 border border-white/10 shadow-2xl bg-[#121215] text-left">
+        <button id="btn-close-info" class="absolute top-6 right-6 text-zinc-400 hover:text-white transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+        
+        <h3 class="text-2xl font-black text-white mb-6 flex items-center gap-3">
+          <span class="text-primary">ℹ️</span> Cómo Jugar
+        </h3>
+        
+        <div class="space-y-5 text-sm text-zinc-300 leading-relaxed">
+          <p><strong>1. Preparación:</strong> Indiquen cuántas personas van a jugar en la pantalla inicial usando los botones <span class="text-white bg-white/10 px-2 py-0.5 rounded font-bold">-</span> y <span class="text-white bg-white/10 px-2 py-0.5 rounded font-bold">+</span>. Siéntense en círculo para que la experiencia sea más inmersiva.</p>
+          
+          <p><strong>2. El Sorteo:</strong> Presiona <span class="text-white font-bold">"Girar Botella"</span>. La botella virtual girará con físicas realistas y seleccionará al azar a uno de los participantes.</p>
+          
+          <div><strong>3. La Decisión:</strong> La persona seleccionada debe elegir valientemente su destino:
+            <ul class="list-disc pl-5 mt-2 space-y-1 text-zinc-400">
+              <li><strong class="text-white">Verdad:</strong> Deberá confesar un secreto o responder con total honestidad a la pregunta en pantalla.</li>
+              <li><strong class="text-white">Reto:</strong> Deberá cumplir el desafío propuesto. ¡Sin cobardes!</li>
+            </ul>
+          </div>
+          
+          <p><strong>4. Modos de Juego:</strong> Puedes cambiar la intensidad usando los filtros ubicados debajo del juego en cualquier momento.</p>
+          
+          <div class="bg-primary/10 border border-primary/20 rounded-xl p-4 mt-6 text-xs text-primary/90 italic">
+            El sistema inteligente garantiza que ninguna verdad o reto se repetirá hasta que hayan agotado todas las opciones disponibles.
+          </div>
+        </div>
+        
+        <button id="btn-understood" class="mt-8 w-full py-4 rounded-2xl bg-white/10 border border-white/20 text-white font-bold hover:bg-white/20 transition-all active:scale-95">
+          ¡Entendido!
+        </button>
+      </div>
+    </div>
+        <!-- SEO & Contenido Largo (Below the fold) -->
+        <article class="w-full max-w-4xl mx-auto px-4 py-12 mt-12 md:mt-16 border-t border-white/10 text-zinc-300">
+        <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">El Mejor Juego de Verdad o Reto para Fiestas</h2>
+        
+        <div class="prose prose-invert prose-lg max-w-none">
+          <p class="mb-4">
+            Bienvenido a la mejor experiencia digital de <strong>Verdad o Reto</strong> (también conocido en algunos lugares como Verdad o Consecuencia o Truth or Dare). Olvídate de buscar una botella física o pensar preguntas aburridas; en Juntapp hemos creado un generador automático con cientos de preguntas y desafíos diseñados para romper el hielo y animar cualquier previa, junta o fiesta.
+          </p>
+
+          <h3 class="text-2xl font-bold text-white mt-8 mb-4">¿Cómo jugar Verdad o Reto?</h3>
+          <p class="mb-4">
+            Las reglas clásicas de Verdad o Reto son muy sencillas. Reúne a tus amigos en un círculo y sigan estos pasos:
+          </p>
+          <ul class="list-disc pl-6 space-y-2 mb-6">
+            <li>Ingresa la cantidad de jugadores en la pantalla inicial de nuestra app.</li>
+            <li>Gira la botella virtual. Quien sea señalado tendrá que tomar una decisión crucial: ¿Verdad o Reto?</li>
+            <li><strong>Verdad:</strong> Si elige esta opción, debe responder con total honestidad a la pregunta incómoda, picante o divertida que aparezca en pantalla.</li>
+            <li><strong>Reto:</strong> Si elige el desafío, deberá realizar la acción propuesta frente a todos. ¡Sin excusas!</li>
+          </ul>
+
+          <h3 class="text-2xl font-bold text-white mt-8 mb-4">Preguntas de Verdad Incómodas y Divertidas</h3>
+          <p class="mb-4">
+            Elegir "Verdad" puede parecer la opción fácil, pero nuestro sistema inteligente garantiza sacar a la luz los mejores secretos. Algunas de las categorías de preguntas que encontrarás incluyen:
+          </p>
+          <ul class="list-disc pl-6 space-y-2 mb-6">
+            <li><strong>Para amigos:</strong> Preguntas para saber qué piensan realmente sobre el grupo.</li>
+            <li><strong>Picantes:</strong> Ideal para pre-fiestas y para elevar la temperatura. (Adaptadas para mayores de 14 años).</li>
+            <li><strong>Preguntas de Parejas:</strong> Cuestionamientos profundos y divertidos sobre el amor y las citas.</li>
+          </ul>
+
+          <h3 class="text-2xl font-bold text-white mt-8 mb-4">Ideas de Retos Locos</h3>
+          <p class="mb-4">
+            Un buen juego de verdad o consecuencia no está completo sin castigos y retos memorables. Nuestros algoritmos están diseñados para darte desde retos físicos ligeros hasta vergüenzas públicas (siempre cuidando la diversión grupal). 
+          </p>
+          
+          <h3 class="text-2xl font-bold text-white mt-8 mb-4">Preguntas Frecuentes (FAQ)</h3>
+          <div class="space-y-4 mb-8">
+            <div class="bg-white/5 border border-white/10 rounded-xl p-4">
+              <h4 class="font-bold text-white mb-1">¿Cuántas personas pueden jugar Verdad o Reto?</h4>
+              <p class="text-sm">El juego está diseñado para ser flexible. Puedes jugar en pareja (2 personas) o en grupos grandes de hasta 10 o más personas. Lo ideal para que todos participen de forma fluida es un grupo de 4 a 8 amigos.</p>
+            </div>
+            <div class="bg-white/5 border border-white/10 rounded-xl p-4">
+              <h4 class="font-bold text-white mb-1">¿Qué pasa si alguien no quiere cumplir un reto?</h4>
+              <p class="text-sm">¡Es parte del juego! Generalmente, si un jugador se rinde o se niega a hacer un reto o responder una verdad, el grupo le impone un "castigo" o penitencia menor (como tomar un trago, si son mayores, o hacer algo gracioso).</p>
+            </div>
+            <div class="bg-white/5 border border-white/10 rounded-xl p-4">
+              <h4 class="font-bold text-white mb-1">¿Es seguro jugar con esta aplicación?</h4>
+              <p class="text-sm">Sí, totalmente. Hemos filtrado y seleccionado cuidadosamente nuestro banco de datos para asegurar que los retos sean divertidos, un poco vergonzosos, pero en ningún momento peligrosos para la integridad física de los jugadores.</p>
+            </div>
+          </div>
+          
+          <div class="bg-white/5 border border-white/10 p-6 rounded-2xl mt-8">
+            <h4 class="text-xl font-bold text-white mb-2">Consejos para una mejor experiencia</h4>
+            <p class="text-sm">
+              Para que la aplicación funcione perfecto, mantén los modos de juego ("Clásico", "Picante", "Random") según el ambiente de tu fiesta. Juntapp lleva el registro para no repetir ninguna pregunta durante tu sesión. ¡Diviértete!
+            </p>
+          </div>
+        </div>
+      </article>
+      </main>
+      
+    </div>
+  </div>
+</Layout>
+
+<script>
+  import { createSeededRandom, seededShuffle } from '../../utils/random';
+
+  const data = {
+    verdades: (document.querySelector('template#data-v') as any)?.content?.textContent ? JSON.parse((document.querySelector('template#data-v') as any).content.textContent) : [],
+    retos: (document.querySelector('template#data-r') as any)?.content?.textContent ? JSON.parse((document.querySelector('template#data-r') as any).content.textContent) : []
+  };
+
+  // Fallback if template doesn't work (initial load or direct import)
+  import rawData from '../../content/truth-dare.json';
+  const gameData = rawData;
+
+  let currentMode = 'Clásico';
+  const seed = localStorage.getItem('vr_room_seed') || Math.random().toString(36).substring(7);
+  localStorage.setItem('vr_room_seed', seed);
+
+  const setupContainer = document.getElementById('setup-container');
+  const btnMinus = document.getElementById('btn-minus');
+  const btnPlus = document.getElementById('btn-plus');
+  const btnStart = document.getElementById('btn-start');
+  const playerCountEl = document.getElementById('player-count');
+  const wheelLines = document.getElementById('wheel-lines');
+  
+  let numPlayers = 5;
+  const minPlayers = 2;
+  const maxPlayers = 10;
+
+  const spinContainer = document.getElementById('spin-container');
+  const choiceContainer = document.getElementById('choice-container');
+  const resultContainer = document.getElementById('result-container');
+  const cardText = document.getElementById('card-text');
+  const cardType = document.getElementById('card-type');
+  const cardCategory = document.getElementById('card-category');
+  
+  const btnSpin = document.getElementById('btn-spin');
+  const btnRestart = document.getElementById('btn-restart');
+  const bottle = document.getElementById('bottle');
+  const btnTruth = document.getElementById('btn-truth');
+  const btnDare = document.getElementById('btn-dare');
+  const btnNext = document.getElementById('btn-next');
+  const modeButtons = document.querySelectorAll('.mode-btn');
+
+  // Modal logic
+  const infoModal = document.getElementById('info-modal');
+  const btnInfo = document.getElementById('btn-info');
+  const btnCloseInfo = document.getElementById('btn-close-info');
+  const btnUnderstood = document.getElementById('btn-understood');
+
+  function openInfo() {
+    infoModal?.classList.remove('hidden');
+    infoModal?.classList.add('flex');
+  }
+
+  function closeInfo() {
+    infoModal?.classList.add('hidden');
+    infoModal?.classList.remove('flex');
+  }
+
+  btnInfo?.addEventListener('click', openInfo);
+  btnCloseInfo?.addEventListener('click', closeInfo);
+  btnUnderstood?.addEventListener('click', closeInfo);
+
+  // Lógica de configuración
+  btnRestart?.addEventListener('click', () => {
+    spinContainer?.classList.add('hidden');
+    spinContainer?.classList.remove('flex');
+    setupContainer?.classList.remove('hidden');
+    
+    // Reset rotation without backwards animation
+    currentRotation = 0;
+    if (bottle) {
+      bottle.style.transition = 'none';
+      bottle.style.transform = `rotate(0deg)`;
+      // Restore transition after a tiny delay so the next spin works
+      setTimeout(() => {
+        if(bottle) bottle.style.transition = 'transform 3s cubic-bezier(0.25, 1, 0.5, 1)';
+      }, 50);
+    }
+  });
+  btnMinus?.addEventListener('click', () => {
+    if (numPlayers > minPlayers) {
+      numPlayers--;
+      if (playerCountEl) playerCountEl.innerText = numPlayers.toString();
+    }
+  });
+
+  btnPlus?.addEventListener('click', () => {
+    if (numPlayers < maxPlayers) {
+      numPlayers++;
+      if (playerCountEl) playerCountEl.innerText = numPlayers.toString();
+    }
+  });
+
+  btnStart?.addEventListener('click', () => {
+    setupContainer?.classList.add('hidden');
+    spinContainer?.classList.remove('hidden');
+    spinContainer?.classList.add('flex'); // Asegurar que use flex en lugar de block
+    drawWheelLines();
+  });
+
+  function drawWheelLines() {
+    if (!wheelLines) return;
+    wheelLines.innerHTML = '';
+    const sliceAngle = 360 / numPlayers;
+    const cx = 50;
+    const cy = 50;
+    const r = 50;
+    
+    for (let i = 0; i < numPlayers; i++) {
+      // Ángulo de la línea divisoria (borde de la porción)
+      const angle = (i * sliceAngle) - (sliceAngle / 2);
+      const rad = (angle - 90) * (Math.PI / 180);
+      const x = cx + r * Math.cos(rad);
+      const y = cy + r * Math.sin(rad);
+      
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', cx.toString());
+      line.setAttribute('y1', cy.toString());
+      line.setAttribute('x2', x.toString());
+      line.setAttribute('y2', y.toString());
+      line.setAttribute('stroke', 'rgba(255,255,255,0.4)');
+      line.setAttribute('stroke-width', '0.5');
+      
+      wheelLines.appendChild(line);
+      
+      // Número identificador del jugador
+      const textAngle = i * sliceAngle;
+      const textRad = (textAngle - 90) * (Math.PI / 180);
+      const tx = cx + (r * 0.85) * Math.cos(textRad);
+      const ty = cy + (r * 0.85) * Math.sin(textRad);
+      
+      const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      text.setAttribute('x', tx.toString());
+      text.setAttribute('y', ty.toString());
+      text.setAttribute('fill', 'rgba(255,255,255,0.8)');
+      text.setAttribute('font-size', '6');
+      text.setAttribute('font-family', 'sans-serif');
+      text.setAttribute('font-weight', '900');
+      text.setAttribute('text-anchor', 'middle');
+      text.setAttribute('dominant-baseline', 'middle');
+      text.textContent = (i + 1).toString();
+      
+      // Orientar el número hacia el centro
+      text.setAttribute('transform', `rotate(${textAngle}, ${tx}, ${ty})`);
+      wheelLines.appendChild(text);
+    }
+  }
+
+  let currentRotation = 0;
+  let isSpinning = false;
+
+  btnSpin?.addEventListener('click', () => {
+    if (isSpinning) return;
+    isSpinning = true;
+    
+    const spins = 1440; // 4 vueltas base
+    const sliceAngle = 360 / numPlayers;
+    
+    // Elige un participante ganador al azar
+    const targetPlayerIndex = Math.floor(Math.random() * numPlayers);
+    const targetAngle = targetPlayerIndex * sliceAngle;
+    
+    // Calcular cuánto falta girar para llegar a targetAngle
+    const currentMod = currentRotation % 360;
+    let angleDiff = targetAngle - currentMod;
+    if (angleDiff <= 0) angleDiff += 360; // Forzar al menos un giro parcial extra hacia adelante
+    
+    // Si la diferencia es muy pequeña, podría verse raro detenerse de inmediato, 
+    // pero como sumamos 1440 siempre dará varias vueltas.
+    currentRotation += spins + angleDiff;
+    
+    if (bottle) {
+      bottle.style.transform = `rotate(${currentRotation}deg)`;
+    }
+    
+    if (btnSpin) {
+      btnSpin.style.opacity = '0.5';
+      btnSpin.style.pointerEvents = 'none';
+    }
+    
+    setTimeout(() => {
+      isSpinning = false;
+      if (btnSpin) {
+        btnSpin.style.opacity = '1';
+        btnSpin.style.pointerEvents = 'auto';
+      }
+      
+      spinContainer?.classList.add('hidden');
+      spinContainer?.classList.remove('flex');
+      choiceContainer?.classList.remove('hidden');
+    }, 3000);
+  });
+
+  function showResult(type: 'verdades' | 'retos') {
+    const pool = gameData[type].filter(item => item.category === currentMode);
+    
+    if (pool.length === 0) {
+      alert("No hay contenido para esta categoría aún.");
+      return;
+    }
+
+    const storageKey = `vr_turn_${seed}_${type}_${currentMode}`;
+    let turnIndex = parseInt(localStorage.getItem(storageKey) || '0');
+
+    // Shuffle logic (The "Non-Repetition" Engine)
+    const shuffleFunc = createSeededRandom(seed + '_vr_pool_' + type + '_' + currentMode);
+    const shuffledPool = seededShuffle(pool, shuffleFunc);
+    
+    const selected = shuffledPool[turnIndex % shuffledPool.length];
+
+    if (choiceContainer && resultContainer && cardText && cardType && cardCategory) {
+      choiceContainer.classList.add('hidden');
+      resultContainer.classList.remove('hidden');
+      
+      cardText.innerText = `"${selected.text}"`;
+      cardType.innerText = type === 'verdades' ? 'Verdad' : 'Reto';
+      cardCategory.innerText = selected.category;
+
+      // Color coding for the label
+      if (type === 'verdades') {
+        cardType.className = "px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border border-white text-white";
+      } else {
+        cardType.className = "px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border border-[#ffb4aa] text-[#ffb4aa]";
+      }
+
+      // Save progress
+      localStorage.setItem(storageKey, (turnIndex + 1).toString());
+    }
+  }
+
+  btnTruth?.addEventListener('click', () => showResult('verdades'));
+  btnDare?.addEventListener('click', () => showResult('retos'));
+
+  btnNext?.addEventListener('click', () => {
+    resultContainer?.classList.add('hidden');
+    spinContainer?.classList.remove('hidden');
+    spinContainer?.classList.add('flex');
+  });
+
+  modeButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentMode = btn.getAttribute('data-mode') || 'Clásico';
+      
+      // Update UI active state using helper classes
+      modeButtons.forEach(b => {
+        b.classList.remove('active-mode');
+        b.classList.add('inactive-mode');
+      });
+      btn.classList.remove('inactive-mode');
+      btn.classList.add('active-mode');
+    });
+  });
+</script>
+
+<style>
+  .active-mode {
+    background-color: var(--color-primary);
+    color: #000;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 20px rgba(0, 234, 255, 0.4);
+  }
+  .inactive-mode {
+    background-color: #1a1a20;
+    color: #a1a1aa;
+    border-color: rgba(255, 255, 255, 0.05);
+  }
+  .inactive-mode:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+  
+  .glass-panel {
+    box-shadow: 0 0 80px -20px rgba(0,0,0,0.5);
+  }
+  
+  /* Animación suave para la entrada de texto */
+  #card-text {
+    animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>

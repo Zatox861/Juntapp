@@ -1,0 +1,122 @@
+@import "tailwindcss";
+
+
+@theme {
+  --color-primary: #a855f7;
+  --color-tertiary: #f43f5e;
+  --color-secondary: #6366f1;
+  --color-background: #020617;
+  --color-on-background: #f8fafc;
+  --color-surface-container: #0f172a;
+  --color-surface-container-low: #020617;
+  --color-surface-container-high: #1e293b;
+  --color-surface-container-highest: #334155;
+  --color-surface-container-lowest: #000000;
+  --color-surface: #020617;
+  --color-on-surface: #f8fafc;
+  --color-on-surface-variant: #94a3b8;
+  --color-primary-container: #7c3aed;
+  --color-on-primary: #ffffff;
+  --color-error: #ff4b4b;
+
+  /* Legacy aliases for backwards compatibility with games */
+  --color-vybe-bg: #020617;
+  --color-vybe-surface: #0f172a;
+  --color-vybe-surface-highlight: #1e293b;
+  --color-vybe-primary: #a855f7;
+  --color-vybe-secondary: #6366f1;
+  --color-vybe-tertiary: #f43f5e;
+  --color-vybe-text: #f8fafc;
+  --color-vybe-text-muted: #94a3b8;
+
+  --font-geist: 'Geist', system-ui, sans-serif;
+  --font-body-lg: 'Geist', system-ui, sans-serif;
+  --font-display-lg-mobile: 'Geist', system-ui, sans-serif;
+  --font-display-lg: 'Geist', system-ui, sans-serif;
+  --font-label-sm: 'Geist', system-ui, sans-serif;
+  --font-headline-md: 'Geist', system-ui, sans-serif;
+  --font-body-md: 'Geist', system-ui, sans-serif;
+  
+  --spacing-stack-lg: 32px;
+  --spacing-stack-md: 16px;
+  --spacing-stack-sm: 8px;
+  --spacing-unit: 8px;
+  --spacing-margin-desktop: 48px;
+  --spacing-margin-mobile: 16px;
+  --spacing-container-max-width: 1280px;
+  --spacing-gutter: 24px;
+
+  /* Font sizes from tailwind config */
+  --text-body-lg: 18px;
+  --text-body-lg--line-height: 1.6;
+  --text-display-lg-mobile: 36px;
+  --text-display-lg-mobile--line-height: 1.2;
+  --text-display-lg-mobile--letter-spacing: -0.03em;
+  --text-display-lg-mobile--font-weight: 700;
+  --text-display-lg: 48px;
+  --text-display-lg--line-height: 1.1;
+  --text-display-lg--letter-spacing: -0.04em;
+  --text-display-lg--font-weight: 700;
+  --text-label-sm: 12px;
+  --text-label-sm--line-height: 1;
+  --text-label-sm--letter-spacing: 0.05em;
+  --text-label-sm--font-weight: 600;
+  --text-headline-md: 24px;
+  --text-headline-md--line-height: 1.3;
+  --text-headline-md--letter-spacing: -0.02em;
+  --text-headline-md--font-weight: 600;
+  --text-body-md: 16px;
+  --text-body-md--line-height: 1.6;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-background);
+    color: var(--color-on-background);
+    font-family: var(--font-geist);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    background-color: color-mix(in srgb, var(--color-primary) 30%, transparent);
+    color: #fff;
+  }
+}
+
+@layer components {
+  .noise-bg {
+    position: relative;
+    z-index: 1;
+  }
+  .noise-bg::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22 opacity=%220.01%22/%3E%3C/svg%3E');
+    pointer-events: none;
+    z-index: -1;
+  }
+  
+  .glow-effect {
+    text-shadow: 0 0 15px color-mix(in srgb, var(--color-primary) 60%, transparent);
+  }
+
+  .glass-panel {
+    background-color: color-mix(in srgb, var(--color-surface-container) 80%, transparent);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .neon-text-primary {
+    text-shadow: 0 0 10px color-mix(in srgb, var(--color-primary) 50%, transparent);
+  }
+  .neon-text-secondary {
+    text-shadow: 0 0 10px color-mix(in srgb, var(--color-secondary) 50%, transparent);
+  }
+  .neon-border-primary {
+    box-shadow: 0 0 15px color-mix(in srgb, var(--color-primary) 30%, transparent), inset 0 0 10px color-mix(in srgb, var(--color-primary) 20%, transparent);
+    border-color: var(--color-primary);
+  }
+}

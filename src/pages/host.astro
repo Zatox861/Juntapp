@@ -1,0 +1,137 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Sala de Espera | Juntapp">
+  <div class="min-h-screen flex flex-col items-center justify-center relative p-6">
+    <div class="absolute inset-0 z-0 pointer-events-none">
+      <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[40rem] h-[20rem] bg-vybe-primary/10 rounded-[100%] blur-[120px]"></div>
+    </div>
+
+    <div class="relative z-10 w-full max-w-lg glass-panel rounded-3xl p-8 md:p-12 text-center flex flex-col items-center">
+      <h1 class="text-3xl md:text-4xl font-geist font-bold text-white mb-2">Sala de Espera</h1>
+      <p class="text-vybe-text-muted mb-8">Pide a tus amigos que escaneen este QR o ingresen el código en juntapp.com</p>
+
+      <!-- QR Code Container -->
+      <div class="bg-white p-4 rounded-2xl shadow-[0_0_40px_rgba(59,130,246,0.3)] mb-8 transition-transform hover:scale-105">
+        <canvas id="qrcode-canvas" class="w-48 h-48 sm:w-64 sm:h-64"></canvas>
+      </div>
+
+      <!-- Room Code -->
+      <div class="mb-6 w-full">
+        <p class="text-xs uppercase tracking-widest text-vybe-text-muted mb-2 font-geist">Código de la Sala</p>
+        <div class="text-5xl md:text-6xl font-mono font-bold text-transparent bg-clip-text bg-gradient-to-r from-vybe-primary to-vybe-tertiary tracking-[0.2em] neon-text-primary mb-4" id="room-code-display">
+          ----
+        </div>
+        
+        <!-- Enlace de invitación (Localhost testing) -->
+        <div class="flex flex-col items-center gap-2">
+          <p class="text-[10px] text-vybe-text-muted/60 font-mono break-all" id="join-link-text"></p>
+          <button id="copy-link-btn" class="text-xs font-bold text-vybe-tertiary hover:text-white transition-colors flex items-center gap-1">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            Copiar enlace de invitación
+          </button>
+        </div>
+      </div>
+
+      <div class="w-full flex flex-col gap-4">
+        <div class="flex justify-between items-center bg-vybe-surface-highlight/50 px-4 py-3 rounded-lg border border-white/5">
+          <span class="text-vybe-text-muted text-sm font-medium">Jugadores unidos:</span>
+          <span class="text-vybe-secondary font-bold text-lg neon-text-secondary" id="player-count">Esperando...</span>
+        </div>
+
+        <!-- Game Mode Selector -->
+        <div class="w-full p-4 bg-white/5 rounded-2xl border border-white/10 text-left mb-2">
+          <p class="text-xs uppercase tracking-widest text-vybe-text-muted mb-3 font-geist">Configuración de Bingo</p>
+          <div class="grid grid-cols-2 gap-2">
+            <button id="mode-classic" class="flex flex-col items-center p-3 rounded-xl border-2 border-vybe-primary bg-vybe-primary/10 text-white transition-all">
+              <span class="text-xl">🏛️</span>
+              <span class="text-xs font-bold">Clásico</span>
+              <span class="text-[10px] opacity-60">5x5 | 75 Bolas</span>
+            </button>
+            <button id="mode-fast" class="flex flex-col items-center p-3 rounded-xl border-2 border-transparent bg-white/5 text-vybe-text-muted hover:bg-white/10 transition-all">
+              <span class="text-xl">⚡</span>
+              <span class="text-xs font-bold">Express</span>
+              <span class="text-[10px] opacity-60">3x3 | 30 Bolas</span>
+            </button>
+          </div>
+        </div>
+
+        <a href="#" id="start-game-btn" class="w-full block py-4 bg-vybe-primary text-white font-semibold rounded-xl hover:bg-blue-500 transition-colors shadow-lg shadow-vybe-primary/20">
+          Iniciar Juegos
+        </a>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  import QRCode from 'qrcode';
+
+  // 1. Generate 4-letter seed if not present in URL
+  const urlParams = new URLSearchParams(window.location.search);
+  let seed = urlParams.get('seed');
+
+  if (!seed) {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    seed = Array.from({ length: 4 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+    // Replace URL without reloading
+    const newUrl = new URL(window.location.href);
+    newUrl.searchParams.set('seed', seed);
+    window.history.replaceState({}, '', newUrl);
+  }
+
+  // 2. Display seed
+  const displayEl = document.getElementById('room-code-display');
+  if (displayEl) displayEl.innerText = seed;
+
+  // 4. Game Mode Selection
+  let currentMode = 'classic';
+  const btnClassic = document.getElementById('mode-classic');
+  const btnFast = document.getElementById('mode-fast');
+  const startBtn = document.getElementById('start-game-btn');
+  const canvas = document.getElementById('qrcode-canvas');
+  const linkText = document.getElementById('join-link-text');
+
+  function updateUrls() {
+    const modeParam = currentMode === 'fast' ? '&m=fast' : '';
+    const gameUrl = `/juegos/bingo?seed=${seed}&p=host${modeParam}`;
+    const inviteUrl = `${window.location.origin}/bingo-lobby?seed=${seed}${modeParam}`;
+    
+    if (startBtn) startBtn.setAttribute('href', gameUrl);
+    if (linkText) linkText.innerText = inviteUrl;
+    
+    // Regenerate QR
+    if (canvas) {
+      QRCode.toCanvas(canvas, inviteUrl, {
+        width: 256,
+        margin: 2,
+        color: {
+          dark: '#0c1322',
+          light: '#ffffff'
+        }
+      });
+    }
+  }
+
+  btnClassic?.addEventListener('click', () => {
+    currentMode = 'classic';
+    btnClassic.classList.add('border-vybe-primary', 'bg-vybe-primary/10', 'text-white');
+    btnClassic.classList.remove('border-transparent', 'bg-white/5', 'text-vybe-text-muted');
+    btnFast?.classList.remove('border-vybe-primary', 'bg-vybe-primary/10', 'text-white');
+    btnFast?.classList.add('border-transparent', 'bg-white/5', 'text-vybe-text-muted');
+    updateUrls();
+  });
+
+  btnFast?.addEventListener('click', () => {
+    currentMode = 'fast';
+    btnFast.classList.add('border-vybe-primary', 'bg-vybe-primary/10', 'text-white');
+    btnFast.classList.remove('border-transparent', 'bg-white/5', 'text-vybe-text-muted');
+    btnClassic?.classList.remove('border-vybe-primary', 'bg-vybe-primary/10', 'text-white');
+    btnClassic?.classList.add('border-transparent', 'bg-white/5', 'text-vybe-text-muted');
+    updateUrls();
+  });
+
+  // Initial update
+  updateUrls();
+</script>
