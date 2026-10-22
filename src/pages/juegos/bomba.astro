@@ -337,14 +337,9 @@ import bombaData from '../../content/bomba.json';
 </style>
 
 <script>
-  // Importamos gestión de jugadores
+  // Importamos gestión de jugadores y datos directamente mediante Vite
   import { getPlayers, onPlayersChange } from '../../utils/players';
-
-  // Obtenemos los datos de la bomba inyectados
-  const rawDataEl = document.getElementById('bomba-data-raw');
-  const bombaData = rawDataEl?.textContent 
-    ? JSON.parse(rawDataEl.textContent) 
-    : { categories: [], penalties: [] };
+  import bombaData from '../../content/bomba.json';
 
   // Sonido Procedural con Web Audio API (100% offline, cero dependencias)
   class BombSoundEngine {
@@ -582,20 +577,32 @@ import bombaData from '../../content/bomba.json';
 
   // Obtener categoría aleatoria sin repetir en la misma sesión
   function getRandomCategory() {
-    const all = bombaData.categories;
+    const all = (bombaData && bombaData.categories && bombaData.categories.length > 0)
+      ? bombaData.categories
+      : [
+          { text: "Marcas famosas de autos", tag: "Cultura" },
+          { text: "Comidas que se comen con las manos", tag: "Comida" },
+          { text: "Tragos o cócteles con alcohol", tag: "Fiesta" },
+          { text: "Palabras con la letra M", tag: "Letras" }
+        ];
+
     let available = all.filter(c => !usedCategories.includes(c.text));
     if (available.length === 0) {
       usedCategories = [];
       available = all;
     }
-    const chosen = available[Math.floor(Math.random() * available.length)];
-    usedCategories.push(chosen.text);
+    const chosen = available[Math.floor(Math.random() * available.length)] || all[0];
+    if (chosen && chosen.text) {
+      usedCategories.push(chosen.text);
+    }
     return chosen;
   }
 
   // Obtener castigo aleatorio
   function getRandomPenalty() {
-    const penalties = bombaData.penalties;
+    const penalties = (bombaData && bombaData.penalties && bombaData.penalties.length > 0)
+      ? bombaData.penalties
+      : ["Toma 2 tragos de castigo.", "Muestra tu última foto en la galería.", "Haz 5 flexiones en el acto."];
     return penalties[Math.floor(Math.random() * penalties.length)];
   }
 
@@ -627,12 +634,20 @@ import bombaData from '../../content/bomba.json';
     bombStartTime = Date.now();
 
     // Pantallas
-    screenSetup.classList.add('hidden');
-    screenExplosion.classList.add('hidden');
-    screenGame.classList.remove('hidden');
-    screenGame.classList.add('flex');
+    if (screenSetup) {
+      screenSetup.classList.remove('flex');
+      screenSetup.classList.add('hidden');
+    }
+    if (screenExplosion) {
+      screenExplosion.classList.remove('flex');
+      screenExplosion.classList.add('hidden');
+    }
+    if (screenGame) {
+      screenGame.classList.remove('hidden');
+      screenGame.classList.add('flex');
+    }
 
-    gameContainer.classList.remove('shake-intense');
+    if (gameContainer) gameContainer.classList.remove('shake-intense');
 
     // Programar tick dinámico y explosión
     scheduleNextTick();
@@ -771,6 +786,7 @@ import bombaData from '../../content/bomba.json';
       screenExplosion.classList.remove('flex');
       screenExplosion.classList.add('hidden');
       screenSetup.classList.remove('hidden');
+      screenSetup.classList.add('flex');
     });
   }
 
