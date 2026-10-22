@@ -1,0 +1,879 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import wordsData from '../../content/el-impostor.json';
+---
+
+<Layout title="El Impostor | Juntapp">
+  <div class="min-h-screen bg-transparent flex flex-col font-sans overflow-x-hidden">
+    <!-- Fondo decorativo -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+      <div class="absolute -top-[10%] -left-[10%] w-[45%] h-[45%] bg-red-600/15 rounded-full blur-[140px] animate-pulse"></div>
+      <div class="absolute top-[25%] -right-[5%] w-[35%] h-[55%] bg-primary/15 rounded-full blur-[120px]"></div>
+      <div class="absolute -bottom-[10%] left-[20%] w-[50%] h-[35%] bg-secondary/10 rounded-full blur-[140px]"></div>
+    </div>
+
+    <div class="relative z-10 flex flex-col flex-grow w-full max-w-5xl mx-auto p-4 md:p-8">
+      <!-- HEADER UNIVERSAL -->
+      <header class="relative flex justify-between items-center mb-6 md:mb-10 w-full z-20">
+        <a href="/play" id="back-btn" class="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors text-sm font-medium z-10" title="Volver al Catálogo">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          <span class="hidden sm:inline">Volver</span>
+        </a>
+        
+        <div class="absolute left-1/2 -translate-x-1/2 flex flex-col items-center w-full pointer-events-none">
+          <h1 class="text-xl md:text-2xl font-geist font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-primary to-secondary uppercase tracking-tighter text-center">
+            El Impostor
+          </h1>
+          <span class="text-[10px] font-mono text-zinc-400">Pass & Play · 1 Celular</span>
+        </div>
+
+        <button id="btn-info" class="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors text-sm font-medium z-10 cursor-pointer" title="Cómo jugar">
+          <span class="hidden sm:inline">Cómo jugar</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        </button>
+      </header>
+
+      <main class="flex-grow flex flex-col items-center justify-start pt-2 md:pt-4 w-full">
+        <div class="w-full max-w-xl z-10">
+
+          <!-- Card Principal Glassmorphism -->
+          <div class="glass-panel relative rounded-[36px] p-6 md:p-10 text-center border border-white/10 shadow-2xl backdrop-blur-xl bg-[#070b14]/90 min-h-[460px] flex flex-col justify-center">
+
+            <!-- FASE 0: CONFIGURACIÓN -->
+            <div id="screen-setup" class="flex flex-col items-center space-y-6 animate-in fade-in duration-300">
+              <div class="w-16 h-16 rounded-3xl bg-gradient-to-tr from-red-600 to-primary flex items-center justify-center text-3xl shadow-[0_0_25px_rgba(239,68,68,0.4)]">
+                🕵️
+              </div>
+              
+              <div>
+                <h2 class="text-3xl font-black text-white tracking-tight">El Impostor</h2>
+                <p class="text-zinc-400 text-xs mt-1 max-w-xs mx-auto">Uno del grupo no sabe la palabra secreta. ¿Podrán descubrirlo antes de que deduzca qué es?</p>
+              </div>
+
+              <!-- Banner de Amigos del Grupo -->
+              <div class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 flex flex-col items-center gap-2 text-center">
+                <div class="flex items-center gap-2">
+                  <span class="text-xs uppercase tracking-wider text-primary font-bold">👥 Jugadores de la Ronda</span>
+                  <span id="party-count-badge" class="text-xs bg-primary/20 text-primary px-2 py-0.5 rounded-full font-bold">0</span>
+                </div>
+                <p id="party-names-display" class="text-xs text-zinc-300 max-w-md truncate">Cargando jugadores...</p>
+                <button type="button" data-open-party-modal class="text-xs text-primary hover:underline font-semibold flex items-center gap-1 cursor-pointer">
+                  <span>✏️ Modificar amigos del grupo</span>
+                </button>
+              </div>
+
+              <!-- Controles de Jugadores e Impostores -->
+              <div class="grid grid-cols-2 gap-3 w-full">
+                <!-- Jugadores -->
+                <div class="bg-black/30 border border-white/10 rounded-2xl p-3 flex flex-col items-center justify-center">
+                  <span class="text-[10px] uppercase font-bold text-zinc-400 tracking-wider">Total Jugadores</span>
+                  <div class="flex items-center gap-3 mt-2">
+                    <button id="btn-minus-players" class="w-8 h-8 rounded-full bg-white/10 text-white font-bold hover:bg-white/20 transition-all flex items-center justify-center cursor-pointer">-</button>
+                    <span id="player-count-num" class="text-2xl font-black text-white">4</span>
+                    <button id="btn-plus-players" class="w-8 h-8 rounded-full bg-white/10 text-white font-bold hover:bg-white/20 transition-all flex items-center justify-center cursor-pointer">+</button>
+                  </div>
+                </div>
+
+                <!-- Impostores -->
+                <div class="bg-black/30 border border-white/10 rounded-2xl p-3 flex flex-col items-center justify-center">
+                  <span class="text-[10px] uppercase font-bold text-red-400 tracking-wider">Impostores</span>
+                  <div class="flex items-center gap-3 mt-2">
+                    <button id="btn-minus-impostors" class="w-8 h-8 rounded-full bg-white/10 text-white font-bold hover:bg-white/20 transition-all flex items-center justify-center cursor-pointer">-</button>
+                    <span id="impostor-count-num" class="text-2xl font-black text-red-400">1</span>
+                    <button id="btn-plus-impostors" class="w-8 h-8 rounded-full bg-white/10 text-white font-bold hover:bg-white/20 transition-all flex items-center justify-center cursor-pointer">+</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Selector de Categoría -->
+              <div class="w-full text-left">
+                <span class="text-[10px] uppercase font-bold text-zinc-400 tracking-wider mb-2 block">Categoría de Palabras</span>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2" id="category-selector">
+                  <button type="button" class="cat-pill active" data-cat="Aleatorio">🎲 Aleatorio</button>
+                  <button type="button" class="cat-pill" data-cat="Comidas">🍕 Comidas</button>
+                  <button type="button" class="cat-pill" data-cat="Lugares">🏖️ Lugares</button>
+                  <button type="button" class="cat-pill" data-cat="Profesiones">💼 Profesiones</button>
+                  <button type="button" class="cat-pill" data-cat="Animales">🦁 Animales</button>
+                  <button type="button" class="cat-pill" data-cat="Ficción y Cultura">🎬 Ficción</button>
+                </div>
+              </div>
+
+              <!-- Opción de Pista para el Impostor -->
+              <div class="w-full flex items-center justify-between bg-black/20 border border-white/5 px-4 py-3 rounded-xl text-left">
+                <div>
+                  <div class="text-xs font-bold text-white">Pista de Categoría</div>
+                  <div class="text-[10px] text-zinc-400">El impostor sabrá la categoría general</div>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" id="toggle-hint" class="sr-only peer" checked>
+                  <div class="w-11 h-6 bg-white/20 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                </label>
+              </div>
+
+              <button 
+                id="btn-start-game"
+                class="w-full py-4 rounded-2xl bg-gradient-to-r from-red-600 via-primary to-secondary text-white font-black text-lg hover:brightness-110 active:scale-95 transition-all shadow-[0_0_30px_rgba(239,68,68,0.3)] cursor-pointer"
+              >
+                Comenzar Partida
+              </button>
+            </div>
+
+            <!-- FASE 1: REVELACIÓN SECRETA (PASS & PLAY) -->
+            <div id="screen-reveal" class="hidden flex-col items-center space-y-6 animate-in fade-in duration-300">
+              <div class="flex items-center justify-between w-full">
+                <span id="reveal-progress" class="text-[11px] font-mono font-bold text-primary uppercase tracking-widest">Jugador 1 de 4</span>
+                <span class="text-[11px] bg-red-500/20 text-red-400 border border-red-500/30 px-3 py-1 rounded-full font-bold">Modo Secreto</span>
+              </div>
+
+              <div class="py-2">
+                <p class="text-zinc-400 text-xs uppercase tracking-wider mb-2">Pasa el teléfono a:</p>
+                <div class="inline-flex items-center gap-3 px-6 py-3 rounded-2xl bg-white/5 border border-white/10 shadow-inner">
+                  <div id="reveal-avatar" class="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary to-secondary flex items-center justify-center text-lg font-black text-white">
+                    V
+                  </div>
+                  <span id="reveal-player-name" class="text-2xl font-black text-white tracking-wide">Vale</span>
+                </div>
+              </div>
+
+              <!-- Tarjeta Oculta / Revelada -->
+              <div class="w-full">
+                <!-- Estado Oculto -->
+                <div id="card-hidden" class="bg-black/50 border-2 border-dashed border-white/20 rounded-3xl p-8 flex flex-col items-center justify-center min-h-[200px] gap-3">
+                  <div class="text-4xl animate-bounce">🔒</div>
+                  <p class="text-sm font-bold text-zinc-300">Asegúrate de que nadie más mire la pantalla</p>
+                  <p class="text-xs text-zinc-500">Presiona el botón para descubrir tu identidad</p>
+                </div>
+
+                <!-- Estado Revelado (Inocente) -->
+                <div id="card-innocent" class="hidden bg-gradient-to-b from-primary/10 to-black/60 border border-primary/40 rounded-3xl p-8 flex-col items-center justify-center min-h-[200px] gap-3 shadow-[0_0_30px_rgba(0,234,255,0.2)] animate-in zoom-in-95 duration-200">
+                  <span class="px-3 py-1 rounded-full bg-primary/20 text-primary border border-primary/30 text-[10px] font-black uppercase tracking-wider" id="innocent-cat-badge">
+                    🍕 Comidas
+                  </span>
+                  <div class="text-5xl" id="innocent-icon">🍕</div>
+                  <h3 id="innocent-word" class="text-3xl md:text-4xl font-black text-white tracking-wide">PIZZA</h3>
+                  <p class="text-xs text-zinc-400 max-w-xs">Eres <strong class="text-primary font-bold">INOCENTE</strong>. Memoriza la palabra y disimula.</p>
+                </div>
+
+                <!-- Estado Revelado (Impostor) -->
+                <div id="card-impostor" class="hidden bg-gradient-to-b from-red-600/20 to-black/80 border-2 border-red-500 rounded-3xl p-8 flex-col items-center justify-center min-h-[200px] gap-3 shadow-[0_0_40px_rgba(239,68,68,0.4)] animate-in zoom-in-95 duration-200">
+                  <div class="text-5xl animate-pulse">🕵️</div>
+                  <h3 class="text-2xl md:text-3xl font-black text-red-500 tracking-wider">¡ERES EL IMPOSTOR!</h3>
+                  <div id="impostor-hint-badge" class="px-3 py-1 rounded-full bg-red-950/80 text-red-300 border border-red-500/40 text-xs font-bold">
+                    Categoría: Comidas
+                  </div>
+                  <p class="text-xs text-zinc-300 max-w-xs leading-relaxed">
+                    NO conoces la palabra secreta. Escucha atentamente las pistas de los demás y actúa como si la supieras.
+                  </p>
+                </div>
+              </div>
+
+              <!-- Botones de Acción de Revelación -->
+              <div class="w-full flex flex-col gap-3">
+                <button 
+                  id="btn-toggle-role" 
+                  type="button" 
+                  class="w-full py-4 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold text-sm transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer select-none"
+                >
+                  <span id="toggle-role-icon">👁️</span>
+                  <span id="toggle-role-text">Ver mi rol secreto</span>
+                </button>
+
+                <button 
+                  id="btn-next-player" 
+                  type="button" 
+                  disabled 
+                  class="w-full py-4 rounded-2xl bg-gradient-to-r from-primary to-secondary text-black font-black text-sm hover:brightness-110 active:scale-95 transition-all disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
+                >
+                  Ocultar y Pasar Teléfono →
+                </button>
+              </div>
+            </div>
+
+            <!-- FASE 2: DEBATE Y PISTAS -->
+            <div id="screen-debate" class="hidden flex-col items-center space-y-6 animate-in fade-in duration-300">
+              <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-primary to-secondary flex items-center justify-center text-2xl shadow-lg">
+                📱
+              </div>
+
+              <div>
+                <span class="text-[10px] uppercase font-bold text-primary tracking-widest">Teléfono a la mesa</span>
+                <h2 class="text-2xl md:text-3xl font-black text-white mt-1">Ronda de Pistas</h2>
+              </div>
+
+              <!-- Quién comienza dando pista -->
+              <div class="w-full bg-gradient-to-r from-primary/10 via-white/5 to-secondary/10 border border-primary/30 rounded-2xl p-4 text-center shadow-lg">
+                <span class="text-xs text-zinc-400 uppercase font-bold tracking-wider">Comienza dando la primera pista:</span>
+                <div id="starter-player-name" class="text-2xl font-black text-white mt-1">--</div>
+              </div>
+
+              <!-- Temporizador de Debate -->
+              <div class="flex flex-col items-center">
+                <div id="debate-timer" class="text-6xl md:text-7xl font-black text-white font-mono tracking-tight tabular-nums drop-shadow-[0_0_20px_rgba(0,234,255,0.3)]">
+                  03:00
+                </div>
+                <div class="flex items-center gap-3 mt-3">
+                  <button id="btn-timer-pause" class="px-4 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-xs font-bold text-white transition-all cursor-pointer">Pausar</button>
+                  <button id="btn-timer-add" class="px-4 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-xs font-bold text-white transition-all cursor-pointer">+1 Minuto</button>
+                </div>
+              </div>
+
+              <!-- Reglas Rápidas de la Ronda -->
+              <div class="bg-black/40 border border-white/5 rounded-2xl p-4 text-left space-y-2 text-xs text-zinc-300">
+                <div class="flex items-start gap-2">
+                  <span class="text-primary font-bold">1.</span>
+                  <span>En orden, cada uno dice <strong>UNA SOLA PALABRA</strong> o pista sutil sobre la palabra secreta.</span>
+                </div>
+                <div class="flex items-start gap-2">
+                  <span class="text-red-400 font-bold">2.</span>
+                  <span>¡Cuidado! Si la pista es muy obvia, el impostor la descubrirá. Si es muy rara, desconfiarán de ti.</span>
+                </div>
+                <div class="flex items-start gap-2">
+                  <span class="text-secondary font-bold">3.</span>
+                  <span>Al terminar la ronda, debatan y decidan a quién acusar.</span>
+                </div>
+              </div>
+
+              <button 
+                id="btn-go-voting" 
+                class="w-full py-4 rounded-2xl bg-gradient-to-r from-red-600 via-primary to-secondary text-white font-black text-base hover:brightness-110 active:scale-95 transition-all shadow-[0_0_25px_rgba(239,68,68,0.3)] cursor-pointer"
+              >
+                🗳️ ¡Ir a la Votación!
+              </button>
+            </div>
+
+            <!-- FASE 3: VOTACIÓN -->
+            <div id="screen-voting" class="hidden flex-col items-center space-y-6 animate-in fade-in duration-300">
+              <div>
+                <span class="text-[10px] uppercase font-bold text-red-400 tracking-widest">El Juicio</span>
+                <h2 class="text-2xl md:text-3xl font-black text-white mt-1">¿A quién sospechan?</h2>
+                <p class="text-xs text-zinc-400 mt-1">Seleccionen al jugador más votado por la mesa.</p>
+              </div>
+
+              <!-- Grid de Jugadores Acusables -->
+              <div id="voting-players-grid" class="grid grid-cols-2 gap-3 w-full max-h-[280px] overflow-y-auto custom-scrollbar pr-1">
+                <!-- Se inyectan por JS -->
+              </div>
+
+              <button 
+                id="btn-confirm-accuse" 
+                disabled 
+                class="w-full py-4 rounded-2xl bg-red-600 text-white font-black text-base hover:bg-red-500 active:scale-95 transition-all shadow-[0_0_30px_rgba(239,68,68,0.4)] disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
+              >
+                Acusar a <span id="accused-name-label">...</span>
+              </button>
+            </div>
+
+            <!-- FASE 4: VEREDICTO FINAL -->
+            <div id="screen-verdict" class="hidden flex-col items-center space-y-6 animate-in zoom-in-95 duration-500">
+              <div id="verdict-icon" class="text-6xl">
+                🎉
+              </div>
+
+              <div>
+                <h2 id="verdict-title" class="text-3xl md:text-4xl font-black text-white tracking-tight">¡Atraparon al Impostor!</h2>
+                <p id="verdict-desc" class="text-sm text-zinc-300 mt-2 max-w-sm mx-auto leading-relaxed">
+                  --
+                </p>
+              </div>
+
+              <!-- Revelación de la Palabra Secreta -->
+              <div class="w-full bg-white/5 border border-white/10 rounded-2xl p-5 text-center shadow-lg">
+                <span class="text-[10px] uppercase tracking-widest text-primary font-bold block mb-1">Palabra Secreta</span>
+                <div class="flex items-center justify-center gap-3">
+                  <span id="verdict-word-icon" class="text-3xl">🍕</span>
+                  <span id="verdict-secret-word" class="text-2xl md:text-3xl font-black text-white tracking-wide">PIZZA</span>
+                </div>
+                <span id="verdict-cat-label" class="text-xs text-zinc-400 mt-1 block">Categoría: Comidas</span>
+              </div>
+
+              <!-- Última oportunidad del impostor (Si fue atrapado) -->
+              <div id="impostor-redemption-box" class="hidden w-full bg-red-950/40 border border-red-500/30 rounded-2xl p-4 text-center">
+                <span class="text-xs text-red-400 font-bold block mb-1">⚡ Última Oportunidad del Impostor</span>
+                <p class="text-xs text-zinc-300">
+                  Si el impostor adivina la palabra secreta ahora, ¡le roba la victoria a todos!
+                </p>
+              </div>
+
+              <!-- Botones Finales -->
+              <div class="w-full flex flex-col gap-3">
+                <button 
+                  id="btn-play-again" 
+                  class="w-full py-4 rounded-2xl bg-gradient-to-r from-primary to-secondary text-black font-black text-base hover:brightness-110 active:scale-95 transition-all shadow-[0_0_25px_rgba(0,234,255,0.3)] cursor-pointer"
+                >
+                  🔄 Jugar Otra Ronda
+                </button>
+                <a 
+                  href="/play" 
+                  class="w-full py-3 rounded-2xl bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white font-bold text-xs transition-all text-center"
+                >
+                  Volver al Catálogo
+                </a>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- Modal Instrucciones -->
+        <div id="info-modal" class="hidden fixed inset-0 z-50 items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
+          <div class="glass-panel relative w-full max-w-md rounded-[32px] p-8 border border-white/10 shadow-2xl bg-[#0e1320] text-left">
+            <button id="btn-close-info" class="absolute top-6 right-6 text-zinc-400 hover:text-white transition-colors cursor-pointer">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+            
+            <h3 class="text-2xl font-black text-white mb-6 flex items-center gap-3">
+              <span class="text-red-500">🕵️</span> Cómo Jugar a El Impostor
+            </h3>
+            
+            <div class="space-y-4 text-sm text-zinc-300 leading-relaxed max-h-[60vh] overflow-y-auto pr-1 custom-scrollbar">
+              <p><strong>1. El Rol Secreto:</strong> Todos los jugadores se pasan el teléfono en secreto. Los inocentes verán la <em>Palabra Secreta</em> (ej. "Pizza"). El impostor NO verá la palabra secreta.</p>
+              
+              <p><strong>2. Ronda de Pistas:</strong> Se deja el teléfono al centro. En orden, cada jugador dice <strong>UNA SOLA PALABRA</strong> o frase corta relacionada con el tema.
+                <br><span class="text-xs text-primary">Consejo: Si tu pista es muy obvia, el impostor sabrá qué es. Si es muy abstracta, desconfiarán de ti.</span>
+              </p>
+              
+              <p><strong>3. Disimular y Engañar:</strong> El impostor debe decir una palabra que encaje con lo que escuchó sin levantar sospechas.</p>
+              
+              <p><strong>4. Votación:</strong> Al terminar el tiempo, todos cuentan <em>1, 2, 3...</em> y apuntan a quien crean que es el impostor. Ingresen al más votado en la app.</p>
+              
+              <p><strong>5. Última Oportunidad:</strong> Si el grupo atrapa al impostor, este tiene UNA última oportunidad: si logra adivinar la palabra secreta exacta, ¡gana el impostor!</p>
+            </div>
+            
+            <button id="btn-understood" class="mt-6 w-full py-4 rounded-2xl bg-white/10 border border-white/20 text-white font-bold hover:bg-white/20 transition-all active:scale-95 cursor-pointer">
+              ¡Entendido, a jugar!
+            </button>
+          </div>
+        </div>
+
+        <!-- SEO & Contenido Largo (Below the fold) -->
+        <article class="w-full max-w-4xl mx-auto px-4 py-12 mt-12 md:mt-16 border-t border-white/10 text-zinc-300 text-left">
+          <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">El Impostor: El Juego de Deducción Social para Fiestas</h2>
+          
+          <div class="prose prose-invert prose-lg max-w-none">
+            <p class="mb-4">
+              ¿Te gustan juegos como <em>The Chameleon</em>, <em>Spyfall</em> o <em>Undercover</em>? <strong>El Impostor</strong> es la experiencia definitiva para juntas y previas con amigos. Solo necesitas <strong>un solo teléfono móvil</strong> para todo el grupo: sin descargas pesadas ni registros complicados.
+            </p>
+
+            <h3 class="text-2xl font-bold text-white mt-8 mb-4">¿Cómo ganar siendo el Impostor?</h3>
+            <ul class="list-disc pl-6 space-y-2 mb-6">
+              <li><strong>Escucha atentamente:</strong> Pon atención a las primeras pistas de tus amigos para identificar la temática antes de que sea tu turno.</li>
+              <li><strong>Pistas neutrales:</strong> Usa palabras comodín que apliquen a muchas cosas (ej. "caliente", "popular", "grande").</li>
+              <li><strong>Confianza absoluta:</strong> Jamás dudes ni muestres nerviosismo; el impostor seguro de sí mismo rara vez es votado.</li>
+            </ul>
+
+            <h3 class="text-2xl font-bold text-white mt-8 mb-4">Preguntas Frecuentes (FAQ)</h3>
+            <div class="space-y-4 mb-8">
+              <div class="bg-white/5 border border-white/10 rounded-xl p-4">
+                <h4 class="font-bold text-white mb-1">¿Cuántos jugadores pueden participar?</h4>
+                <p class="text-sm">El juego está optimizado para grupos de 3 a 12 personas. Con 6 o más personas, puedes habilitar 2 impostores para elevar el caos y la diversión.</p>
+              </div>
+              <div class="bg-white/5 border border-white/10 rounded-xl p-4">
+                <h4 class="font-bold text-white mb-1">¿Qué pasa con la pantalla del teléfono durante el debate?</h4>
+                <p class="text-sm">Nuestra web app activa automáticamente la <strong>Wake Lock API</strong> para mantener la pantalla siempre encendida en el centro de la mesa sin que se bloquee.</p>
+              </div>
+            </div>
+          </div>
+        </article>
+
+      </main>
+    </div>
+  </div>
+</Layout>
+
+<!-- Datos del juego inyectados -->
+<template id="impostor-data">{JSON.stringify(wordsData)}</template>
+
+<script>
+  import { getPlayers, onPlayersChange } from '../../utils/players';
+  import { requestWakeLock, releaseWakeLock } from '../../utils/wakeLock';
+
+  // Paleta de degradados para los avatares
+  const avatarGradients = [
+    'from-purple-500 to-indigo-500',
+    'from-pink-500 to-rose-500',
+    'from-cyan-500 to-blue-500',
+    'from-amber-500 to-orange-500',
+    'from-emerald-500 to-teal-500',
+    'from-fuchsia-500 to-purple-600',
+    'from-red-500 to-orange-600',
+    'from-teal-500 to-cyan-600'
+  ];
+
+  // Elementos DOM de Pantallas
+  const screenSetup = document.getElementById('screen-setup');
+  const screenReveal = document.getElementById('screen-reveal');
+  const screenDebate = document.getElementById('screen-debate');
+  const screenVoting = document.getElementById('screen-voting');
+  const screenVerdict = document.getElementById('screen-verdict');
+
+  // Elementos de Configuración
+  const partyCountBadge = document.getElementById('party-count-badge');
+  const partyNamesDisplay = document.getElementById('party-names-display');
+  const btnMinusPlayers = document.getElementById('btn-minus-players');
+  const btnPlusPlayers = document.getElementById('btn-plus-players');
+  const playerCountNum = document.getElementById('player-count-num');
+  const btnMinusImpostors = document.getElementById('btn-minus-impostors');
+  const btnPlusImpostors = document.getElementById('btn-plus-impostors');
+  const impostorCountNum = document.getElementById('impostor-count-num');
+  const categoryPills = document.querySelectorAll('.cat-pill');
+  const toggleHint = document.getElementById('toggle-hint') as HTMLInputElement;
+  const btnStartGame = document.getElementById('btn-start-game');
+
+  // Elementos de Revelación
+  const revealProgress = document.getElementById('reveal-progress');
+  const revealAvatar = document.getElementById('reveal-avatar');
+  const revealPlayerName = document.getElementById('reveal-player-name');
+  const cardHidden = document.getElementById('card-hidden');
+  const cardInnocent = document.getElementById('card-innocent');
+  const cardImpostor = document.getElementById('card-impostor');
+  const innocentCatBadge = document.getElementById('innocent-cat-badge');
+  const innocentIcon = document.getElementById('innocent-icon');
+  const innocentWord = document.getElementById('innocent-word');
+  const impostorHintBadge = document.getElementById('impostor-hint-badge');
+  const btnToggleRole = document.getElementById('btn-toggle-role');
+  const toggleRoleIcon = document.getElementById('toggle-role-icon');
+  const toggleRoleText = document.getElementById('toggle-role-text');
+  const btnNextPlayer = document.getElementById('btn-next-player') as HTMLButtonElement;
+
+  // Elementos de Debate
+  const starterPlayerName = document.getElementById('starter-player-name');
+  const debateTimer = document.getElementById('debate-timer');
+  const btnTimerPause = document.getElementById('btn-timer-pause');
+  const btnTimerAdd = document.getElementById('btn-timer-add');
+  const btnGoVoting = document.getElementById('btn-go-voting');
+
+  // Elementos de Votación
+  const votingPlayersGrid = document.getElementById('voting-players-grid');
+  const btnConfirmAccuse = document.getElementById('btn-confirm-accuse') as HTMLButtonElement;
+  const accusedNameLabel = document.getElementById('accused-name-label');
+
+  // Elementos de Veredicto
+  const verdictIcon = document.getElementById('verdict-icon');
+  const verdictTitle = document.getElementById('verdict-title');
+  const verdictDesc = document.getElementById('verdict-desc');
+  const verdictWordIcon = document.getElementById('verdict-word-icon');
+  const verdictSecretWord = document.getElementById('verdict-secret-word');
+  const verdictCatLabel = document.getElementById('verdict-cat-label');
+  const impostorRedemptionBox = document.getElementById('impostor-redemption-box');
+  const btnPlayAgain = document.getElementById('btn-play-again');
+
+  // Modal Info
+  const infoModal = document.getElementById('info-modal');
+  const btnInfo = document.getElementById('btn-info');
+  const btnCloseInfo = document.getElementById('btn-close-info');
+  const btnUnderstood = document.getElementById('btn-understood');
+
+  function openInfo() {
+    infoModal?.classList.remove('hidden');
+    infoModal?.classList.add('flex');
+  }
+  function closeInfo() {
+    infoModal?.classList.add('hidden');
+    infoModal?.classList.remove('flex');
+  }
+  btnInfo?.addEventListener('click', openInfo);
+  btnCloseInfo?.addEventListener('click', closeInfo);
+  btnUnderstood?.addEventListener('click', closeInfo);
+
+  // Cargar datos de palabras
+  const dataRaw = (document.getElementById('impostor-data') as HTMLTemplateElement)?.content?.textContent || '{}';
+  const categoriesData: Record<string, { word: string; icon: string }[]> = JSON.parse(dataRaw);
+
+  // Estado de la partida
+  let playersList: string[] = [];
+  let numPlayers = 4;
+  let numImpostors = 1;
+  let selectedCategory = 'Aleatorio';
+  let hasCategoryHint = true;
+
+  let currentSecretWord = { word: '', icon: '', category: '' };
+  let impostorIndices: number[] = [];
+  let currentRevealIndex = 0;
+  let isRoleRevealed = false;
+  let starterIndex = 0;
+
+  let debateSeconds = 180;
+  let timerInterval: any = null;
+  let isTimerPaused = false;
+  let selectedAccusedIndex: number | null = null;
+
+  // Sincronizar jugadores con el Gestor Global
+  function syncParty() {
+    const party = getPlayers();
+    if (partyCountBadge) partyCountBadge.textContent = party.length.toString();
+    
+    if (party.length >= 3) {
+      playersList = [...party];
+      numPlayers = Math.min(12, Math.max(3, party.length));
+      if (partyNamesDisplay) partyNamesDisplay.textContent = party.join(', ');
+    } else if (party.length > 0) {
+      // Menos de 3 amigos, rellenar con Jugador X
+      playersList = [...party];
+      while (playersList.length < numPlayers) {
+        playersList.push(`Jugador ${playersList.length + 1}`);
+      }
+      if (partyNamesDisplay) partyNamesDisplay.textContent = party.join(', ') + ' (añade más amigos para personalizar)';
+    } else {
+      playersList = Array.from({ length: numPlayers }, (_, i) => `Jugador ${i + 1}`);
+      if (partyNamesDisplay) partyNamesDisplay.textContent = 'Sin amigos configurados (jugando como Jugador 1, 2...)';
+    }
+
+    if (playerCountNum) playerCountNum.textContent = numPlayers.toString();
+    validateImpostors();
+  }
+
+  function validateImpostors() {
+    const maxAllowed = numPlayers >= 6 ? 2 : 1;
+    if (numImpostors > maxAllowed) numImpostors = maxAllowed;
+    if (impostorCountNum) impostorCountNum.textContent = numImpostors.toString();
+  }
+
+  btnMinusPlayers?.addEventListener('click', () => {
+    if (numPlayers > 3) {
+      numPlayers--;
+      syncParty();
+    }
+  });
+
+  btnPlusPlayers?.addEventListener('click', () => {
+    if (numPlayers < 12) {
+      numPlayers++;
+      syncParty();
+    }
+  });
+
+  btnMinusImpostors?.addEventListener('click', () => {
+    if (numImpostors > 1) {
+      numImpostors--;
+      validateImpostors();
+    }
+  });
+
+  btnPlusImpostors?.addEventListener('click', () => {
+    const maxAllowed = numPlayers >= 6 ? 2 : 1;
+    if (numImpostors < maxAllowed) {
+      numImpostors++;
+      validateImpostors();
+    } else if (numPlayers < 6) {
+      alert("Se necesitan al menos 6 jugadores para jugar con 2 impostores.");
+    }
+  });
+
+  // Selector de Categoría
+  categoryPills.forEach(pill => {
+    pill.addEventListener('click', () => {
+      categoryPills.forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      selectedCategory = pill.getAttribute('data-cat') || 'Aleatorio';
+    });
+  });
+
+  toggleHint?.addEventListener('change', () => {
+    hasCategoryHint = toggleHint.checked;
+  });
+
+  syncParty();
+  onPlayersChange(syncParty);
+
+  // Iniciar Partida
+  btnStartGame?.addEventListener('click', () => {
+    // 1. Elegir palabra secreta
+    let catToPick = selectedCategory;
+    const catKeys = Object.keys(categoriesData);
+    if (catToPick === 'Aleatorio') {
+      catToPick = catKeys[Math.floor(Math.random() * catKeys.length)];
+    }
+    const wordsPool = categoriesData[catToPick] || categoriesData['Comidas'];
+    const chosen = wordsPool[Math.floor(Math.random() * wordsPool.length)];
+    currentSecretWord = { word: chosen.word, icon: chosen.icon, category: catToPick };
+
+    // 2. Elegir Impostores al azar
+    impostorIndices = [];
+    while (impostorIndices.length < numImpostors) {
+      const randIdx = Math.floor(Math.random() * numPlayers);
+      if (!impostorIndices.includes(randIdx)) {
+        impostorIndices.push(randIdx);
+      }
+    }
+
+    // 3. Elegir quién da la primera pista
+    starterIndex = Math.floor(Math.random() * numPlayers);
+
+    // 4. Cambiar a pantalla de Revelación
+    currentRevealIndex = 0;
+    screenSetup?.classList.add('hidden');
+    screenReveal?.classList.remove('hidden');
+    screenReveal?.classList.add('flex');
+
+    loadRevealCard();
+  });
+
+  function loadRevealCard() {
+    isRoleRevealed = false;
+    cardHidden?.classList.remove('hidden');
+    cardInnocent?.classList.add('hidden');
+    cardImpostor?.classList.add('hidden');
+    cardInnocent?.classList.remove('flex');
+    cardImpostor?.classList.remove('flex');
+
+    if (btnToggleRole) {
+      if (toggleRoleIcon) toggleRoleIcon.textContent = '👁️';
+      if (toggleRoleText) toggleRoleText.textContent = 'Ver mi rol secreto';
+    }
+
+    if (btnNextPlayer) btnNextPlayer.disabled = true;
+
+    const pName = playersList[currentRevealIndex] || `Jugador ${currentRevealIndex + 1}`;
+    if (revealProgress) revealProgress.textContent = `Jugador ${currentRevealIndex + 1} de ${numPlayers}`;
+    if (revealPlayerName) revealPlayerName.textContent = pName;
+    if (revealAvatar) {
+      revealAvatar.textContent = pName.charAt(0).toUpperCase();
+      revealAvatar.className = `w-10 h-10 rounded-xl bg-gradient-to-tr ${avatarGradients[currentRevealIndex % avatarGradients.length]} flex items-center justify-center text-lg font-black text-white`;
+    }
+  }
+
+  // Toggle Ver Rol
+  btnToggleRole?.addEventListener('click', () => {
+    isRoleRevealed = !isRoleRevealed;
+    const isImpostor = impostorIndices.includes(currentRevealIndex);
+
+    if (isRoleRevealed) {
+      cardHidden?.classList.add('hidden');
+      if (toggleRoleIcon) toggleRoleIcon.textContent = '🙈';
+      if (toggleRoleText) toggleRoleText.textContent = 'Ocultar mi rol';
+      if (btnNextPlayer) btnNextPlayer.disabled = false;
+
+      if (isImpostor) {
+        cardImpostor?.classList.remove('hidden');
+        cardImpostor?.classList.add('flex');
+        if (impostorHintBadge) {
+          if (hasCategoryHint) {
+            impostorHintBadge.textContent = `Categoría: ${currentSecretWord.category}`;
+            impostorHintBadge.classList.remove('hidden');
+          } else {
+            impostorHintBadge.textContent = 'Modo a Ciegas (Sin Pista)';
+            impostorHintBadge.classList.add('hidden');
+          }
+        }
+      } else {
+        cardInnocent?.classList.remove('hidden');
+        cardInnocent?.classList.add('flex');
+        if (innocentCatBadge) innocentCatBadge.textContent = currentSecretWord.category;
+        if (innocentIcon) innocentIcon.textContent = currentSecretWord.icon;
+        if (innocentWord) innocentWord.textContent = currentSecretWord.word;
+      }
+    } else {
+      cardHidden?.classList.remove('hidden');
+      cardInnocent?.classList.add('hidden');
+      cardInnocent?.classList.remove('flex');
+      cardImpostor?.classList.add('hidden');
+      cardImpostor?.classList.remove('flex');
+      if (toggleRoleIcon) toggleRoleIcon.textContent = '👁️';
+      if (toggleRoleText) toggleRoleText.textContent = 'Ver mi rol secreto';
+    }
+  });
+
+  // Botón Siguiente Jugador
+  btnNextPlayer?.addEventListener('click', () => {
+    currentRevealIndex++;
+    if (currentRevealIndex < numPlayers) {
+      loadRevealCard();
+    } else {
+      // Todos vieron su rol: pasar al debate
+      startDebatePhase();
+    }
+  });
+
+  // Fase de Debate
+  function startDebatePhase() {
+    screenReveal?.classList.add('hidden');
+    screenReveal?.classList.remove('flex');
+    screenDebate?.classList.remove('hidden');
+    screenDebate?.classList.add('flex');
+
+    // Activar WakeLock para mantener la pantalla activa
+    requestWakeLock();
+
+    const starter = playersList[starterIndex] || `Jugador ${starterIndex + 1}`;
+    if (starterPlayerName) starterPlayerName.textContent = starter;
+
+    debateSeconds = 180;
+    isTimerPaused = false;
+    updateTimerText();
+
+    clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+      if (!isTimerPaused) {
+        debateSeconds--;
+        updateTimerText();
+        if (debateSeconds <= 0) {
+          clearInterval(timerInterval);
+        }
+      }
+    }, 1000);
+  }
+
+  function updateTimerText() {
+    if (!debateTimer) return;
+    const mins = Math.floor(debateSeconds / 60);
+    const secs = debateSeconds % 60;
+    debateTimer.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    if (debateSeconds <= 15) {
+      debateTimer.classList.add('text-red-500', 'animate-pulse');
+    } else {
+      debateTimer.classList.remove('text-red-500', 'animate-pulse');
+    }
+  }
+
+  btnTimerPause?.addEventListener('click', () => {
+    isTimerPaused = !isTimerPaused;
+    if (btnTimerPause) btnTimerPause.textContent = isTimerPaused ? 'Reanudar' : 'Pausar';
+  });
+
+  btnTimerAdd?.addEventListener('click', () => {
+    debateSeconds += 60;
+    updateTimerText();
+  });
+
+  // Ir a Votación
+  btnGoVoting?.addEventListener('click', () => {
+    clearInterval(timerInterval);
+    screenDebate?.classList.add('hidden');
+    screenDebate?.classList.remove('flex');
+    screenVoting?.classList.remove('hidden');
+    screenVoting?.classList.add('flex');
+
+    selectedAccusedIndex = null;
+    if (btnConfirmAccuse) btnConfirmAccuse.disabled = true;
+    if (accusedNameLabel) accusedNameLabel.textContent = '...';
+
+    renderVotingGrid();
+  });
+
+  function renderVotingGrid() {
+    if (!votingPlayersGrid) return;
+    votingPlayersGrid.innerHTML = playersList.map((name, i) => {
+      const grad = avatarGradients[i % avatarGradients.length];
+      const initial = name.charAt(0).toUpperCase();
+      return `
+        <button 
+          type="button" 
+          data-vote-idx="${i}" 
+          class="vote-card flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/10 hover:border-red-500/50 hover:bg-white/10 transition-all text-left cursor-pointer group"
+        >
+          <div class="w-8 h-8 rounded-xl bg-gradient-to-tr ${grad} flex items-center justify-center text-xs font-black text-white shrink-0">
+            ${initial}
+          </div>
+          <span class="text-sm font-bold text-white truncate">${name}</span>
+        </button>
+      `;
+    }).join('');
+
+    votingPlayersGrid.querySelectorAll('[data-vote-idx]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const idx = parseInt((e.currentTarget as HTMLElement).getAttribute('data-vote-idx') || '-1');
+        if (idx >= 0) {
+          selectedAccusedIndex = idx;
+          votingPlayersGrid.querySelectorAll('.vote-card').forEach(c => {
+            c.classList.remove('border-red-500', 'bg-red-500/10', 'scale-[1.02]');
+          });
+          btn.classList.add('border-red-500', 'bg-red-500/10', 'scale-[1.02]');
+          if (btnConfirmAccuse) btnConfirmAccuse.disabled = false;
+          if (accusedNameLabel) accusedNameLabel.textContent = playersList[idx];
+        }
+      });
+    });
+  }
+
+  // Confirmar Votación y Veredicto
+  btnConfirmAccuse?.addEventListener('click', () => {
+    if (selectedAccusedIndex === null) return;
+    screenVoting?.classList.add('hidden');
+    screenVoting?.classList.remove('flex');
+    screenVerdict?.classList.remove('hidden');
+    screenVerdict?.classList.add('flex');
+
+    const accusedName = playersList[selectedAccusedIndex];
+    const isImpostor = impostorIndices.includes(selectedAccusedIndex);
+    const impostorNames = impostorIndices.map(i => playersList[i]).join(' y ');
+
+    if (verdictWordIcon) verdictWordIcon.textContent = currentSecretWord.icon;
+    if (verdictSecretWord) verdictSecretWord.textContent = currentSecretWord.word;
+    if (verdictCatLabel) verdictCatLabel.textContent = `Categoría: ${currentSecretWord.category}`;
+
+    if (isImpostor) {
+      if (verdictIcon) verdictIcon.textContent = '🎉🕵️';
+      if (verdictTitle) {
+        verdictTitle.textContent = '¡ATRAPARON AL IMPOSTOR!';
+        verdictTitle.className = 'text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300';
+      }
+      if (verdictDesc) {
+        verdictDesc.innerHTML = `¡Excelente deducción! <strong class="text-white">${accusedName}</strong> era el impostor y no logró engañar a la mesa.`;
+      }
+      impostorRedemptionBox?.classList.remove('hidden');
+    } else {
+      if (verdictIcon) verdictIcon.textContent = '😱❌';
+      if (verdictTitle) {
+        verdictTitle.textContent = '¡ERA INOCENTE!';
+        verdictTitle.className = 'text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-rose-400';
+      }
+      if (verdictDesc) {
+        verdictDesc.innerHTML = `<strong class="text-white">${accusedName}</strong> era completamente inocente... El verdadero impostor era <strong class="text-red-400 font-black">${impostorNames}</strong>. ¡El impostor se sale con la suya!`;
+      }
+      impostorRedemptionBox?.classList.add('hidden');
+    }
+  });
+
+  // Jugar otra ronda
+  btnPlayAgain?.addEventListener('click', () => {
+    screenVerdict?.classList.add('hidden');
+    screenVerdict?.classList.remove('flex');
+    screenSetup?.classList.remove('hidden');
+    screenSetup?.classList.add('flex');
+  });
+
+  // Limpiar wake lock al salir
+  window.addEventListener('beforeunload', () => {
+    releaseWakeLock();
+  });
+</script>
+
+<style>
+  .glass-panel {
+    box-shadow: 0 0 60px -15px rgba(0, 0, 0, 0.7);
+  }
+
+  .cat-pill {
+    padding: 0.6rem 0.8rem;
+    border-radius: 0.85rem;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #a1a1aa;
+    font-size: 0.75rem;
+    font-weight: 700;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    text-align: center;
+  }
+
+  .cat-pill:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+  }
+
+  .cat-pill.active {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.3), rgba(0, 234, 255, 0.3));
+    border-color: #00eaff;
+    color: #ffffff;
+    box-shadow: 0 0 15px rgba(0, 234, 255, 0.2);
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 9999px;
+  }
+</style>

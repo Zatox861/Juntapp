@@ -78,8 +78,21 @@ import Logo from '../components/Logo.astro';
         </a>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <!-- Card 1: Verdad o Reto -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Card 1: El Impostor (Nuevo) -->
+        <a href="/juegos/el-impostor" class="group relative bg-surface-container rounded-[24px] border border-red-500/20 overflow-hidden hover:border-red-500/60 transition-all duration-500 cursor-pointer h-[350px] flex flex-col justify-end shadow-[0_0_30px_rgba(239,68,68,0.15)]">
+          <img alt="Grupo de amigos jugando El Impostor en la noche con un teléfono" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="/img/cover_el_impostor.webp">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-transparent"></div>
+          <div class="relative z-10 p-6">
+            <div class="bg-red-500/20 text-red-400 w-max px-3 py-1 rounded-full font-label-sm text-[10px] mb-3 backdrop-blur-md border border-red-500/30 uppercase tracking-widest font-black">
+              Nuevo · Deducción
+            </div>
+            <h3 class="font-headline-md text-2xl font-bold text-on-background mb-1">El Impostor</h3>
+            <p class="font-body-md text-on-surface-variant line-clamp-2">Todos conocen la palabra secreta menos uno. ¿Quién está fingiendo en el grupo?</p>
+          </div>
+        </a>
+
+        <!-- Card 2: Verdad o Reto -->
         <a href="/juegos/verdad-reto" class="group relative bg-surface-container rounded-[24px] border border-white/5 overflow-hidden hover:border-primary/50 transition-all duration-500 cursor-pointer h-[350px] flex flex-col justify-end">
           <img alt="Vista aérea de amigos sentados en círculo jugando verdad o reto con una botella en una alfombra" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="/img/cover_verdad_reto.webp">
           <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-transparent"></div>
@@ -92,7 +105,7 @@ import Logo from '../components/Logo.astro';
           </div>
         </a>
 
-        <!-- Card 2: Ruleta -->
+        <!-- Card 3: Ruleta -->
         <a href="/juegos/ruleta" class="group relative bg-surface-container rounded-[24px] border border-white/5 overflow-hidden hover:border-tertiary/50 transition-all duration-500 cursor-pointer h-[350px] flex flex-col justify-end">
           <img alt="Ruleta neón futurista" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="/img/cover_ruleta.webp">
           <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-transparent"></div>
@@ -105,7 +118,7 @@ import Logo from '../components/Logo.astro';
           </div>
         </a>
 
-        <!-- Card 3: ¿Quién es más probable? -->
+        <!-- Card 4: ¿Quién es más probable? -->
         <a href="/juegos/quien-es" class="group relative bg-surface-container rounded-[24px] border border-white/5 overflow-hidden hover:border-secondary/50 transition-all duration-500 cursor-pointer h-[350px] flex flex-col justify-end">
           <img alt="Siluetas en fiesta neón señalando" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="/img/cover_quien_es.webp">
           <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-transparent"></div>
@@ -118,7 +131,7 @@ import Logo from '../components/Logo.astro';
           </div>
         </a>
 
-        <!-- Card 4: Bingo -->
+        <!-- Card 5: Bingo -->
         <a href="/bingo-lobby" class="group relative bg-surface-container rounded-[24px] border border-white/5 overflow-hidden hover:border-primary/50 transition-all duration-500 cursor-pointer h-[350px] flex flex-col justify-end">
           <img alt="Perspectiva en primera persona sosteniendo un cartón de Bingo con amigos de fondo" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="/img/cover_bingo.webp">
           <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-transparent"></div>
@@ -131,7 +144,7 @@ import Logo from '../components/Logo.astro';
           </div>
         </a>
 
-        <!-- Card 5: Quién sabe más -->
+        <!-- Card 6: Quién sabe más -->
         <a href="/juegos/quien-sabe-mas" class="group relative bg-surface-container rounded-[24px] border border-white/5 overflow-hidden hover:border-secondary/50 transition-all duration-500 cursor-pointer h-[350px] flex flex-col justify-end">
           <img alt="Amigos jugando trivia en un quincho de asados" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="/img/cover_quien_sabe_mas.webp">
           <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-transparent"></div>
@@ -144,7 +157,7 @@ import Logo from '../components/Logo.astro';
           </div>
         </a>
 
-        <!-- Card 6: Mímica -->
+        <!-- Card 7: Mímica -->
         <a href="/juegos/mimica" class="group relative bg-surface-container rounded-[24px] border border-white/5 overflow-hidden hover:border-tertiary/50 transition-all duration-500 cursor-pointer h-[350px] flex flex-col justify-end">
           <img alt="Persona haciendo gestos de mímica con amigos riendo en un living de fondo" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="/img/cover_mimica.webp">
           <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-transparent"></div>
@@ -154,6 +167,19 @@ import Logo from '../components/Logo.astro';
             </div>
             <h3 class="font-headline-md text-2xl font-bold text-on-background mb-1">Mímica Extrema</h3>
             <p class="font-body-md text-on-surface-variant line-clamp-2">Adivina la palabra oculta. Las actuaciones vergonzosas están aseguradas.</p>
+          </div>
+        </a>
+
+        <!-- Card 8: Yo Nunca -->
+        <a href="/juegos/yo-nunca" class="group relative bg-surface-container rounded-[24px] border border-white/5 overflow-hidden hover:border-primary/50 transition-all duration-500 cursor-pointer h-[350px] flex flex-col justify-end">
+          <img alt="Vasos y amigos en junta jugando Yo Nunca" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="/img/cover_yo_nunca.webp">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-transparent"></div>
+          <div class="relative z-10 p-6">
+            <div class="bg-primary/20 text-primary w-max px-3 py-1 rounded-full font-label-sm text-[10px] mb-3 backdrop-blur-md border border-primary/30 uppercase tracking-widest font-bold">
+              Confesiones
+            </div>
+            <h3 class="font-headline-md text-2xl font-bold text-on-background mb-1">Yo Nunca</h3>
+            <p class="font-body-md text-on-surface-variant line-clamp-2">Descubre los secretos más divertidos y atrevidos mientras todos toman.</p>
           </div>
         </a>
       </div>
