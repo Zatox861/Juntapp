@@ -20,16 +20,22 @@ const { title, description = "Juntapp - La plataforma definitiva de juegos de fi
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     
+    <!-- PWA & Mobile Web App -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Juntapp" />
+    
     <!-- Open Graph / Redes Sociales -->
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content="/img/hero-party.jpg" />
+    <meta property="og:image" content="/img/hero-party.webp" />
     <meta property="og:site_name" content="Juntapp" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content="/img/hero-party.jpg" />
+    <meta name="twitter:image" content="/img/hero-party.webp" />
 
     <!-- Google Fonts: Geist & Material Symbols -->
     <link href="https://fonts.googleapis.com" rel="preconnect">
@@ -71,7 +77,7 @@ const { title, description = "Juntapp - La plataforma definitiva de juegos de fi
             <span class="material-symbols-outlined text-xl">forum</span>
           </button>
           <div class="w-10 h-10 rounded-full border-2 border-primary/20 overflow-hidden ml-2 cursor-pointer hover:border-primary transition-colors">
-            <img alt="Gamer profile avatar" class="w-full h-full object-cover" src="/img/avatar.png">
+            <img alt="Gamer profile avatar" class="w-full h-full object-cover" src="/img/avatar.webp">
           </div>
         </div>
       </div>
@@ -81,5 +87,9 @@ const { title, description = "Juntapp - La plataforma definitiva de juegos de fi
       <slot />
     </main>
 
+    <script>
+      import { autoWakeLock } from '../utils/wakeLock';
+      autoWakeLock();
+    </script>
   </body>
 </html>
