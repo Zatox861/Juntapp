@@ -1,0 +1,227 @@
+---
+// Componente de modal para gestionar jugadores globales del grupo
+---
+
+<!-- Modal de Jugadores -->
+<div 
+  id="party-players-modal" 
+  class="hidden fixed inset-0 z-50 items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-300"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="party-modal-title"
+>
+  <div class="glass-panel relative w-full max-w-md rounded-3xl p-6 md:p-8 border border-white/10 shadow-[0_0_50px_rgba(168,85,247,0.2)] bg-[#090d16] text-left flex flex-col max-h-[90vh]">
+    
+    <!-- Botón Cerrar -->
+    <button 
+      id="btn-close-party-modal" 
+      class="absolute top-5 right-5 w-8 h-8 rounded-full bg-white/5 border border-white/10 text-zinc-400 hover:text-white hover:bg-white/10 transition-colors flex items-center justify-center"
+      aria-label="Cerrar modal"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+    </button>
+    
+    <!-- Encabezado -->
+    <div class="flex items-center gap-3 mb-2">
+      <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-primary to-secondary flex items-center justify-center text-xl shadow-[0_0_15px_rgba(168,85,247,0.4)]">
+        👥
+      </div>
+      <div>
+        <h2 id="party-modal-title" class="text-xl font-bold text-white tracking-tight">Amigos en la Junta</h2>
+        <p class="text-xs text-on-surface-variant">Se usarán automáticamente en todos los juegos.</p>
+      </div>
+    </div>
+
+    <!-- Formulario para agregar -->
+    <form id="party-add-form" class="flex gap-2 my-4">
+      <input 
+        type="text" 
+        id="party-player-input" 
+        placeholder="Nombre o apodo (ej. Vale)"
+        maxlength="16"
+        autocomplete="off"
+        class="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/30 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+      />
+      <button 
+        type="submit" 
+        class="px-5 py-3 rounded-xl bg-gradient-to-r from-primary to-secondary text-white font-bold text-sm shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:scale-105 active:scale-95 transition-all flex items-center gap-1 cursor-pointer"
+      >
+        <span>+</span> Añadir
+      </button>
+    </form>
+
+    <!-- Lista de jugadores (Scrollable) -->
+    <div class="flex-grow overflow-y-auto pr-1 my-2 min-h-[140px] max-h-[260px] custom-scrollbar">
+      <div id="party-players-list" class="flex flex-col gap-2">
+        <!-- Renderizado dinámicamente con JS -->
+      </div>
+
+      <!-- Estado vacío -->
+      <div id="party-empty-state" class="hidden flex-col items-center justify-center py-8 text-center">
+        <span class="text-3xl mb-2 opacity-50">🍻</span>
+        <p class="text-xs text-white/50 max-w-[240px]">Aún no hay amigos en el grupo. Agrega a los que están contigo para personalizar las rondas.</p>
+      </div>
+    </div>
+
+    <!-- Footer del Modal -->
+    <div class="pt-4 mt-2 border-t border-white/5 flex items-center justify-between">
+      <span id="party-total-count" class="text-xs font-mono text-zinc-400">0 jugadores</span>
+      
+      <div class="flex items-center gap-2">
+        <button 
+          id="btn-clear-party" 
+          type="button" 
+          class="text-xs text-red-400 hover:text-red-300 transition-colors px-2 py-1 rounded hover:bg-red-500/10"
+        >
+          Limpiar todos
+        </button>
+        <button 
+          id="btn-done-party" 
+          type="button" 
+          class="px-4 py-2 bg-white/10 hover:bg-white/20 text-white font-bold text-xs rounded-xl transition-all"
+        >
+          ¡Listo!
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  import { getPlayers, addPlayer, removePlayer, clearPlayers, onPlayersChange } from '../utils/players';
+
+  const modal = document.getElementById('party-players-modal');
+  const btnClose = document.getElementById('btn-close-party-modal');
+  const btnDone = document.getElementById('btn-done-party');
+  const btnClear = document.getElementById('btn-clear-party');
+  const form = document.getElementById('party-add-form') as HTMLFormElement;
+  const input = document.getElementById('party-player-input') as HTMLInputElement;
+  const list = document.getElementById('party-players-list');
+  const emptyState = document.getElementById('party-empty-state');
+  const totalCount = document.getElementById('party-total-count');
+
+  // Paleta de degradados para los avatares
+  const avatarGradients = [
+    'from-purple-500 to-indigo-500',
+    'from-pink-500 to-rose-500',
+    'from-cyan-500 to-blue-500',
+    'from-amber-500 to-orange-500',
+    'from-emerald-500 to-teal-500',
+    'from-fuchsia-500 to-purple-600'
+  ];
+
+  function renderList(players: string[]) {
+    // Actualizar todos los contadores de la página (Navbar, etc.)
+    document.querySelectorAll('[data-party-count]').forEach(el => {
+      el.textContent = players.length.toString();
+    });
+
+    if (totalCount) {
+      totalCount.textContent = `${players.length} amigo${players.length === 1 ? '' : 's'} listo${players.length === 1 ? '' : 's'}`;
+    }
+
+    if (!list || !emptyState) return;
+
+    if (players.length === 0) {
+      list.innerHTML = '';
+      emptyState.classList.remove('hidden');
+      emptyState.classList.add('flex');
+      return;
+    }
+
+    emptyState.classList.add('hidden');
+    emptyState.classList.remove('flex');
+
+    list.innerHTML = players.map((name, index) => {
+      const initial = name.charAt(0).toUpperCase();
+      const grad = avatarGradients[index % avatarGradients.length];
+      return `
+        <div class="flex items-center justify-between bg-white/5 hover:bg-white/10 px-3 py-2 rounded-xl border border-white/5 transition-all group">
+          <div class="flex items-center gap-2.5">
+            <div class="w-7 h-7 rounded-lg bg-gradient-to-tr ${grad} flex items-center justify-center text-xs font-bold text-white shadow-sm">
+              ${initial}
+            </div>
+            <span class="text-sm font-semibold text-white tracking-wide">${name}</span>
+          </div>
+          <button 
+            type="button" 
+            data-remove-index="${index}" 
+            class="text-zinc-500 hover:text-red-400 p-1 rounded transition-colors text-xs"
+            title="Eliminar a ${name}"
+          >
+            ✕
+          </button>
+        </div>
+      `;
+    }).join('');
+
+    // Listener de eliminación
+    list.querySelectorAll('[data-remove-index]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const idx = parseInt((e.currentTarget as HTMLElement).getAttribute('data-remove-index') || '-1');
+        if (idx >= 0) removePlayer(idx);
+      });
+    });
+  }
+
+  function openModal() {
+    modal?.classList.remove('hidden');
+    modal?.classList.add('flex');
+    input?.focus();
+    renderList(getPlayers());
+  }
+
+  function closeModal() {
+    modal?.classList.add('hidden');
+    modal?.classList.remove('flex');
+  }
+
+  // Event Listeners
+  form?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (!input) return;
+    const val = input.value.trim();
+    if (val) {
+      addPlayer(val);
+      input.value = '';
+      input.focus();
+    }
+  });
+
+  btnClose?.addEventListener('click', closeModal);
+  btnDone?.addEventListener('click', closeModal);
+  
+  btnClear?.addEventListener('click', () => {
+    if (confirm('¿Quieres borrar la lista de amigos?')) {
+      clearPlayers();
+    }
+  });
+
+  // Cerrar al hacer clic en el backdrop
+  modal?.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal();
+  });
+
+  // Escuchar teclas Escape y Enter
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !modal?.classList.contains('hidden')) {
+      closeModal();
+    }
+  });
+
+  // Exponer al scope global para que cualquier botón [data-open-party-modal] lo abra
+  document.addEventListener('click', (e) => {
+    const target = (e.target as HTMLElement).closest('[data-open-party-modal]');
+    if (target) {
+      e.preventDefault();
+      openModal();
+    }
+  });
+
+  // Suscribirse a cambios en los jugadores
+  onPlayersChange(renderList);
+
+  // Render inicial
+  renderList(getPlayers());
+</script>

@@ -44,9 +44,23 @@ import Layout from '../../layouts/Layout.astro';
               Opciones
             </h2>
             <p class="text-xs text-vybe-text-muted mt-1.5 leading-relaxed">
-              Configura los premios o castigos (máx 20).
+              Configura los premios, castigos o nombres (máx 20).
             </p>
           </div>
+
+          <!-- Botón Cargar Jugadores del Grupo -->
+          <button 
+            id="btn-load-party-players" 
+            type="button" 
+            class="w-full py-2.5 px-3 bg-gradient-to-r from-primary/15 to-secondary/15 hover:from-primary/25 hover:to-secondary/25 border border-primary/30 rounded-xl text-primary hover:text-white transition-all flex items-center justify-between text-xs font-bold mb-3 cursor-pointer shadow-sm group"
+            title="Cargar los nombres de amigos configurados en la junta"
+          >
+            <span class="flex items-center gap-1.5">
+              <span>👥</span>
+              <span>Cargar amigos del grupo</span>
+            </span>
+            <span class="px-2 py-0.5 rounded-full bg-primary/20 text-primary font-mono text-[11px] group-hover:bg-primary group-hover:text-black transition-colors" data-party-count>0</span>
+          </button>
           
           <!-- Contenedor de Casillas Dinámicas -->
           <div id="options-container" class="space-y-2 mb-4 overflow-y-auto pr-2 custom-scrollbar max-h-[180px] md:max-h-none">
@@ -154,6 +168,7 @@ import Layout from '../../layouts/Layout.astro';
 
 <script>
   import { createSeededRandom } from '../../utils/random';
+  import { getPlayers, onPlayersChange } from '../../utils/players';
 
   const urlParams = new URLSearchParams(window.location.search);
   let localSeed = localStorage.getItem('juntapp_local_seed');
@@ -303,6 +318,28 @@ import Layout from '../../layouts/Layout.astro';
       optionsContainer.appendChild(newInput);
       optionsContainer.scrollTop = optionsContainer.scrollHeight;
       newInput.querySelector('input')?.focus();
+    }
+  });
+
+  const btnLoadParty = document.getElementById('btn-load-party-players');
+  btnLoadParty?.addEventListener('click', () => {
+    const party = getPlayers();
+    if (party.length >= 2) {
+      options = [...party.slice(0, 20)];
+      localStorage.setItem('juntapp_ruleta_options', JSON.stringify(options));
+      renderInputs();
+      drawWheel();
+      sounds.tick();
+    } else {
+      // Si aún no hay amigos configurados, abrir el modal de grupo
+      const modalTrigger = document.querySelector('[data-open-party-modal]') as HTMLElement;
+      if (modalTrigger) {
+        modalTrigger.click();
+      } else {
+        const modal = document.getElementById('party-players-modal');
+        modal?.classList.remove('hidden');
+        modal?.classList.add('flex');
+      }
     }
   });
 

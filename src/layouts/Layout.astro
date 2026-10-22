@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import Logo from '../components/Logo.astro';
+import PlayersModal from '../components/PlayersModal.astro';
 
 interface Props {
   title: string;
@@ -75,11 +76,23 @@ const { title, description = "Juntapp - La plataforma definitiva de juegos de fi
         </ul>
         
         <!-- Trailing Actions -->
-        <div class="flex items-center gap-4 text-primary">
-          <button class="hover:bg-white/5 transition-all duration-300 p-2 rounded-full scale-95 active:scale-90" aria-label="Comunidad">
-            <span class="material-symbols-outlined text-xl">forum</span>
+        <div class="flex items-center gap-3">
+          <!-- Botón Grupo de Jugadores -->
+          <button 
+            data-open-party-modal
+            class="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-surface-container border border-primary/30 text-white hover:border-primary hover:bg-primary/15 transition-all text-xs font-bold shadow-[0_0_15px_rgba(168,85,247,0.15)] active:scale-95 cursor-pointer group"
+            title="Administrar amigos en la junta"
+          >
+            <span class="text-sm">👥</span>
+            <span class="hidden sm:inline text-zinc-300 group-hover:text-white transition-colors">Grupo</span>
+            <span data-party-count class="px-1.5 py-0.5 rounded-full bg-primary/20 text-primary font-mono text-[11px] font-bold">0</span>
           </button>
-          <div class="w-10 h-10 rounded-full border-2 border-primary/20 overflow-hidden ml-2 cursor-pointer hover:border-primary transition-colors">
+
+          <div 
+            data-open-party-modal
+            class="w-9 h-9 rounded-full border-2 border-primary/20 overflow-hidden cursor-pointer hover:border-primary transition-colors hover:scale-105 active:scale-95" 
+            title="Mi Grupo"
+          >
             <img alt="Gamer profile avatar" class="w-full h-full object-cover" src="/img/avatar.webp">
           </div>
         </div>
@@ -89,6 +102,9 @@ const { title, description = "Juntapp - La plataforma definitiva de juegos de fi
     <main class="flex-grow flex flex-col relative w-full max-w-[1280px] mx-auto">
       <slot />
     </main>
+
+    <!-- Modal global de jugadores de la junta -->
+    <PlayersModal />
 
     <script>
       import { autoWakeLock } from '../utils/wakeLock';

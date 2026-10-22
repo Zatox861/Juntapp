@@ -74,8 +74,18 @@ const questions = questionsData;
               </div>
               <p class="text-primary text-[10px] uppercase font-bold tracking-[0.3em] animate-pulse">¡Prepárate!</p>
             </div>
+            <!-- Candidatos del Grupo para apuntar -->
+            <div id="party-candidates-wrapper" class="w-full flex flex-col items-center gap-2 pt-2 pb-2">
+              <div class="flex items-center gap-2">
+                <span class="text-[11px] uppercase tracking-wider text-primary/80 font-bold">🎯 ¿A quién apuntan?</span>
+                <button type="button" data-open-party-modal class="text-[10px] text-zinc-400 hover:text-white underline cursor-pointer">Editar grupo</button>
+              </div>
+              <div id="party-candidates-list" class="flex flex-wrap items-center justify-center gap-2 max-w-lg">
+                <!-- Se generan dinámicamente con los nombres del grupo -->
+              </div>
+            </div>
             
-            <div id="action-area" class="pt-8">
+            <div id="action-area" class="pt-4">
                <button 
                   id="btn-next" 
                   class="group flex items-center justify-center gap-3 mx-auto px-12 py-5 bg-gradient-to-br from-primary to-secondary text-black rounded-2xl font-black text-xl hover:scale-105 active:scale-95 transition-all shadow-[0_10px_40px_-10px_rgba(0,234,255,0.5)]"
@@ -160,6 +170,7 @@ const questions = questionsData;
 
 <script>
   import { createSeededRandom, seededShuffle } from '../../utils/random';
+  import { getPlayers, onPlayersChange } from '../../utils/players';
 
   // Elementos UI
   const startScreen = document.getElementById('start-screen');
@@ -172,6 +183,30 @@ const questions = questionsData;
   const timerText = document.getElementById('timer-text');
   const timerLabel = document.getElementById('timer-label');
   const actionArea = document.getElementById('action-area');
+  const candidatesList = document.getElementById('party-candidates-list');
+
+  function renderCandidates() {
+    if (!candidatesList) return;
+    const party = getPlayers();
+    if (party.length === 0) {
+      candidatesList.innerHTML = `
+        <button type="button" data-open-party-modal class="px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 hover:border-primary/50 text-xs text-zinc-400 hover:text-white transition-all flex items-center gap-1.5 cursor-pointer">
+          <span>👥</span> Añadir amigos del grupo
+        </button>
+      `;
+      return;
+    }
+    
+    candidatesList.innerHTML = party.map(p => `
+      <span class="px-3.5 py-1.5 rounded-xl bg-white/5 border border-white/10 text-white font-bold text-xs tracking-wide shadow-sm flex items-center gap-1.5 hover:bg-white/10 hover:border-primary/40 transition-all cursor-default">
+        <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+        ${p}
+      </span>
+    `).join('');
+  }
+
+  renderCandidates();
+  onPlayersChange(renderCandidates);
 
   // Modal logic
   const infoModal = document.getElementById('info-modal');

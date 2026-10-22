@@ -42,7 +42,15 @@ import wordsRaw from '../../content/mimica.json';
               <div class="w-20 h-20 bg-gradient-to-tr from-secondary to-primary rounded-3xl mx-auto mb-8 flex items-center justify-center shadow-lg -rotate-3 group-hover:rotate-0 transition-transform">
                 <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-white"><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg>
               </div>
-              <h2 class="text-4xl font-black italic uppercase tracking-tighter text-white mb-4">¿Quién actúa?</h2>
+              <h2 class="text-4xl font-black italic uppercase tracking-tighter text-white mb-2">¿Quién actúa?</h2>
+              
+              <!-- Badge de Jugador que Actúa -->
+              <div id="mimica-actor-box" class="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/5 border border-white/10 mb-6">
+                <span class="text-xs uppercase tracking-wider text-primary font-bold">🎭 Turno de:</span>
+                <span id="mimica-actor-name" class="text-sm font-extrabold text-white tracking-wide">Cualquiera</span>
+                <button type="button" data-open-party-modal class="text-[10px] text-zinc-400 hover:text-white underline ml-1 cursor-pointer">Editar grupo</button>
+              </div>
+
               <p class="text-white/60 text-sm mb-8 leading-relaxed">
                 Elige una categoría y prepárate para actuar. Tienes 60 segundos para que adivinen el máximo posible.
               </p>
@@ -68,6 +76,11 @@ import wordsRaw from '../../content/mimica.json';
 
         <!-- Área de Juego -->
         <div id="game-area" class="hidden w-full max-w-2xl flex flex-col items-center">
+          <!-- Indicador de Actor Activo -->
+          <div class="mb-3 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-xs text-primary font-bold">
+            🎭 Actúa: <span id="mimica-active-actor" class="text-white font-extrabold">--</span>
+          </div>
+
           <!-- Stats bar -->
           <div class="w-full flex justify-between items-center mb-6 px-4">
             <div class="flex flex-col">
@@ -97,13 +110,13 @@ import wordsRaw from '../../content/mimica.json';
           <div class="w-full grid grid-cols-2 gap-4">
             <button 
               id="btn-pass" 
-              class="py-6 bg-white/5 border border-white/10 text-white/60 rounded-2xl font-black uppercase tracking-[0.2em] text-xs hover:bg-white/10 hover:text-white transition-all active:scale-95"
+              class="py-6 bg-white/5 border border-white/10 text-white/60 rounded-2xl font-black uppercase tracking-[0.2em] text-xs hover:bg-white/10 hover:text-white transition-all active:scale-95 cursor-pointer"
             >
               Pasar
             </button>
             <button 
               id="btn-correct" 
-              class="py-6 bg-primary text-black rounded-2xl font-black uppercase tracking-[0.2em] text-sm shadow-[0_10px_25px_-5px_rgba(0,234,255,0.4)] hover:scale-[1.02] active:scale-95 transition-all"
+              class="py-6 bg-primary text-black rounded-2xl font-black uppercase tracking-[0.2em] text-sm shadow-[0_10px_25px_-5px_rgba(0,234,255,0.4)] hover:scale-[1.02] active:scale-95 transition-all cursor-pointer"
             >
               ¡Correcto!
             </button>
@@ -114,8 +127,8 @@ import wordsRaw from '../../content/mimica.json';
         <div id="end-screen" class="hidden w-full max-w-md text-center animate-in fade-in zoom-in duration-700">
           <div class="glass-panel p-12 rounded-[40px] border border-white/10 shadow-2xl relative overflow-hidden">
             <h2 class="text-2xl font-black uppercase tracking-widest text-white/40 mb-2">¡Tiempo agotado!</h2>
-            <div class="text-8xl font-black italic text-primary mb-6" id="final-score">0</div>
-            <p class="text-white/60 text-sm mb-8">Palabras adivinadas con éxito.</p>
+            <div class="text-8xl font-black italic text-primary mb-2" id="final-score">0</div>
+            <p id="mimica-end-actor-message" class="text-xs text-primary font-bold mb-6">Palabras adivinadas con éxito.</p>
 
             <div class="w-full bg-black/40 rounded-2xl p-6 mb-8 max-h-40 overflow-y-auto border border-white/5">
               <div id="guessed-list" class="flex flex-wrap justify-center gap-2 text-xs font-bold uppercase tracking-wider text-white/40">
@@ -195,6 +208,7 @@ import wordsRaw from '../../content/mimica.json';
 
 <script>
   import { createSeededRandom, seededShuffle } from '../../utils/random';
+  import { getPlayers, onPlayersChange } from '../../utils/players';
 
   // Elementos UI
   const startScreen = document.getElementById('start-screen');
@@ -214,6 +228,9 @@ import wordsRaw from '../../content/mimica.json';
   const finalScore = document.getElementById('final-score');
   const guessedList = document.getElementById('guessed-list');
   const currentCatDisplay = document.getElementById('current-cat-display');
+  const actorNameEl = document.getElementById('mimica-actor-name');
+  const activeActorEl = document.getElementById('mimica-active-actor');
+  const endActorMsgEl = document.getElementById('mimica-end-actor-message');
 
   // Modal logic
   const infoModal = document.getElementById('info-modal');
@@ -243,6 +260,29 @@ import wordsRaw from '../../content/mimica.json';
   let timeLeft = 60;
   let timerId: any = null;
   let guessedWords: string[] = [];
+  let actorRoundIndex = 0;
+
+  function getActiveActor(): string {
+    const party = getPlayers();
+    if (party.length === 0) return 'Cualquiera';
+    return party[actorRoundIndex % party.length];
+  }
+
+  function updateActorDisplay() {
+    const actor = getActiveActor();
+    if (actorNameEl) actorNameEl.textContent = actor;
+    if (activeActorEl) activeActorEl.textContent = actor;
+    if (endActorMsgEl) {
+      if (actor !== 'Cualquiera') {
+        endActorMsgEl.textContent = `¡Gran ronda de ${actor}! Adivinaron ${score} palabras.`;
+      } else {
+        endActorMsgEl.textContent = 'Palabras adivinadas con éxito.';
+      }
+    }
+  }
+
+  updateActorDisplay();
+  onPlayersChange(updateActorDisplay);
 
   // Datos
   const templateElement = document.getElementById('words-data') as HTMLTemplateElement;
@@ -302,6 +342,7 @@ import wordsRaw from '../../content/mimica.json';
     if (guessedList) {
       guessedList.innerHTML = guessedWords.map(w => `<span class="px-2 py-1 bg-white/5 rounded-lg border border-white/10 text-white/60">${w}</span>`).join('');
     }
+    updateActorDisplay();
   };
 
   btnStartGame?.addEventListener('click', () => {
@@ -317,6 +358,7 @@ import wordsRaw from '../../content/mimica.json';
     score = 0;
     guessedWords = [];
     
+    updateActorDisplay();
     startScreen?.classList.add('hidden');
     gameArea?.classList.remove('hidden');
     
@@ -337,6 +379,8 @@ import wordsRaw from '../../content/mimica.json';
   });
 
   btnRestart?.addEventListener('click', () => {
+    actorRoundIndex++;
+    updateActorDisplay();
     endScreen?.classList.add('hidden');
     startScreen?.classList.remove('hidden');
   });

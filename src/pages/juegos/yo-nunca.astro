@@ -50,9 +50,16 @@ import phrasesRaw from '../../content/yo-nunca.json';
               </p>
 
               <!-- Selector de Dificultad -->
-              <div class="flex bg-black/40 p-1.5 rounded-2xl border border-white/10 mb-8 max-w-[280px] mx-auto">
+              <div class="flex bg-black/40 p-1.5 rounded-2xl border border-white/10 mb-6 max-w-[280px] mx-auto">
                 <button id="btn-select-soft" class="flex-1 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all bg-white text-black shadow-xl">Soft</button>
                 <button id="btn-select-hard" class="flex-1 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all text-white/40 hover:text-white">Picante</button>
+              </div>
+
+              <!-- Preview de Amigos del Grupo -->
+              <div class="mb-8 flex items-center justify-center gap-2 text-xs">
+                <span class="text-zinc-400">👥 Grupo:</span>
+                <span id="yo-nunca-party-text" class="text-primary font-bold">Sin amigos configurados</span>
+                <button type="button" data-open-party-modal class="text-zinc-400 hover:text-white underline cursor-pointer">Editar</button>
               </div>
 
               <button 
@@ -67,6 +74,12 @@ import phrasesRaw from '../../content/yo-nunca.json';
 
         <!-- Área de Juego -->
         <div id="game-area" class="hidden w-full max-w-2xl flex flex-col items-center">
+          <!-- Turno de Lectura -->
+          <div id="yo-nunca-party-reader" class="hidden mb-4 inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs">
+            <span class="text-primary font-bold">📖 Lee en voz alta:</span>
+            <span id="yo-nunca-reader-name" class="text-white font-extrabold">--</span>
+          </div>
+
           <div class="w-full glass-panel p-10 md:p-16 rounded-[40px] border border-white/10 shadow-2xl relative overflow-hidden mb-12 min-h-[300px] flex flex-col justify-center text-center">
             <div id="card-tag" class="absolute top-8 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-primary/20 rounded-full border border-primary/30 text-[10px] font-black uppercase tracking-[0.2em] text-primary mb-6">
               Modo Soft
@@ -159,6 +172,7 @@ import phrasesRaw from '../../content/yo-nunca.json';
 
 <script>
   import { createSeededRandom, seededShuffle } from '../../utils/random';
+  import { getPlayers, onPlayersChange } from '../../utils/players';
 
   const startScreen = document.getElementById('start-screen');
   const gameArea = document.getElementById('game-area');
@@ -170,6 +184,24 @@ import phrasesRaw from '../../content/yo-nunca.json';
   
   const btnSelectSoft = document.getElementById('btn-select-soft');
   const btnSelectHard = document.getElementById('btn-select-hard');
+
+  const partyTextEl = document.getElementById('yo-nunca-party-text');
+  const readerBox = document.getElementById('yo-nunca-party-reader');
+  const readerNameEl = document.getElementById('yo-nunca-reader-name');
+
+  function syncParty() {
+    const party = getPlayers();
+    if (partyTextEl) {
+      if (party.length === 0) {
+        partyTextEl.textContent = 'Sin amigos configurados';
+      } else {
+        partyTextEl.textContent = `${party.length} amigo${party.length === 1 ? '' : 's'}: ${party.join(', ')}`;
+      }
+    }
+  }
+
+  syncParty();
+  onPlayersChange(syncParty);
 
   // Modal logic
   const infoModal = document.getElementById('info-modal');
@@ -230,7 +262,7 @@ import phrasesRaw from '../../content/yo-nunca.json';
       const actionArea = document.getElementById('action-area');
       if (actionArea) {
         const btnRestart = document.createElement('button');
-        btnRestart.className = "flex items-center justify-center gap-3 px-12 py-6 bg-white/10 text-white border border-white/20 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-white/20 transition-all";
+        btnRestart.className = "flex items-center justify-center gap-3 px-12 py-6 bg-white/10 text-white border border-white/20 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-white/20 transition-all cursor-pointer";
         btnRestart.innerHTML = `
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
           Reiniciar
@@ -251,6 +283,14 @@ import phrasesRaw from '../../content/yo-nunca.json';
     
     if (cardTag) {
       cardTag.innerText = `Modo ${currentMode}`;
+    }
+
+    const party = getPlayers();
+    if (party.length > 0) {
+      readerBox?.classList.remove('hidden');
+      if (readerNameEl) readerNameEl.textContent = party[turnIndex % party.length];
+    } else {
+      readerBox?.classList.add('hidden');
     }
   };
 

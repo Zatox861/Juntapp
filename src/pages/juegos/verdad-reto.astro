@@ -47,6 +47,18 @@ import truthDareData from '../../content/truth-dare.json';
             <button id="btn-plus" class="w-14 h-14 rounded-full bg-white/5 border border-white/10 text-white font-bold text-2xl hover:bg-white/10 transition-colors flex items-center justify-center">+</button>
           </div>
           
+          <!-- Amigos del Grupo (Gestor Global) -->
+          <div id="party-info-box" class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 flex flex-col items-center gap-2 text-center">
+            <div class="flex items-center gap-2">
+              <span class="text-xs uppercase tracking-wider text-primary font-bold">👥 Amigos del Grupo</span>
+              <span id="party-names-count" class="text-xs bg-primary/20 text-primary px-2 py-0.5 rounded-full font-bold">0</span>
+            </div>
+            <p id="party-names-preview" class="text-xs text-zinc-300 max-w-xs truncate">Ninguno configurado aún</p>
+            <button type="button" data-open-party-modal class="text-xs text-primary hover:underline font-semibold flex items-center gap-1 cursor-pointer">
+              <span>✏️ Editar o añadir amigos</span>
+            </button>
+          </div>
+          
           <button 
             id="btn-start"
             class="mt-8 py-4 px-12 rounded-2xl bg-gradient-to-br from-primary to-secondary text-black font-black text-lg hover:brightness-110 transition-all active:scale-95 shadow-[0_0_20px_rgba(0,234,255,0.3)] w-full"
@@ -100,6 +112,10 @@ import truthDareData from '../../content/truth-dare.json';
         <div id="choice-container" class="hidden space-y-8 animate-in fade-in zoom-in duration-300">
           <div class="flex flex-col items-center mb-4">
              <span class="text-[10px] uppercase tracking-[0.2em] text-primary font-bold mb-2">Paso 2</span>
+             <div id="choice-player-badge" class="inline-flex items-center gap-2 px-5 py-2 rounded-2xl bg-gradient-to-r from-primary/20 to-secondary/20 border border-primary/40 text-primary font-bold text-sm shadow-[0_0_20px_rgba(0,234,255,0.2)]">
+               <span>🎯 Le toca a:</span>
+               <span id="target-player-name" class="text-white font-black text-base tracking-wide">--</span>
+             </div>
           </div>
 
           <h1 class="text-4xl md:text-5xl font-black text-white leading-tight">
@@ -137,7 +153,8 @@ import truthDareData from '../../content/truth-dare.json';
 
         <!-- Pantalla 3: Resultado -->
         <div id="result-container" class="hidden animate-in fade-in zoom-in duration-300">
-          <div class="mb-6">
+          <div class="mb-4 flex flex-col items-center gap-2">
+            <span id="result-player-badge" class="text-xs font-black uppercase tracking-wider text-primary">Turno de <span id="result-player-name" class="text-white underline">--</span></span>
             <span id="card-type" class="px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border border-current"></span>
           </div>
           
@@ -276,6 +293,7 @@ import truthDareData from '../../content/truth-dare.json';
 
 <script>
   import { createSeededRandom, seededShuffle } from '../../utils/random';
+  import { getPlayers, onPlayersChange } from '../../utils/players';
 
   const data = {
     verdades: (document.querySelector('template#data-v') as any)?.content?.textContent ? JSON.parse((document.querySelector('template#data-v') as any).content.textContent) : [],
@@ -300,6 +318,34 @@ import truthDareData from '../../content/truth-dare.json';
   let numPlayers = 5;
   const minPlayers = 2;
   const maxPlayers = 10;
+  let activePlayerName = '';
+
+  function syncPartyState() {
+    const party = getPlayers();
+    const countEl = document.getElementById('party-names-count');
+    const previewEl = document.getElementById('party-names-preview');
+    if (countEl) countEl.innerText = party.length.toString();
+    if (previewEl) {
+      if (party.length === 0) {
+        previewEl.innerText = 'Ninguno configurado aún (jugando con números)';
+      } else {
+        previewEl.innerText = party.join(', ');
+      }
+    }
+    // Si hay amigos en el grupo (entre 2 y 10), preseleccionar automáticamente
+    if (party.length >= 2) {
+      numPlayers = Math.min(10, Math.max(2, party.length));
+      if (playerCountEl) playerCountEl.innerText = numPlayers.toString();
+    }
+  }
+
+  syncPartyState();
+  onPlayersChange(() => {
+    syncPartyState();
+    if (spinContainer && !spinContainer.classList.contains('hidden')) {
+      drawWheelLines();
+    }
+  });
 
   const spinContainer = document.getElementById('spin-container');
   const choiceContainer = document.getElementById('choice-container');
@@ -347,12 +393,12 @@ import truthDareData from '../../content/truth-dare.json';
     if (bottle) {
       bottle.style.transition = 'none';
       bottle.style.transform = `rotate(0deg)`;
-      // Restore transition after a tiny delay so the next spin works
       setTimeout(() => {
         if(bottle) bottle.style.transition = 'transform 3s cubic-bezier(0.25, 1, 0.5, 1)';
       }, 50);
     }
   });
+
   btnMinus?.addEventListener('click', () => {
     if (numPlayers > minPlayers) {
       numPlayers--;
@@ -370,7 +416,7 @@ import truthDareData from '../../content/truth-dare.json';
   btnStart?.addEventListener('click', () => {
     setupContainer?.classList.add('hidden');
     spinContainer?.classList.remove('hidden');
-    spinContainer?.classList.add('flex'); // Asegurar que use flex en lugar de block
+    spinContainer?.classList.add('flex');
     drawWheelLines();
   });
 
@@ -381,9 +427,10 @@ import truthDareData from '../../content/truth-dare.json';
     const cx = 50;
     const cy = 50;
     const r = 50;
+    const party = getPlayers();
     
     for (let i = 0; i < numPlayers; i++) {
-      // Ángulo de la línea divisoria (borde de la porción)
+      // Ángulo de la línea divisoria
       const angle = (i * sliceAngle) - (sliceAngle / 2);
       const rad = (angle - 90) * (Math.PI / 180);
       const x = cx + r * Math.cos(rad);
@@ -399,24 +446,29 @@ import truthDareData from '../../content/truth-dare.json';
       
       wheelLines.appendChild(line);
       
-      // Número identificador del jugador
+      // Nombre o número identificador del jugador
       const textAngle = i * sliceAngle;
       const textRad = (textAngle - 90) * (Math.PI / 180);
-      const tx = cx + (r * 0.85) * Math.cos(textRad);
-      const ty = cy + (r * 0.85) * Math.sin(textRad);
+      const tx = cx + (r * 0.82) * Math.cos(textRad);
+      const ty = cy + (r * 0.82) * Math.sin(textRad);
       
       const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
       text.setAttribute('x', tx.toString());
       text.setAttribute('y', ty.toString());
-      text.setAttribute('fill', 'rgba(255,255,255,0.8)');
-      text.setAttribute('font-size', '6');
+      text.setAttribute('fill', 'rgba(255,255,255,0.95)');
+      
+      const playerName = party[i];
+      const displayLabel = playerName ? (playerName.length > 7 ? playerName.substring(0, 6) + '..' : playerName) : (i + 1).toString();
+      const fontSize = playerName && playerName.length > 4 ? '4.5' : '5.5';
+
+      text.setAttribute('font-size', fontSize);
       text.setAttribute('font-family', 'sans-serif');
       text.setAttribute('font-weight', '900');
       text.setAttribute('text-anchor', 'middle');
       text.setAttribute('dominant-baseline', 'middle');
-      text.textContent = (i + 1).toString();
+      text.textContent = displayLabel;
       
-      // Orientar el número hacia el centro
+      // Orientar el texto hacia el centro
       text.setAttribute('transform', `rotate(${textAngle}, ${tx}, ${ty})`);
       wheelLines.appendChild(text);
     }
@@ -439,10 +491,8 @@ import truthDareData from '../../content/truth-dare.json';
     // Calcular cuánto falta girar para llegar a targetAngle
     const currentMod = currentRotation % 360;
     let angleDiff = targetAngle - currentMod;
-    if (angleDiff <= 0) angleDiff += 360; // Forzar al menos un giro parcial extra hacia adelante
+    if (angleDiff <= 0) angleDiff += 360;
     
-    // Si la diferencia es muy pequeña, podría verse raro detenerse de inmediato, 
-    // pero como sumamos 1440 siempre dará varias vueltas.
     currentRotation += spins + angleDiff;
     
     if (bottle) {
@@ -461,6 +511,14 @@ import truthDareData from '../../content/truth-dare.json';
         btnSpin.style.pointerEvents = 'auto';
       }
       
+      const party = getPlayers();
+      activePlayerName = (party && party[targetPlayerIndex]) ? party[targetPlayerIndex] : `Jugador ${targetPlayerIndex + 1}`;
+
+      const targetPlayerNameEl = document.getElementById('target-player-name');
+      const resultPlayerNameEl = document.getElementById('result-player-name');
+      if (targetPlayerNameEl) targetPlayerNameEl.textContent = activePlayerName;
+      if (resultPlayerNameEl) resultPlayerNameEl.textContent = activePlayerName;
+
       spinContainer?.classList.add('hidden');
       spinContainer?.classList.remove('flex');
       choiceContainer?.classList.remove('hidden');

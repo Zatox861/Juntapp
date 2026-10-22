@@ -44,6 +44,17 @@ import questions from '../../data/quien-sabe-mas-questions.json';
               <div class="text-base font-mono text-vybe-secondary font-bold tracking-tight text-right drop-shadow-[0_0_8px_rgba(255,42,109,0.5)]">◆ <span id="mobile-prize">10.000</span></div>
             </div>
 
+            <!-- Turno de Jugador (Gestor Global) -->
+            <div id="trivia-party-badge" class="flex items-center justify-between bg-[#050a18]/90 border border-primary/30 rounded-xl px-4 py-2.5 z-10 shadow-md">
+              <div class="flex items-center gap-2">
+                <span class="text-xs uppercase tracking-wider text-primary font-bold">🎯 Turno de:</span>
+                <span id="trivia-active-player" class="text-sm font-extrabold text-white tracking-wide">Todos</span>
+              </div>
+              <button type="button" data-open-party-modal class="text-[11px] text-zinc-400 hover:text-white underline cursor-pointer flex items-center gap-1">
+                <span>👥 Grupo (<span data-party-count>0</span>)</span>
+              </button>
+            </div>
+
             <!-- Área de Pregunta -->
             <div class="relative group z-10">
               <div class="absolute -inset-1 bg-gradient-to-r from-secondary/20 to-primary/20 rounded-xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
@@ -188,12 +199,13 @@ import questions from '../../data/quien-sabe-mas-questions.json';
       <div class="text-blue-400 mb-8 animate-pulse">
         <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
       </div>
-      <h3 class="text-2xl font-bold mb-4 uppercase tracking-tighter text-blue-100">Llamada en curso...</h3>
+      <h3 class="text-2xl font-bold mb-2 uppercase tracking-tighter text-blue-100">Llamada a un Amigo</h3>
+      <p id="phone-friend-name" class="text-sm font-bold text-primary mb-4">📞 Consulta con tu experto del grupo</p>
       <div id="phone-timer" class="text-8xl md:text-[12rem] font-black text-orange-500 tabular-nums drop-shadow-[0_0_30px_rgba(249,115,22,0.4)]">
         60
       </div>
-      <p class="text-white/40 mt-12 text-sm max-w-xs text-center leading-relaxed">
-        Consulta con tu experto. Tienes 1 minuto antes de que la llamada se corte automáticamente.
+      <p class="text-white/40 mt-8 text-sm max-w-xs text-center leading-relaxed">
+        Tienes 1 minuto antes de que la llamada se corte automáticamente.
       </p>
       <button id="close-phone" class="mt-12 px-8 py-3 bg-red-600/20 border border-red-500/50 rounded-full text-red-500 font-bold hover:bg-red-600 hover:text-white transition-all uppercase text-xs tracking-widest">
         Finalizar Llamada
@@ -338,6 +350,8 @@ import questions from '../../data/quien-sabe-mas-questions.json';
 </style>
 
 <script>
+  import { getPlayers, onPlayersChange } from '../../utils/players';
+
   // Banco de preguntas masivo inyectado desde el servidor
   const allQuestions = JSON.parse(JSON.stringify(await import('../../data/quien-sabe-mas-questions.json')));
   const questionPools = allQuestions.default || allQuestions;
@@ -551,7 +565,23 @@ import questions from '../../data/quien-sabe-mas-questions.json';
       if (textEl) textEl.textContent = qData.a[i];
     });
     updateLadder();
+    updatePartyTurnDisplay();
   }
+
+  function updatePartyTurnDisplay() {
+    const party = getPlayers();
+    const playerEl = document.getElementById('trivia-active-player');
+    if (playerEl) {
+      if (party.length === 0) {
+        playerEl.textContent = 'Todos';
+      } else {
+        const turnName = party[currentLevel % party.length];
+        playerEl.textContent = turnName;
+      }
+    }
+  }
+
+  onPlayersChange(updatePartyTurnDisplay);
 
   function handleAnswer(index: number) {
     if (!canAnswer) return;
@@ -632,6 +662,22 @@ import questions from '../../data/quien-sabe-mas-questions.json';
     if (!phoneOverlay || !phoneTimerEl) return;
     playSound('lifeline');
     
+    // Asignar amigo del grupo como experto
+    const party = getPlayers();
+    const phoneFriendEl = document.getElementById('phone-friend-name');
+    if (phoneFriendEl) {
+      if (party.length > 1) {
+        const currentFriend = party[currentLevel % party.length];
+        const otherFriends = party.filter(p => p !== currentFriend);
+        const expert = otherFriends.length > 0 ? otherFriends[Math.floor(Math.random() * otherFriends.length)] : party[0];
+        phoneFriendEl.innerHTML = `📞 ¡Llamando a <span class="text-white underline font-extrabold text-base">${expert}</span> para que te ayude!`;
+      } else if (party.length === 1) {
+        phoneFriendEl.innerHTML = `📞 ¡Llamando a <span class="text-white underline font-extrabold text-base">${party[0]}</span> para que te ayude!`;
+      } else {
+        phoneFriendEl.textContent = "📞 Consulta con tu experto del grupo";
+      }
+    }
+
     phoneOverlay.classList.remove('hidden');
     let timeLeft = 60;
     phoneTimerEl.innerText = timeLeft.toString();
