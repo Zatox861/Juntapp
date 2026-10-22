@@ -2,13 +2,19 @@
 import '../styles/global.css';
 import Logo from '../components/Logo.astro';
 import PlayersModal from '../components/PlayersModal.astro';
+import Footer from '../components/Footer.astro';
 
 interface Props {
   title: string;
   description?: string;
+  hideFooter?: boolean;
 }
 
-const { title, description = "Juntapp - La plataforma definitiva de juegos de fiesta sin complicaciones. Escanea y juega." } = Astro.props;
+const { 
+  title, 
+  description = "Juntapp - La plataforma definitiva de juegos de fiesta sin complicaciones. Escanea y juega.",
+  hideFooter = false 
+} = Astro.props;
 ---
 
 <!doctype html>
@@ -102,6 +108,8 @@ const { title, description = "Juntapp - La plataforma definitiva de juegos de fi
     <main class="flex-grow flex flex-col relative w-full max-w-[1280px] mx-auto">
       <slot />
     </main>
+
+    {!hideFooter && <Footer />}
 
     <!-- Modal global de jugadores de la junta -->
     <PlayersModal />

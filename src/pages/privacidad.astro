@@ -1,0 +1,155 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout 
+  title="Política de Privacidad | Juntapp" 
+  description="Política de privacidad de Juntapp. Conoce cómo cuidamos tus datos, almacenamiento local y transparencia total."
+>
+  <div class="py-10 md:py-16 px-4 max-w-4xl mx-auto w-full">
+    <!-- Header -->
+    <div class="mb-10 text-center">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-400/10 border border-cyan-400/20 text-cyan-400 text-xs font-bold uppercase tracking-wider mb-4">
+        <span>🔒 Privacidad</span>
+      </div>
+      <h1 class="font-display-lg text-3xl md:text-5xl font-black text-white mb-3 tracking-tight">
+        Política de <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-pink-400 to-purple-400">Privacidad</span>
+      </h1>
+      <p class="text-zinc-400 text-sm md:text-base max-w-2xl mx-auto">
+        En Juntapp creemos que para jugar con amigos no necesitas entregar tus datos personales. Privacidad simple, directa y sin letras chicas.
+      </p>
+      <div class="text-xs text-zinc-500 mt-2 font-mono">
+        Última actualización: Octubre 2026 • Versión 1.2
+      </div>
+    </div>
+
+    <!-- Contenido Principal -->
+    <div class="glass-panel rounded-3xl p-6 md:p-10 border border-white/10 space-y-8 text-zinc-300 text-sm md:text-base leading-relaxed">
+      
+      <!-- Resumen Rápido -->
+      <div class="bg-gradient-to-r from-cyan-500/10 via-purple-500/10 to-pink-500/10 border border-white/10 rounded-2xl p-5">
+        <h2 class="text-white font-bold text-base mb-2 flex items-center gap-2">
+          <span>🛡️</span> Privacidad por diseño:
+        </h2>
+        <p class="text-zinc-300 text-xs md:text-sm">
+          No requerimos registro ni contraseña. No vendemos tus datos a nadie. Los nombres de los amigos que agregas a tu grupo se almacenan únicamente en la memoria de tu propio navegador móvil o computadora, no en nuestros servidores.
+        </p>
+      </div>
+
+      <!-- 1. Datos que no recopilamos -->
+      <section class="space-y-3">
+        <h2 class="text-xl font-bold text-white flex items-center gap-2.5">
+          <span class="w-7 h-7 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-xs text-cyan-400 font-mono">1</span>
+          ¿Qué datos NO recopilamos?
+        </h2>
+        <p>
+          Para jugar a cualquiera de nuestros juegos en <strong class="text-white">juntapp.net</strong>:
+        </p>
+        <ul class="list-disc pl-5 space-y-2 text-zinc-300">
+          <li><strong>No te pedimos crear una cuenta:</strong> Sin correos obligatorios para jugar, sin contraseñas ni números telefónicos.</li>
+          <li><strong>No recopilamos información bancaria o de pago:</strong> Juntapp es de libre acceso.</li>
+          <li><strong>No accedemos a tu lista de contactos ni a tu cámara:</strong> El escaneo de códigos QR se hace con la aplicación de cámara nativa de tu propio teléfono para abrir el enlace web.</li>
+        </ul>
+      </section>
+
+      <!-- 2. Almacenamiento Local (LocalStorage) -->
+      <section class="space-y-3">
+        <h2 class="text-xl font-bold text-white flex items-center gap-2.5">
+          <span class="w-7 h-7 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-xs text-purple-400 font-mono">2</span>
+          Almacenamiento Local (LocalStorage)
+        </h2>
+        <p>
+          Para facilitarte jugar múltiples rondas o cambiar de juego sin tener que escribir los nombres de tus amigos cada vez, utilizamos la función de <strong class="text-white">LocalStorage</strong> de tu navegador.
+        </p>
+        <div class="p-4 rounded-xl bg-white/5 border border-white/10 text-xs md:text-sm space-y-2">
+          <p>
+            • <strong>Dónde vive esa información:</strong> 100% en el almacenamiento interno de tu navegador web.
+          </p>
+          <p>
+            • <strong>Cómo borrarla:</strong> Puedes eliminar todos los nombres en cualquier instante abriendo el menú "👥 Grupo" y haciendo clic en <em>"Limpiar grupo"</em>, o borrando los datos de navegación de tu navegador.
+          </p>
+        </div>
+      </section>
+
+      <!-- 3. Salas de Juego Efímeras (Bingo) -->
+      <section class="space-y-3">
+        <h2 class="text-xl font-bold text-white flex items-center gap-2.5">
+          <span class="w-7 h-7 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-xs text-pink-400 font-mono">3</span>
+          Salas Multijugador y Códigos Temporales
+        </h2>
+        <p>
+          En dinámicas con sala anfitriona (como el Bingo con cartones digitales), los códigos de 4 letras son efímeros y se utilizan para conectar temporalmente la partida. Una vez finalizada la partida o cerrada la pestaña, la sala se descarta sin guardar registros permanentes de las jugadas.
+        </p>
+      </section>
+
+      <!-- 4. Cookies y Herramientas de Terceros -->
+      <section class="space-y-3">
+        <h2 class="text-xl font-bold text-white flex items-center gap-2.5">
+          <span class="w-7 h-7 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-xs text-secondary font-mono">4</span>
+          Cookies y Servicios de Terceros
+        </h2>
+        <p>
+          Como la mayoría de los sitios web modernos, podemos apoyarnos en servicios técnicos de terceros indispensables para garantizar la rapidez, seguridad y sostenibilidad del proyecto:
+        </p>
+        <ul class="list-disc pl-5 space-y-2 text-zinc-300">
+          <li>
+            <strong class="text-white">Infraestructura y CDN (Cloudflare):</strong> Gestiona la seguridad perimetral, protección contra ataques y entrega de contenido ultrarrápida a nivel global mediante cookies técnicas de rendimiento.
+          </li>
+          <li>
+            <strong class="text-white">Tipografías (Google Fonts):</strong> Carga tipografías optimizadas de forma segura.
+          </li>
+          <li>
+            <strong class="text-white">Publicidad no invasiva (Google AdSense u otros partners):</strong> Para mantener la plataforma 100% gratuita, podemos mostrar anuncios publicitarios que pueden emplear cookies estándar de la industria para medir la efectividad publicitaria.
+          </li>
+        </ul>
+        <p class="text-xs text-zinc-400">
+          Puedes gestionar o bloquear las cookies en cualquier momento desde la configuración de privacidad de tu navegador.
+        </p>
+      </section>
+
+      <!-- 5. Tus Derechos -->
+      <section class="space-y-3">
+        <h2 class="text-xl font-bold text-white flex items-center gap-2.5">
+          <span class="w-7 h-7 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-xs text-primary font-mono">5</span>
+          Tus Derechos
+        </h2>
+        <p>
+          Tienes el control total de tu experiencia. Dado que no almacenamos identificadores personales en bases de datos centralizadas, tu derecho al olvido y a la privacidad se ejerce de forma inmediata directamente desde tu dispositivo limpiando la memoria caché.
+        </p>
+      </section>
+
+      <!-- 6. Contacto -->
+      <section class="space-y-3 pt-2 border-t border-white/10">
+        <h2 class="text-xl font-bold text-white flex items-center gap-2.5">
+          <span class="w-7 h-7 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-xs text-cyan-400 font-mono">6</span>
+          Contacto de Privacidad
+        </h2>
+        <p>
+          Si tienes cualquier duda, solicitud o comentario sobre nuestras prácticas de privacidad, estamos a tu disposición:
+        </p>
+        <a 
+          href="mailto:privacidad@juntapp.net" 
+          class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-cyan-400 font-semibold hover:bg-cyan-400/10 transition-colors text-sm"
+        >
+          ✉️ privacidad@juntapp.net (o contacto@juntapp.net)
+        </a>
+      </section>
+    </div>
+
+    <!-- Navegación inferior rápida -->
+    <div class="mt-8 flex flex-wrap justify-between items-center gap-4 text-xs md:text-sm text-zinc-400">
+      <a href="/" class="flex items-center gap-1.5 hover:text-white transition-colors">
+        <span>←</span> Volver al Inicio
+      </a>
+      <div class="flex items-center gap-4">
+        <a href="/terminos" class="hover:text-cyan-400 transition-colors underline underline-offset-4">
+          Términos y Condiciones
+        </a>
+        <span>•</span>
+        <a href="/contacto" class="hover:text-cyan-400 transition-colors underline underline-offset-4">
+          Centro de Contacto
+        </a>
+      </div>
+    </div>
+  </div>
+</Layout>
