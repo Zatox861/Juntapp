@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import Logo from '../components/Logo.astro';
 ---
 
 <Layout title="Juntapp | Noches Inolvidables">
@@ -162,9 +163,9 @@ import Layout from '../layouts/Layout.astro';
   <!-- Footer Component -->
   <footer class="bg-surface-container-lowest full-width mt-auto border-t border-white/5">
     <div class="flex flex-col md:flex-row justify-between items-center px-4 md:px-12 py-8 gap-6 max-w-[1280px] mx-auto w-full">
-      <div class="font-display-lg text-2xl font-bold text-primary tracking-tighter">
-        JUNTAPP
-      </div>
+      <a href="/" class="hover:opacity-90 transition-opacity">
+        <Logo size="sm" />
+      </a>
       <ul class="flex flex-wrap justify-center gap-6 font-body-md text-sm">
         <li><a class="text-on-surface-variant hover:text-tertiary transition-colors opacity-80 hover:opacity-100 block" href="#">Términos</a></li>
         <li><a class="text-on-surface-variant hover:text-tertiary transition-colors opacity-80 hover:opacity-100 block" href="#">Privacidad</a></li>

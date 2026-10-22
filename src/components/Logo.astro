@@ -1,0 +1,49 @@
+---
+interface Props {
+  size?: 'sm' | 'md' | 'lg';
+  showText?: boolean;
+  class?: string;
+}
+
+const { size = 'md', showText = true, class: className = '' } = Astro.props;
+
+const iconSizes = {
+  sm: 'w-7 h-7',
+  md: 'w-9 h-9',
+  lg: 'w-11 h-11'
+};
+
+const textSizes = {
+  sm: 'text-xl',
+  md: 'text-2xl',
+  lg: 'text-3xl'
+};
+---
+
+<div class={`inline-flex items-center gap-2.5 group select-none ${className}`}>
+  <!-- Isotipo: Squircle Neón con la J minimalista (idéntico al favicon) -->
+  <div class={`${iconSizes[size]} relative flex-shrink-0 rounded-[10px] overflow-hidden shadow-[0_0_15px_rgba(168,85,247,0.3)] group-hover:shadow-[0_0_25px_rgba(0,234,255,0.5)] group-hover:scale-105 transition-all duration-300`}>
+    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
+      <defs>
+        <linearGradient id="logoBgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#9333ea"/>
+          <stop offset="50%" stop-color="#db2777"/>
+          <stop offset="100%" stop-color="#06b6d4"/>
+        </linearGradient>
+      </defs>
+      <!-- Background Squircle -->
+      <rect width="64" height="64" rx="16" fill="url(#logoBgGrad)"/>
+      
+      <!-- Minimalist J -->
+      <circle cx="40" cy="16" r="4.5" fill="#ffffff"/>
+      <path d="M36 24V40C36 44.5 32.5 48 28 48C23.5 48 20 44.5 20 40" stroke="#ffffff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+
+  {showText && (
+    <span class={`font-display-lg ${textSizes[size]} font-black tracking-tight flex items-center leading-none`}>
+      <span class="text-white">JUNT</span>
+      <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400">APP</span>
+    </span>
+  )}
+</div>

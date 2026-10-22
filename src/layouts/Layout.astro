@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import Logo from '../components/Logo.astro';
 
 interface Props {
   title: string;
@@ -59,8 +60,8 @@ const { title, description = "Juntapp - La plataforma definitiva de juegos de fi
     <nav class="bg-background/80 backdrop-blur-xl docked full-width top-0 sticky z-40 border-b border-white/10 shadow-lg shadow-primary/5">
       <div class="flex justify-between items-center px-4 md:px-12 py-4 w-full max-w-[1280px] mx-auto">
         <!-- Brand -->
-        <a href="/" class="font-display-lg text-3xl font-bold tracking-tighter text-primary">
-          JUNTAPP
+        <a href="/" class="flex items-center hover:opacity-90 transition-opacity">
+          <Logo size="md" />
         </a>
         
         <!-- Navigation Links (Web) -->
