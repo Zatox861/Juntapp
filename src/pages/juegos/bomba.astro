@@ -297,6 +297,9 @@ import bombaData from '../../content/bomba.json';
   </dialog>
 </Layout>
 
+<!-- Datos de Bomba inyectados de forma segura -->
+<template id="bomba-data-raw">{JSON.stringify(bombaData)}</template>
+
 <style>
   .mode-pill {
     padding: 0.6rem 0.5rem;
@@ -333,9 +336,15 @@ import bombaData from '../../content/bomba.json';
   }
 </style>
 
-<script define:vars={{ bombaData }}>
+<script>
   // Importamos gestión de jugadores
   import { getPlayers, onPlayersChange } from '../../utils/players';
+
+  // Obtenemos los datos de la bomba inyectados
+  const rawDataEl = document.getElementById('bomba-data-raw');
+  const bombaData = rawDataEl?.textContent 
+    ? JSON.parse(rawDataEl.textContent) 
+    : { categories: [], penalties: [] };
 
   // Sonido Procedural con Web Audio API (100% offline, cero dependencias)
   class BombSoundEngine {
@@ -531,13 +540,17 @@ import bombaData from '../../content/bomba.json';
     const raw = getPlayers();
     if (raw && raw.length >= 2) {
       playersList = [...raw];
-      partyCountBadge.textContent = playersList.length;
-      partyNamesDisplay.textContent = playersList.join(', ');
+      if (partyCountBadge) partyCountBadge.textContent = String(playersList.length);
+      if (partyNamesDisplay) partyNamesDisplay.textContent = playersList.join(', ');
+    } else if (raw && raw.length === 1) {
+      playersList = [raw[0], 'Jugador 2'];
+      if (partyCountBadge) partyCountBadge.textContent = '2';
+      if (partyNamesDisplay) partyNamesDisplay.textContent = `${raw[0]}, Jugador 2 (¡añade más amigos para una mejor ronda!)`;
     } else {
       // Fallback si no hay jugadores en el gestor
       playersList = ['Jugador 1', 'Jugador 2', 'Jugador 3', 'Jugador 4'];
-      partyCountBadge.textContent = '4 (Default)';
-      partyNamesDisplay.textContent = 'Usando nombres por defecto. ¡Añade los tuyos en "👥 Grupo"!';
+      if (partyCountBadge) partyCountBadge.textContent = '4 (Default)';
+      if (partyNamesDisplay) partyNamesDisplay.textContent = 'Usando nombres por defecto. ¡Añade los tuyos en "👥 Grupo"!';
     }
 
     // Inicializar stats de explosiones si faltan
