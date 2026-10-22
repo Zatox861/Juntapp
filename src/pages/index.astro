@@ -6,62 +6,172 @@ import Logo from '../components/Logo.astro';
 <Layout title="Juntapp | Noches Inolvidables">
   <div class="px-4 md:px-12 py-16 md:py-[80px]">
     <!-- Hero Section -->
-    <section class="flex flex-col md:flex-row items-center mb-[120px] md:gap-[100px]">
+    <section class="flex flex-col lg:flex-row items-center mb-16 lg:mb-24 lg:gap-16 xl:gap-24">
       <!-- Text Content -->
-      <div class="w-full md:w-5/12 flex flex-col gap-4 z-20">
-        <div class="inline-flex items-center gap-2 bg-surface-container/80 border border-white/10 backdrop-blur-md px-4 py-2 rounded-full w-max mb-2">
+      <div class="w-full lg:w-6/12 flex flex-col gap-5 z-20">
+        
+        <!-- Live Counter Pill -->
+        <div class="inline-flex items-center gap-2 bg-surface-container/80 border border-white/10 backdrop-blur-md px-4 py-1.5 rounded-full w-max">
           <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-          <span class="font-label-sm text-label-sm text-primary" id="user-count">+1.200 jugando ahora</span>
+          <span class="font-label-sm text-xs md:text-sm text-primary font-bold" id="user-count">+1.200 jugando ahora</span>
         </div>
-        <h1 class="font-display-lg text-4xl md:text-5xl text-on-background tracking-tighter">
-          Juegos rápidos para noches <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary glow-effect">inolvidables</span>.
+
+        <h1 class="font-display-lg text-4xl sm:text-5xl xl:text-6xl text-on-background tracking-tighter font-black leading-[1.08]">
+          Juegos de fiesta para noches <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400 glow-effect">inolvidables</span>.
         </h1>
-        <p class="font-body-lg text-lg text-on-surface-variant mt-2 max-w-[90%]">
-          Conecta, ríe y descubre verdades incómodas con tu círculo <span class="text-primary font-bold">totalmente gratis</span> y a un tap de distancia.
+
+        <p class="font-body-lg text-base sm:text-lg text-zinc-300 leading-relaxed max-w-xl">
+          Pásense <strong class="text-white">un solo celular</strong> en el living o jueguen en grupo. Personalizado con los nombres de tus amigos, <strong class="text-primary">100% gratis</strong> y sin descargar ninguna app.
         </p>
-        <div class="flex flex-wrap items-center gap-4 mt-6">
-          <a href="/play" class="bg-gradient-to-r from-primary to-secondary text-white font-black font-headline-md text-xl py-4 px-10 rounded-xl shadow-[0_0_30px_rgba(168,85,247,0.3)] hover:shadow-[0_0_50px_rgba(168,85,247,0.5)] transition-all duration-300 hover:-translate-y-1 text-center">
-            Empezar Party
+
+        <!-- CTA Buttons -->
+        <div class="flex flex-wrap items-center gap-3 pt-2">
+          <!-- Botón Primario: Explorar Juegos -->
+          <a 
+            href="/play" 
+            class="bg-gradient-to-r from-purple-600 via-pink-600 to-cyan-500 text-white font-black font-headline-md text-base sm:text-lg py-3.5 px-8 rounded-2xl shadow-[0_0_30px_rgba(168,85,247,0.35)] hover:shadow-[0_0_45px_rgba(0,234,255,0.5)] transition-all duration-300 hover:-translate-y-0.5 active:scale-95 text-center flex items-center justify-center gap-2"
+          >
+            <span>🚀 Explorar Juegos</span>
           </a>
-          <button id="btn-join" class="bg-surface-container hover:bg-surface-variant text-on-surface font-headline-md text-xl py-3 px-8 rounded-xl border border-white/5 transition-all duration-300 font-semibold cursor-pointer">
-            Tengo un código
+
+          <!-- Botón de Grupo en el Hero (Destacado) -->
+          <button 
+            type="button"
+            data-open-party-modal
+            class="bg-surface-container/90 hover:bg-surface-variant text-white font-bold text-base py-3.5 px-6 rounded-2xl border border-primary/40 hover:border-primary transition-all duration-300 shadow-[0_0_20px_rgba(168,85,247,0.2)] hover:-translate-y-0.5 active:scale-95 cursor-pointer flex items-center gap-2.5 group"
+            title="Configurar amigos de la junta"
+          >
+            <span class="text-xl group-hover:scale-110 transition-transform">👥</span>
+            <span id="hero-party-btn-text">Configurar Grupo</span>
+            <span id="hero-party-badge" class="px-2 py-0.5 rounded-full bg-primary/20 text-primary font-mono text-xs font-black">0</span>
           </button>
         </div>
+
+        <!-- Widget Interactivo de Amigos en el Hero -->
+        <div class="w-full max-w-lg bg-surface-container/50 border border-white/10 rounded-2xl p-4 backdrop-blur-md flex flex-col gap-2 shadow-lg">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
+              <span>👥</span> Amigos en la junta:
+            </span>
+            <button 
+              type="button" 
+              data-open-party-modal 
+              class="text-xs text-primary hover:text-white font-semibold transition-colors cursor-pointer flex items-center gap-1"
+            >
+              <span id="hero-widget-edit-text">✏️ Añadir amigos</span>
+            </button>
+          </div>
+
+          <!-- Chips de Jugadores o Mensaje de Invitación -->
+          <div id="hero-party-chips" class="flex flex-wrap gap-1.5 items-center min-h-[32px]">
+            <span class="text-xs text-zinc-400 italic">
+              Nadie en el grupo todavía. ¡Agrega a tus amigos para que los retos salgan con sus nombres!
+            </span>
+          </div>
+        </div>
+
+        <!-- Enlace Sutil para Unirse a Sala de Bingo con Código -->
+        <div class="pt-1">
+          <button 
+            id="btn-join" 
+            class="text-xs text-zinc-400 hover:text-zinc-200 transition-colors flex items-center gap-1.5 cursor-pointer group"
+          >
+            <span>¿Te invitaron a una sala de Bingo?</span>
+            <span class="text-primary group-hover:underline font-semibold">Ingresar código de 4 letras →</span>
+          </button>
+        </div>
+
       </div>
 
       <!-- Visual Composition -->
-      <div class="w-full md:w-7/12 relative mt-12 md:mt-0 min-h-[400px] md:min-h-[500px]">
+      <div class="w-full lg:w-6/12 relative mt-8 lg:mt-0 min-h-[380px] sm:min-h-[460px]">
         <!-- Main Image -->
-        <div class="absolute inset-0 md:inset-auto md:right-0 md:top-1/2 md:-translate-y-1/2 w-full md:w-[110%] aspect-video md:aspect-[4/3] rounded-2xl md:rounded-[32px] overflow-hidden border border-white/10 shadow-2xl z-10">
+        <div class="absolute inset-0 w-full aspect-video sm:aspect-[4/3] rounded-3xl overflow-hidden border border-white/10 shadow-2xl z-10">
           <img alt="Grupo de amigos riendo iluminados cálidamente por una pantalla" class="w-full h-full object-cover" src="/img/hero-party.webp">
-          <div class="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent"></div>
+          <div class="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent"></div>
         </div>
 
-        <!-- Floating Glass Card 1: Verdad o Reto -->
-        <div class="absolute -top-4 -left-4 md:-left-8 bg-surface-container/60 backdrop-blur-xl border border-white/10 p-3 px-5 rounded-2xl shadow-2xl z-30 flex items-center gap-3 animate-[bounce_4s_ease-in-out_infinite]">
-          <div class="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center text-xl border border-primary/30 shadow-[0_0_15px_rgba(168,85,247,0.3)]">
-            😂
+        <!-- Floating Glass Card 1: Bomba de Tiempo -->
+        <div class="absolute -top-3 -left-2 sm:-left-6 bg-surface-container/70 backdrop-blur-xl border border-orange-500/30 p-3 px-4 rounded-2xl shadow-2xl z-30 flex items-center gap-3 animate-[bounce_4s_ease-in-out_infinite]">
+          <div class="w-10 h-10 bg-orange-500/20 rounded-xl flex items-center justify-center text-xl border border-orange-500/30 shadow-[0_0_15px_rgba(249,115,22,0.3)]">
+            💣
           </div>
           <div>
-            <p class="font-label-sm text-sm text-on-surface font-bold">Verdad o Reto</p>
-            <p class="font-label-sm text-[10px] text-purple-300 tracking-wider uppercase font-medium">Ronda de confesiones</p>
+            <p class="font-label-sm text-xs sm:text-sm text-white font-bold">Bomba de Tiempo</p>
+            <p class="font-label-sm text-[10px] text-orange-400 tracking-wider uppercase font-semibold">¡Pásate el celular!</p>
           </div>
         </div>
 
-        <!-- Floating Glass Card 2: ¿Quién es más? -->
-        <div class="absolute top-[60%] -right-4 md:-right-8 bg-surface-container/60 backdrop-blur-xl border border-white/10 p-3 px-5 rounded-2xl shadow-2xl z-30 flex items-center gap-3 animate-[bounce_5s_ease-in-out_infinite] delay-700">
-          <div class="w-10 h-10 bg-tertiary/20 rounded-full flex items-center justify-center text-xl border border-tertiary/30 shadow-[0_0_15px_rgba(244,63,94,0.3)]">
-            😬
+        <!-- Floating Glass Card 2: El Impostor -->
+        <div class="absolute top-[60%] -right-2 sm:-right-6 bg-surface-container/70 backdrop-blur-xl border border-red-500/30 p-3 px-4 rounded-2xl shadow-2xl z-30 flex items-center gap-3 animate-[bounce_5s_ease-in-out_infinite] delay-700">
+          <div class="w-10 h-10 bg-red-500/20 rounded-xl flex items-center justify-center text-xl border border-red-500/30 shadow-[0_0_15px_rgba(239,68,68,0.3)]">
+            🕵️
           </div>
           <div>
-            <p class="font-label-sm text-sm text-on-surface font-bold">¿Quién es más...?</p>
-            <p class="font-label-sm text-[10px] text-rose-300 tracking-wider uppercase font-medium">Vota por tus amigos</p>
+            <p class="font-label-sm text-xs sm:text-sm text-white font-bold">El Impostor</p>
+            <p class="font-label-sm text-[10px] text-red-400 tracking-wider uppercase font-semibold">¿Quién está mintiendo?</p>
           </div>
         </div>
 
         <!-- Floating Reaction -->
-        <div class="absolute top-1/4 right-4 bg-white/10 backdrop-blur-md rounded-full p-2 z-20 shadow-lg border border-white/5 animate-[pulse_3s_ease-in-out_infinite]">
+        <div class="absolute top-1/4 right-3 bg-white/10 backdrop-blur-md rounded-full p-2 z-20 shadow-lg border border-white/10 animate-[pulse_3s_ease-in-out_infinite]">
           <span class="text-2xl">🎉</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sección: ¿Cómo funciona Juntapp? (3 Reglas de Oro) -->
+    <section class="mb-20">
+      <div class="glass-panel rounded-3xl p-6 md:p-10 border border-white/10 bg-surface-container/30">
+        <div class="text-center max-w-xl mx-auto mb-8">
+          <span class="text-xs uppercase font-bold tracking-widest text-primary bg-primary/10 border border-primary/20 px-3 py-1 rounded-full">
+            ⚡ Rápido y sin vueltas
+          </span>
+          <h2 class="text-2xl md:text-3xl font-black text-white mt-3">¿Cómo se juega en Juntapp?</h2>
+          <p class="text-zinc-400 text-xs md:text-sm mt-1">Diseñado para que nadie se quede afuera y la previa empiece en segundos.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          
+          <!-- Paso 1: 1 Celular -->
+          <div class="p-5 rounded-2xl bg-white/5 border border-white/5 hover:border-cyan-400/40 transition-colors flex flex-col gap-3 group">
+            <div class="w-12 h-12 rounded-2xl bg-cyan-400/10 border border-cyan-400/20 text-cyan-400 flex items-center justify-center text-2xl group-hover:scale-105 transition-transform">
+              📱
+            </div>
+            <div>
+              <h3 class="text-white font-bold text-base mb-1">1 Solo Celular en la mesa</h3>
+              <p class="text-zinc-400 text-xs leading-relaxed">
+                No necesitan que todos descarguen nada. Se van pasando el teléfono en mano o lo dejan al centro como ruleta.
+              </p>
+            </div>
+          </div>
+
+          <!-- Paso 2: Con tu gente -->
+          <div class="p-5 rounded-2xl bg-white/5 border border-white/5 hover:border-purple-400/40 transition-colors flex flex-col gap-3 group">
+            <div class="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center text-2xl group-hover:scale-105 transition-transform">
+              👥
+            </div>
+            <div>
+              <h3 class="text-white font-bold text-base mb-1">Con los nombres de tu grupo</h3>
+              <p class="text-zinc-400 text-xs leading-relaxed">
+                Anota a tus amigos una sola vez y todos los juegos usarán sus nombres para los turnos, sospechas y penitencias.
+              </p>
+            </div>
+          </div>
+
+          <!-- Paso 3: Cero registros -->
+          <div class="p-5 rounded-2xl bg-white/5 border border-white/5 hover:border-pink-500/40 transition-colors flex flex-col gap-3 group">
+            <div class="w-12 h-12 rounded-2xl bg-pink-500/10 border border-pink-500/20 text-pink-400 flex items-center justify-center text-2xl group-hover:scale-105 transition-transform">
+              ⚡
+            </div>
+            <div>
+              <h3 class="text-white font-bold text-base mb-1">Sin cuentas ni descargas</h3>
+              <p class="text-zinc-400 text-xs leading-relaxed">
+                Entra a juntapp.net desde cualquier teléfono o computador y juega de inmediato. 100% gratis siempre.
+              </p>
+            </div>
+          </div>
+
         </div>
       </div>
     </section>
@@ -79,117 +189,159 @@ import Logo from '../components/Logo.astro';
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <!-- Card: Bomba de Tiempo (Nuevo) -->
-        <a href="/juegos/bomba" class="group relative bg-surface-container rounded-[24px] border border-orange-500/30 overflow-hidden hover:border-orange-500/70 transition-all duration-500 cursor-pointer h-[350px] flex flex-col justify-end shadow-[0_0_35px_rgba(249,115,22,0.2)]">
+        <!-- Card 1: Bomba de Tiempo (Nuevo) -->
+        <a href="/juegos/bomba" class="group relative bg-surface-container rounded-[24px] border border-orange-500/30 overflow-hidden hover:border-orange-500/70 transition-all duration-500 cursor-pointer h-[360px] flex flex-col justify-end shadow-[0_0_35px_rgba(249,115,22,0.2)]">
           <img alt="Bomba de Tiempo neón con mecha encendida y chispas" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="/img/cover_bomba.webp">
           <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-transparent"></div>
           <div class="relative z-10 p-6">
-            <div class="bg-gradient-to-r from-orange-500/30 to-red-500/30 text-orange-300 w-max px-3 py-1 rounded-full font-label-sm text-[10px] mb-3 backdrop-blur-md border border-orange-500/40 uppercase tracking-widest font-black flex items-center gap-1">
-              <span>🔥</span> ¡Nuevo! Pánico Total
+            <div class="flex flex-wrap items-center gap-1.5 mb-3">
+              <span class="bg-gradient-to-r from-orange-500/30 to-red-500/30 text-orange-300 px-2.5 py-0.5 rounded-full font-label-sm text-[10px] backdrop-blur-md border border-orange-500/40 uppercase tracking-widest font-black flex items-center gap-1">
+                <span>🔥</span> Pánico Total
+              </span>
+              <span class="bg-black/60 text-zinc-300 px-2.5 py-0.5 rounded-full font-label-sm text-[10px] backdrop-blur-md border border-white/10 uppercase tracking-wider font-semibold">
+                📱 1 Celular
+              </span>
             </div>
             <h3 class="font-headline-md text-2xl font-bold text-on-background mb-1">Bomba de Tiempo</h3>
             <p class="font-body-md text-on-surface-variant line-clamp-2">Di una palabra de la categoría y pásate el celular antes de que explote en tus manos.</p>
           </div>
         </a>
 
-        <!-- Card 1: El Impostor -->
-        <a href="/juegos/el-impostor" class="group relative bg-surface-container rounded-[24px] border border-red-500/20 overflow-hidden hover:border-red-500/60 transition-all duration-500 cursor-pointer h-[350px] flex flex-col justify-end shadow-[0_0_30px_rgba(239,68,68,0.15)]">
+        <!-- Card 2: El Impostor -->
+        <a href="/juegos/el-impostor" class="group relative bg-surface-container rounded-[24px] border border-red-500/20 overflow-hidden hover:border-red-500/60 transition-all duration-500 cursor-pointer h-[360px] flex flex-col justify-end shadow-[0_0_30px_rgba(239,68,68,0.15)]">
           <img alt="Grupo de amigos jugando El Impostor en la noche con un teléfono" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="/img/cover_el_impostor.webp">
           <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-transparent"></div>
           <div class="relative z-10 p-6">
-            <div class="bg-red-500/20 text-red-400 w-max px-3 py-1 rounded-full font-label-sm text-[10px] mb-3 backdrop-blur-md border border-red-500/30 uppercase tracking-widest font-black">
-              Nuevo · Deducción
+            <div class="flex flex-wrap items-center gap-1.5 mb-3">
+              <span class="bg-red-500/20 text-red-400 px-2.5 py-0.5 rounded-full font-label-sm text-[10px] backdrop-blur-md border border-red-500/30 uppercase tracking-widest font-black">
+                🕵️ Deducción
+              </span>
+              <span class="bg-black/60 text-zinc-300 px-2.5 py-0.5 rounded-full font-label-sm text-[10px] backdrop-blur-md border border-white/10 uppercase tracking-wider font-semibold">
+                📱 1 Celular
+              </span>
             </div>
             <h3 class="font-headline-md text-2xl font-bold text-on-background mb-1">El Impostor</h3>
             <p class="font-body-md text-on-surface-variant line-clamp-2">Todos conocen la palabra secreta menos uno. ¿Quién está fingiendo en el grupo?</p>
           </div>
         </a>
 
-        <!-- Card 2: Verdad o Reto -->
-        <a href="/juegos/verdad-reto" class="group relative bg-surface-container rounded-[24px] border border-white/5 overflow-hidden hover:border-primary/50 transition-all duration-500 cursor-pointer h-[350px] flex flex-col justify-end">
+        <!-- Card 3: Verdad o Reto -->
+        <a href="/juegos/verdad-reto" class="group relative bg-surface-container rounded-[24px] border border-white/5 overflow-hidden hover:border-primary/50 transition-all duration-500 cursor-pointer h-[360px] flex flex-col justify-end">
           <img alt="Vista aérea de amigos sentados en círculo jugando verdad o reto con una botella en una alfombra" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="/img/cover_verdad_reto.webp">
           <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-transparent"></div>
           <div class="relative z-10 p-6">
-            <div class="bg-primary/20 text-primary w-max px-3 py-1 rounded-full font-label-sm text-[10px] mb-3 backdrop-blur-md border border-primary/30 uppercase tracking-widest font-bold">
-              Top #1 Social
+            <div class="flex flex-wrap items-center gap-1.5 mb-3">
+              <span class="bg-primary/20 text-primary px-2.5 py-0.5 rounded-full font-label-sm text-[10px] backdrop-blur-md border border-primary/30 uppercase tracking-widest font-bold">
+                Top #1 Social
+              </span>
+              <span class="bg-black/60 text-zinc-300 px-2.5 py-0.5 rounded-full font-label-sm text-[10px] backdrop-blur-md border border-white/10 uppercase tracking-wider font-semibold">
+                📱 1 Celular
+              </span>
             </div>
             <h3 class="font-headline-md text-2xl font-bold text-on-background mb-1">Verdad o Reto</h3>
             <p class="font-body-md text-on-surface-variant line-clamp-2">Preguntas que no te atreverías a hacer en público. Prepárate para las confesiones.</p>
           </div>
         </a>
 
-        <!-- Card 3: Ruleta -->
-        <a href="/juegos/ruleta" class="group relative bg-surface-container rounded-[24px] border border-white/5 overflow-hidden hover:border-tertiary/50 transition-all duration-500 cursor-pointer h-[350px] flex flex-col justify-end">
+        <!-- Card 4: Ruleta -->
+        <a href="/juegos/ruleta" class="group relative bg-surface-container rounded-[24px] border border-white/5 overflow-hidden hover:border-tertiary/50 transition-all duration-500 cursor-pointer h-[360px] flex flex-col justify-end">
           <img alt="Ruleta neón futurista" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="/img/cover_ruleta.webp">
           <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-transparent"></div>
           <div class="relative z-10 p-6">
-            <div class="bg-tertiary/20 text-tertiary w-max px-3 py-1 rounded-full font-label-sm text-[10px] mb-3 backdrop-blur-md border border-tertiary/30 uppercase tracking-widest font-bold">
-              Alta Energía
+            <div class="flex flex-wrap items-center gap-1.5 mb-3">
+              <span class="bg-tertiary/20 text-tertiary px-2.5 py-0.5 rounded-full font-label-sm text-[10px] backdrop-blur-md border border-tertiary/30 uppercase tracking-widest font-bold">
+                Alta Energía
+              </span>
+              <span class="bg-black/60 text-zinc-300 px-2.5 py-0.5 rounded-full font-label-sm text-[10px] backdrop-blur-md border border-white/10 uppercase tracking-wider font-semibold">
+                📱 1 Celular
+              </span>
             </div>
-            <h3 class="font-headline-md text-2xl font-bold text-on-background mb-1">Ruleta de la Suerte</h3>
+            <h3 class="font-headline-md text-2xl font-bold text-on-background mb-1">Ruleta de Castigos</h3>
             <p class="font-body-md text-on-surface-variant line-clamp-2">Retos absurdos y penalizaciones ridículas. Nadie se salva de la suerte.</p>
           </div>
         </a>
 
-        <!-- Card 4: ¿Quién es más probable? -->
-        <a href="/juegos/quien-es" class="group relative bg-surface-container rounded-[24px] border border-white/5 overflow-hidden hover:border-secondary/50 transition-all duration-500 cursor-pointer h-[350px] flex flex-col justify-end">
+        <!-- Card 5: ¿Quién es más probable? -->
+        <a href="/juegos/quien-es" class="group relative bg-surface-container rounded-[24px] border border-white/5 overflow-hidden hover:border-secondary/50 transition-all duration-500 cursor-pointer h-[360px] flex flex-col justify-end">
           <img alt="Siluetas en fiesta neón señalando" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="/img/cover_quien_es.webp">
           <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-transparent"></div>
           <div class="relative z-10 p-6">
-            <div class="bg-secondary/20 text-secondary w-max px-3 py-1 rounded-full font-label-sm text-[10px] mb-3 backdrop-blur-md border border-secondary/30 uppercase tracking-widest font-bold">
-              Solo Valientes
+            <div class="flex flex-wrap items-center gap-1.5 mb-3">
+              <span class="bg-secondary/20 text-secondary px-2.5 py-0.5 rounded-full font-label-sm text-[10px] backdrop-blur-md border border-secondary/30 uppercase tracking-widest font-bold">
+                Solo Valientes
+              </span>
+              <span class="bg-black/60 text-zinc-300 px-2.5 py-0.5 rounded-full font-label-sm text-[10px] backdrop-blur-md border border-white/10 uppercase tracking-wider font-semibold">
+                📱 1 Celular
+              </span>
             </div>
             <h3 class="font-headline-md text-2xl font-bold text-on-background mb-1">¿Quién es más...?</h3>
             <p class="font-body-md text-on-surface-variant line-clamp-2">Vota quién es más probable que... y descubre lo que realmente piensan de ti.</p>
           </div>
         </a>
 
-        <!-- Card 5: Bingo -->
-        <a href="/bingo-lobby" class="group relative bg-surface-container rounded-[24px] border border-white/5 overflow-hidden hover:border-primary/50 transition-all duration-500 cursor-pointer h-[350px] flex flex-col justify-end">
+        <!-- Card 6: Bingo -->
+        <a href="/bingo-lobby" class="group relative bg-surface-container rounded-[24px] border border-white/5 overflow-hidden hover:border-primary/50 transition-all duration-500 cursor-pointer h-[360px] flex flex-col justify-end">
           <img alt="Perspectiva en primera persona sosteniendo un cartón de Bingo con amigos de fondo" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="/img/cover_bingo.webp">
           <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-transparent"></div>
           <div class="relative z-10 p-6">
-            <div class="bg-primary/20 text-primary w-max px-3 py-1 rounded-full font-label-sm text-[10px] mb-3 backdrop-blur-md border border-primary/30 uppercase tracking-widest font-bold">
-              Clásico Renacido
+            <div class="flex flex-wrap items-center gap-1.5 mb-3">
+              <span class="bg-cyan-400/20 text-cyan-400 px-2.5 py-0.5 rounded-full font-label-sm text-[10px] backdrop-blur-md border border-cyan-400/30 uppercase tracking-widest font-bold">
+                🌐 Multicelular · Sala QR
+              </span>
             </div>
             <h3 class="font-headline-md text-2xl font-bold text-on-background mb-1">Bingo</h3>
             <p class="font-body-md text-on-surface-variant line-clamp-2">Cartones dinámicos y diversión clásica. Grita ¡Bingo! antes que los demás.</p>
           </div>
         </a>
 
-        <!-- Card 6: Quién sabe más -->
-        <a href="/juegos/quien-sabe-mas" class="group relative bg-surface-container rounded-[24px] border border-white/5 overflow-hidden hover:border-secondary/50 transition-all duration-500 cursor-pointer h-[350px] flex flex-col justify-end">
+        <!-- Card 7: Quién sabe más -->
+        <a href="/juegos/quien-sabe-mas" class="group relative bg-surface-container rounded-[24px] border border-white/5 overflow-hidden hover:border-secondary/50 transition-all duration-500 cursor-pointer h-[360px] flex flex-col justify-end">
           <img alt="Amigos jugando trivia en un quincho de asados" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="/img/cover_quien_sabe_mas.webp">
           <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-transparent"></div>
           <div class="relative z-10 p-6">
-            <div class="bg-secondary/20 text-secondary w-max px-3 py-1 rounded-full font-label-sm text-[10px] mb-3 backdrop-blur-md border border-secondary/30 uppercase tracking-widest font-bold">
-              Desafío Mental
+            <div class="flex flex-wrap items-center gap-1.5 mb-3">
+              <span class="bg-secondary/20 text-secondary px-2.5 py-0.5 rounded-full font-label-sm text-[10px] backdrop-blur-md border border-secondary/30 uppercase tracking-widest font-bold">
+                Desafío Mental
+              </span>
+              <span class="bg-black/60 text-zinc-300 px-2.5 py-0.5 rounded-full font-label-sm text-[10px] backdrop-blur-md border border-white/10 uppercase tracking-wider font-semibold">
+                📱 1 Celular
+              </span>
             </div>
             <h3 class="font-headline-md text-2xl font-bold text-on-background mb-1">¿Quién Sabe Más?</h3>
             <p class="font-body-md text-on-surface-variant line-clamp-2">Pon a prueba a tus amigos en rondas de trivia. El que falla, paga penitencia.</p>
           </div>
         </a>
 
-        <!-- Card 7: Mímica -->
-        <a href="/juegos/mimica" class="group relative bg-surface-container rounded-[24px] border border-white/5 overflow-hidden hover:border-tertiary/50 transition-all duration-500 cursor-pointer h-[350px] flex flex-col justify-end">
+        <!-- Card 8: Mímica -->
+        <a href="/juegos/mimica" class="group relative bg-surface-container rounded-[24px] border border-white/5 overflow-hidden hover:border-tertiary/50 transition-all duration-500 cursor-pointer h-[360px] flex flex-col justify-end">
           <img alt="Persona haciendo gestos de mímica con amigos riendo en un living de fondo" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="/img/cover_mimica.webp">
           <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-transparent"></div>
           <div class="relative z-10 p-6">
-            <div class="bg-tertiary/20 text-tertiary w-max px-3 py-1 rounded-full font-label-sm text-[10px] mb-3 backdrop-blur-md border border-tertiary/30 uppercase tracking-widest font-bold">
-              Risas Garantizadas
+            <div class="flex flex-wrap items-center gap-1.5 mb-3">
+              <span class="bg-tertiary/20 text-tertiary px-2.5 py-0.5 rounded-full font-label-sm text-[10px] backdrop-blur-md border border-tertiary/30 uppercase tracking-widest font-bold">
+                Risas Garantizadas
+              </span>
+              <span class="bg-black/60 text-zinc-300 px-2.5 py-0.5 rounded-full font-label-sm text-[10px] backdrop-blur-md border border-white/10 uppercase tracking-wider font-semibold">
+                📱 1 Celular
+              </span>
             </div>
             <h3 class="font-headline-md text-2xl font-bold text-on-background mb-1">Mímica Extrema</h3>
             <p class="font-body-md text-on-surface-variant line-clamp-2">Adivina la palabra oculta. Las actuaciones vergonzosas están aseguradas.</p>
           </div>
         </a>
 
-        <!-- Card 8: Yo Nunca -->
-        <a href="/juegos/yo-nunca" class="group relative bg-surface-container rounded-[24px] border border-white/5 overflow-hidden hover:border-primary/50 transition-all duration-500 cursor-pointer h-[350px] flex flex-col justify-end">
+        <!-- Card 9: Yo Nunca -->
+        <a href="/juegos/yo-nunca" class="group relative bg-surface-container rounded-[24px] border border-white/5 overflow-hidden hover:border-primary/50 transition-all duration-500 cursor-pointer h-[360px] flex flex-col justify-end">
           <img alt="Vasos y amigos en junta jugando Yo Nunca" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="/img/cover_yo_nunca.webp">
           <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-transparent"></div>
           <div class="relative z-10 p-6">
-            <div class="bg-primary/20 text-primary w-max px-3 py-1 rounded-full font-label-sm text-[10px] mb-3 backdrop-blur-md border border-primary/30 uppercase tracking-widest font-bold">
-              Confesiones
+            <div class="flex flex-wrap items-center gap-1.5 mb-3">
+              <span class="bg-primary/20 text-primary px-2.5 py-0.5 rounded-full font-label-sm text-[10px] backdrop-blur-md border border-primary/30 uppercase tracking-widest font-bold">
+                Confesiones
+              </span>
+              <span class="bg-black/60 text-zinc-300 px-2.5 py-0.5 rounded-full font-label-sm text-[10px] backdrop-blur-md border border-white/10 uppercase tracking-wider font-semibold">
+                📱 1 Celular
+              </span>
             </div>
             <h3 class="font-headline-md text-2xl font-bold text-on-background mb-1">Yo Nunca</h3>
             <p class="font-body-md text-on-surface-variant line-clamp-2">Descubre los secretos más divertidos y atrevidos mientras todos toman.</p>
@@ -199,24 +351,72 @@ import Logo from '../components/Logo.astro';
     </section>
   </div>
 
-
-
-  <!-- Modal unirse (Hidden) -->
+  <!-- Modal unirse a Bingo (Hidden) -->
   <dialog id="join-modal" class="bg-transparent backdrop:bg-black/80 backdrop:backdrop-blur-sm p-0 m-auto rounded-2xl w-full max-w-sm open:flex flex-col border border-white/10 shadow-2xl">
-    <div class="glass-panel p-8 rounded-2xl flex flex-col w-full relative">
-      <button id="close-modal" class="absolute top-4 right-4 text-on-surface-variant hover:text-white transition-colors">✕</button>
+    <div class="glass-panel p-8 rounded-2xl flex flex-col w-full relative bg-[#090d16]">
+      <button id="close-modal" class="absolute top-4 right-4 text-on-surface-variant hover:text-white transition-colors cursor-pointer">✕</button>
       <h2 class="text-2xl font-geist font-bold text-white mb-2">Ingresa el código</h2>
-      <p class="text-on-surface-variant text-sm mb-6">Si no tienes el código QR, pide el código de 4 letras al anfitrión.</p>
+      <p class="text-on-surface-variant text-sm mb-6">Pide el código de 4 letras de la sala de Bingo al anfitrión.</p>
       
       <input type="text" id="room-code" placeholder="Ej: ABCD" class="w-full bg-surface-container-highest border border-white/10 rounded-lg px-4 py-3 text-white text-center text-2xl font-mono uppercase tracking-widest focus:outline-none focus:border-primary transition-all mb-4" maxlength="4" />
       
-      <button id="submit-join" class="w-full bg-primary text-on-primary py-3 rounded-lg font-bold hover:bg-primary/90 transition-colors">Entrar a la Sala</button>
+      <button id="submit-join" class="w-full bg-primary text-on-primary py-3 rounded-lg font-bold hover:bg-primary/90 transition-colors cursor-pointer">Entrar a la Sala</button>
     </div>
   </dialog>
 </Layout>
 
-
 <script>
+  import { getPlayers, onPlayersChange } from '../utils/players';
+
+  // Sincronización del widget de grupo en el Hero
+  const heroPartyBtnText = document.getElementById('hero-party-btn-text');
+  const heroPartyBadge = document.getElementById('hero-party-badge');
+  const heroPartyChips = document.getElementById('hero-party-chips');
+  const heroWidgetEditText = document.getElementById('hero-widget-edit-text');
+
+  function syncHeroParty() {
+    const players = getPlayers();
+    const count = players.length;
+
+    if (heroPartyBadge) heroPartyBadge.textContent = String(count);
+
+    if (count > 0) {
+      if (heroPartyBtnText) heroPartyBtnText.textContent = `Mi Grupo (${count})`;
+      if (heroWidgetEditText) heroWidgetEditText.textContent = `✏️ Editar lista`;
+
+      if (heroPartyChips) {
+        heroPartyChips.innerHTML = '';
+        players.forEach(p => {
+          const chip = document.createElement('span');
+          chip.className = 'px-3 py-1 rounded-full bg-primary/15 border border-primary/30 text-white text-xs font-bold flex items-center gap-1.5 shadow-[0_0_10px_rgba(168,85,247,0.15)]';
+          chip.innerHTML = `<span>👤</span> ${p}`;
+          heroPartyChips.appendChild(chip);
+        });
+
+        const addMore = document.createElement('button');
+        addMore.type = 'button';
+        addMore.setAttribute('data-open-party-modal', '');
+        addMore.className = 'px-2.5 py-1 rounded-full bg-white/5 border border-white/15 hover:border-primary hover:text-white text-zinc-400 text-xs font-semibold cursor-pointer transition-colors';
+        addMore.textContent = '+ Añadir';
+        heroPartyChips.appendChild(addMore);
+      }
+    } else {
+      if (heroPartyBtnText) heroPartyBtnText.textContent = 'Configurar Grupo';
+      if (heroWidgetEditText) heroWidgetEditText.textContent = `✏️ Añadir amigos`;
+
+      if (heroPartyChips) {
+        heroPartyChips.innerHTML = `
+          <button type="button" data-open-party-modal class="text-left text-xs text-zinc-400 hover:text-white transition-colors cursor-pointer flex items-center gap-1.5 italic">
+            <span>✨</span> <span>Nadie en el grupo todavía. <strong>Toca aquí</strong> para añadir a tus amigos y personalizar turnos y retos.</span>
+          </button>
+        `;
+      }
+    }
+  }
+
+  syncHeroParty();
+  onPlayersChange(syncHeroParty);
+
   // Algoritmo de Ciclo Solar para el contador de usuarios
   const userCountEl = document.getElementById('user-count');
   let currentDisplayUsers = 0;
@@ -253,6 +453,7 @@ import Logo from '../components/Logo.astro';
 
   updateDynamicCounter();
 
+  // Modal para unirse a Bingo
   const btnJoin = document.getElementById('btn-join');
   const modal = document.getElementById('join-modal') as HTMLDialogElement;
   const closeModal = document.getElementById('close-modal');
