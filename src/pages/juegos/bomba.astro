@@ -130,39 +130,41 @@ import bombaData from '../../content/bomba.json';
               </div>
 
               <!-- Bomba Animada con Chispa y Mecha -->
-              <div class="relative w-44 h-44 my-2 flex items-center justify-center select-none">
-                <!-- Aura de calor -->
-                <div id="bomb-aura" class="absolute inset-0 bg-orange-500/20 rounded-full blur-2xl transition-all duration-300"></div>
-                
-                <!-- SVG de Bomba Estilizada -->
-                <svg id="bomb-svg" viewBox="0 0 200 200" class="w-full h-full relative z-10 transition-transform duration-100 drop-shadow-[0_0_20px_rgba(249,115,22,0.5)]">
-                  <!-- Mecha que se consume -->
-                  <path id="fuse-path" d="M100 65 Q 120 40 135 25" stroke="#d97706" stroke-width="6" stroke-linecap="round" fill="none" />
+              <div class="flex flex-col items-center gap-3 select-none my-1">
+                <div class="relative w-40 h-40 sm:w-44 sm:h-44 flex items-center justify-center">
+                  <!-- Aura de calor -->
+                  <div id="bomb-aura" class="absolute inset-0 bg-orange-500/20 rounded-full blur-2xl transition-all duration-300"></div>
                   
-                  <!-- Chispa animada -->
-                  <g id="fuse-spark" transform="translate(135, 25)">
-                    <circle r="6" fill="#fef08a" class="animate-ping" />
-                    <circle r="4" fill="#f97316" />
-                    <line x1="-8" y1="-8" x2="8" y2="8" stroke="#fde047" stroke-width="2" />
-                    <line x1="-8" y1="8" x2="8" y2="-8" stroke="#ef4444" stroke-width="2" />
-                  </g>
+                  <!-- SVG de Bomba Estilizada -->
+                  <svg id="bomb-svg" viewBox="0 0 200 200" class="w-full h-full relative z-10 transition-transform duration-100 drop-shadow-[0_0_25px_rgba(249,115,22,0.5)]">
+                    <!-- Mecha que se consume -->
+                    <path id="fuse-path" d="M100 65 Q 120 40 135 25" stroke="#d97706" stroke-width="6" stroke-linecap="round" fill="none" />
+                    
+                    <!-- Chispa animada -->
+                    <g id="fuse-spark" transform="translate(135, 25)">
+                      <circle r="6" fill="#fef08a" class="animate-ping" />
+                      <circle r="4" fill="#f97316" />
+                      <line x1="-8" y1="-8" x2="8" y2="8" stroke="#fde047" stroke-width="2" />
+                      <line x1="-8" y1="8" x2="8" y2="-8" stroke="#ef4444" stroke-width="2" />
+                    </g>
 
-                  <!-- Tapa de la Bomba -->
-                  <rect x="85" y="60" width="30" height="15" rx="4" fill="#374151" stroke="#4b5563" stroke-width="2" />
+                    <!-- Tapa de la Bomba -->
+                    <rect x="85" y="60" width="30" height="15" rx="4" fill="#374151" stroke="#4b5563" stroke-width="2" />
 
-                  <!-- Cuerpo de la Bomba -->
-                  <circle cx="100" cy="120" r="60" fill="#111827" stroke="#374151" stroke-width="4" />
-                  <!-- Reflejo curvo -->
-                  <path d="M70 85 A 45 45 0 0 1 125 78" stroke="rgba(255,255,255,0.2)" stroke-width="5" stroke-linecap="round" fill="none" />
+                    <!-- Cuerpo de la Bomba -->
+                    <circle cx="100" cy="120" r="60" fill="#111827" stroke="#374151" stroke-width="4" />
+                    <!-- Reflejo curvo -->
+                    <path d="M70 85 A 45 45 0 0 1 125 78" stroke="rgba(255,255,255,0.2)" stroke-width="5" stroke-linecap="round" fill="none" />
 
-                  <!-- Calavera o Emblema Neón Central -->
-                  <circle cx="92" cy="115" r="5" fill="#f97316" />
-                  <circle cx="108" cy="115" r="5" fill="#f97316" />
-                  <path d="M94 130 Q 100 135 106 130" stroke="#f97316" stroke-width="3" stroke-linecap="round" fill="none" />
-                </svg>
+                    <!-- Calavera o Emblema Neón Central -->
+                    <circle cx="92" cy="115" r="5" fill="#f97316" />
+                    <circle cx="108" cy="115" r="5" fill="#f97316" />
+                    <path d="M94 130 Q 100 135 106 130" stroke="#f97316" stroke-width="3" stroke-linecap="round" fill="none" />
+                  </svg>
+                </div>
 
-                <!-- Pulso de cuenta regresiva (secreta) -->
-                <div id="heartbeat-indicator" class="absolute bottom-2 px-3 py-1 rounded-full bg-black/60 border border-white/10 text-[10px] font-mono text-zinc-400">
+                <!-- Pulso de cuenta regresiva (Claramente visible y sin solaparse) -->
+                <div id="heartbeat-indicator" class="px-3.5 py-1 rounded-full bg-black/60 border border-white/10 text-xs font-mono text-zinc-300 shadow-md">
                   🔥 MECHA ENCENDIDA
                 </div>
               </div>
@@ -682,15 +684,15 @@ import bombaData from '../../content/bomba.json';
       gameContainer.classList.add('shake-intense');
       bombAura.className = 'absolute inset-0 bg-red-600/40 rounded-full blur-2xl transition-all duration-100 animate-ping';
       heartbeatIndicator.textContent = '🚨 ¡PELIGRO INMINENTE!';
-      heartbeatIndicator.className = 'absolute bottom-2 px-3 py-1 rounded-full bg-red-600/60 border border-red-400 text-[10px] font-mono text-white animate-pulse';
+      heartbeatIndicator.className = 'px-3.5 py-1 rounded-full bg-red-600/70 border border-red-400 text-xs font-mono text-white animate-pulse shadow-lg shadow-red-600/30';
     } else if (progress > 0.45) {
       bombAura.className = 'absolute inset-0 bg-orange-600/30 rounded-full blur-2xl transition-all duration-200';
       heartbeatIndicator.textContent = '⚠️ ¡SE ACELERA!';
-      heartbeatIndicator.className = 'absolute bottom-2 px-3 py-1 rounded-full bg-orange-600/40 border border-orange-400 text-[10px] font-mono text-orange-200';
+      heartbeatIndicator.className = 'px-3.5 py-1 rounded-full bg-orange-600/40 border border-orange-400 text-xs font-mono text-orange-200 shadow-md';
     } else {
       bombAura.className = 'absolute inset-0 bg-orange-500/20 rounded-full blur-2xl transition-all duration-300';
       heartbeatIndicator.textContent = '🔥 MECHA ENCENDIDA';
-      heartbeatIndicator.className = 'absolute bottom-2 px-3 py-1 rounded-full bg-black/60 border border-white/10 text-[10px] font-mono text-zinc-400';
+      heartbeatIndicator.className = 'px-3.5 py-1 rounded-full bg-black/60 border border-white/10 text-xs font-mono text-zinc-300 shadow-md';
     }
 
     // Pequeño bamboleo de la bomba con cada tick
