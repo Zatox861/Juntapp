@@ -1,0 +1,777 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import bombaData from '../../content/bomba.json';
+---
+
+<Layout 
+  title="Bomba de Tiempo | Juntapp"
+  description="Bomba de Tiempo: Di una palabra que encaje en la categoría y pasa el celular antes de que la bomba explote en tus manos."
+>
+  <div class="min-h-screen bg-transparent flex flex-col font-sans overflow-x-hidden">
+    <!-- Fondo decorativo dinámico -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+      <div id="ambient-glow-1" class="absolute -top-[10%] -left-[10%] w-[45%] h-[45%] bg-orange-600/15 rounded-full blur-[140px] transition-all duration-700 animate-pulse"></div>
+      <div id="ambient-glow-2" class="absolute top-[25%] -right-[5%] w-[35%] h-[55%] bg-red-600/15 rounded-full blur-[120px] transition-all duration-700"></div>
+      <div id="ambient-glow-3" class="absolute -bottom-[10%] left-[20%] w-[50%] h-[35%] bg-primary/10 rounded-full blur-[140px] transition-all duration-700"></div>
+    </div>
+
+    <div class="relative z-10 flex flex-col flex-grow w-full max-w-5xl mx-auto p-4 md:p-8">
+      <!-- HEADER UNIVERSAL -->
+      <header class="relative flex justify-between items-center mb-6 md:mb-10 w-full z-20">
+        <a href="/play" id="back-btn" class="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors text-sm font-medium z-10" title="Volver al Catálogo">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          <span class="hidden sm:inline">Volver</span>
+        </a>
+        
+        <div class="absolute left-1/2 -translate-x-1/2 flex flex-col items-center w-full pointer-events-none">
+          <h1 class="text-xl md:text-2xl font-geist font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-red-500 to-pink-500 uppercase tracking-tighter text-center">
+            Bomba de Tiempo
+          </h1>
+          <span class="text-[10px] font-mono text-zinc-400">Pasa el Celular · ¡Tic Tac Boom!</span>
+        </div>
+
+        <button id="btn-info" class="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors text-sm font-medium z-10 cursor-pointer" title="Cómo jugar">
+          <span class="hidden sm:inline">Cómo jugar</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        </button>
+      </header>
+
+      <main class="flex-grow flex flex-col items-center justify-start pt-2 md:pt-4 w-full">
+        <div class="w-full max-w-xl z-10">
+
+          <!-- Card Principal Glassmorphism -->
+          <div id="game-container" class="glass-panel relative rounded-[36px] p-6 md:p-10 text-center border border-white/10 shadow-2xl backdrop-blur-xl bg-[#080c16]/90 min-h-[480px] flex flex-col justify-center transition-all duration-300">
+
+            <!-- FASE 0: CONFIGURACIÓN -->
+            <div id="screen-setup" class="flex flex-col items-center space-y-6 animate-in fade-in duration-300">
+              <!-- Bomba Icon con brillo -->
+              <div class="relative group cursor-pointer">
+                <div class="absolute -inset-1 bg-gradient-to-r from-orange-600 to-red-600 rounded-full blur-xl opacity-70 group-hover:opacity-100 transition duration-500 animate-pulse"></div>
+                <div class="relative w-20 h-20 rounded-3xl bg-gradient-to-tr from-[#1a0808] to-[#2d120a] border border-orange-500/30 flex items-center justify-center text-4xl shadow-xl">
+                  💣
+                </div>
+              </div>
+              
+              <div>
+                <h2 class="text-3xl md:text-4xl font-black text-white tracking-tight">Bomba de Tiempo</h2>
+                <p class="text-zinc-400 text-xs md:text-sm mt-1 max-w-xs mx-auto">
+                  Di una palabra válida para la categoría y pasa el celular antes de que explote en tus manos.
+                </p>
+              </div>
+
+              <!-- Banner de Amigos del Grupo -->
+              <div class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 flex flex-col items-center gap-2 text-center">
+                <div class="flex items-center gap-2">
+                  <span class="text-xs uppercase tracking-wider text-orange-400 font-bold">👥 Jugadores de la Ronda</span>
+                  <span id="party-count-badge" class="text-xs bg-orange-500/20 text-orange-400 px-2 py-0.5 rounded-full font-bold">0</span>
+                </div>
+                <p id="party-names-display" class="text-xs text-zinc-300 max-w-md truncate">Cargando jugadores...</p>
+                <button type="button" data-open-party-modal class="text-xs text-orange-400 hover:underline font-semibold flex items-center gap-1 cursor-pointer">
+                  <span>✏️ Modificar amigos del grupo</span>
+                </button>
+              </div>
+
+              <!-- Selector de Tiempo / Pánico -->
+              <div class="w-full text-left">
+                <span class="text-[10px] uppercase font-bold text-zinc-400 tracking-wider mb-2 block">Duración de la Mecha</span>
+                <div class="grid grid-cols-3 gap-2" id="time-mode-selector">
+                  <button type="button" class="mode-pill active" data-mode="normal">
+                    <span class="font-bold text-xs block">⏱️ Clásico</span>
+                    <span class="text-[9px] text-zinc-400 block mt-0.5">20-45 seg</span>
+                  </button>
+                  <button type="button" class="mode-pill" data-mode="fast">
+                    <span class="font-bold text-xs block">⚡ Pánico</span>
+                    <span class="text-[9px] text-zinc-400 block mt-0.5">10-25 seg</span>
+                  </button>
+                  <button type="button" class="mode-pill" data-mode="chaos">
+                    <span class="font-bold text-xs block">💥 Caos</span>
+                    <span class="text-[9px] text-zinc-400 block mt-0.5">15-60 seg</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Opciones de Sonido y Vibración -->
+              <div class="w-full flex items-center justify-between bg-black/20 border border-white/5 px-4 py-3 rounded-xl text-left">
+                <div class="flex items-center gap-2.5">
+                  <span class="text-lg">🔊</span>
+                  <div>
+                    <div class="text-xs font-bold text-white">Efectos de Sonido</div>
+                    <div class="text-[10px] text-zinc-400">Tic-tac acelerado y explosión sintetizada</div>
+                  </div>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" id="toggle-sound" class="sr-only peer" checked>
+                  <div class="w-11 h-6 bg-white/20 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-orange-500"></div>
+                </label>
+              </div>
+
+              <button 
+                id="btn-start-bomb"
+                class="w-full py-4 rounded-2xl bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 text-white font-black text-lg hover:brightness-110 active:scale-95 transition-all shadow-[0_0_35px_rgba(249,115,22,0.4)] cursor-pointer"
+              >
+                ¡Encender Bomba! 🔥
+              </button>
+            </div>
+
+            <!-- FASE 1: BOMBA ACTIVA (TIC TAC) -->
+            <div id="screen-game" class="hidden flex-col items-center justify-between py-2 space-y-6 animate-in zoom-in-95 duration-200">
+              
+              <!-- Turno de Jugador -->
+              <div class="flex flex-col items-center gap-1">
+                <span class="text-[11px] font-bold uppercase tracking-widest text-orange-400 animate-pulse">
+                  💣 TIENE LA BOMBA
+                </span>
+                <div class="text-2xl md:text-3xl font-black text-white flex items-center gap-2">
+                  <span id="current-player-name" class="drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]">Jugador 1</span>
+                </div>
+                <div class="text-xs text-zinc-400 mt-0.5">
+                  Pasa el teléfono a: <strong id="next-player-name" class="text-zinc-200">Jugador 2</strong>
+                </div>
+              </div>
+
+              <!-- Bomba Animada con Chispa y Mecha -->
+              <div class="relative w-44 h-44 my-2 flex items-center justify-center select-none">
+                <!-- Aura de calor -->
+                <div id="bomb-aura" class="absolute inset-0 bg-orange-500/20 rounded-full blur-2xl transition-all duration-300"></div>
+                
+                <!-- SVG de Bomba Estilizada -->
+                <svg id="bomb-svg" viewBox="0 0 200 200" class="w-full h-full relative z-10 transition-transform duration-100 drop-shadow-[0_0_20px_rgba(249,115,22,0.5)]">
+                  <!-- Mecha que se consume -->
+                  <path id="fuse-path" d="M100 65 Q 120 40 135 25" stroke="#d97706" stroke-width="6" stroke-linecap="round" fill="none" />
+                  
+                  <!-- Chispa animada -->
+                  <g id="fuse-spark" transform="translate(135, 25)">
+                    <circle r="6" fill="#fef08a" class="animate-ping" />
+                    <circle r="4" fill="#f97316" />
+                    <line x1="-8" y1="-8" x2="8" y2="8" stroke="#fde047" stroke-width="2" />
+                    <line x1="-8" y1="8" x2="8" y2="-8" stroke="#ef4444" stroke-width="2" />
+                  </g>
+
+                  <!-- Tapa de la Bomba -->
+                  <rect x="85" y="60" width="30" height="15" rx="4" fill="#374151" stroke="#4b5563" stroke-width="2" />
+
+                  <!-- Cuerpo de la Bomba -->
+                  <circle cx="100" cy="120" r="60" fill="#111827" stroke="#374151" stroke-width="4" />
+                  <!-- Reflejo curvo -->
+                  <path d="M70 85 A 45 45 0 0 1 125 78" stroke="rgba(255,255,255,0.2)" stroke-width="5" stroke-linecap="round" fill="none" />
+
+                  <!-- Calavera o Emblema Neón Central -->
+                  <circle cx="92" cy="115" r="5" fill="#f97316" />
+                  <circle cx="108" cy="115" r="5" fill="#f97316" />
+                  <path d="M94 130 Q 100 135 106 130" stroke="#f97316" stroke-width="3" stroke-linecap="round" fill="none" />
+                </svg>
+
+                <!-- Pulso de cuenta regresiva (secreta) -->
+                <div id="heartbeat-indicator" class="absolute bottom-2 px-3 py-1 rounded-full bg-black/60 border border-white/10 text-[10px] font-mono text-zinc-400">
+                  🔥 MECHA ENCENDIDA
+                </div>
+              </div>
+
+              <!-- Tarjeta de Categoría -->
+              <div class="w-full bg-white/5 border border-white/10 rounded-2xl p-5 relative overflow-hidden backdrop-blur-md">
+                <div class="inline-block px-3 py-0.5 rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/30 text-[10px] font-bold uppercase tracking-wider mb-2" id="category-tag">
+                  Categoría
+                </div>
+                <div class="text-xl md:text-2xl font-black text-white leading-tight" id="category-text">
+                  Cargando categoría...
+                </div>
+                <div class="text-xs text-zinc-400 mt-2">
+                  Di tu respuesta rápido y presiona el botón para pasarle la bomba a tu amigo.
+                </div>
+              </div>
+
+              <!-- Botón Gigante de Pasar Bomba -->
+              <button 
+                id="btn-pass-bomb"
+                class="w-full py-5 rounded-2xl bg-gradient-to-r from-orange-500 via-red-600 to-pink-600 text-white font-black text-xl hover:brightness-110 active:scale-95 transition-all shadow-[0_0_30px_rgba(239,68,68,0.5)] cursor-pointer flex items-center justify-center gap-3 select-none"
+              >
+                <span>¡PASAR BOMBA!</span>
+                <span class="text-2xl">💣💨</span>
+              </button>
+            </div>
+
+            <!-- FASE 2: ¡EXPLOSIÓN! (BOOM) -->
+            <div id="screen-explosion" class="hidden flex-col items-center justify-center py-4 space-y-6 animate-in zoom-in-75 duration-300">
+              
+              <!-- Explosión visual -->
+              <div class="relative">
+                <div class="w-24 h-24 rounded-full bg-red-600/30 blur-2xl absolute inset-0 animate-ping"></div>
+                <div class="text-7xl md:text-8xl drop-shadow-[0_0_35px_rgba(239,68,68,0.8)] animate-bounce select-none">
+                  💥
+                </div>
+              </div>
+
+              <div class="space-y-1">
+                <h2 class="text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-400 to-yellow-300 tracking-tight">
+                  ¡BOOOOOM!
+                </h2>
+                <div class="text-zinc-300 text-sm md:text-base">
+                  La bomba explotó en las manos de:
+                </div>
+                <div id="loser-name" class="text-3xl md:text-4xl font-black text-white drop-shadow-[0_0_20px_rgba(239,68,68,0.6)] pt-1">
+                  --
+                </div>
+              </div>
+
+              <!-- Tarjeta de Penitencia / Castigo -->
+              <div class="w-full bg-red-950/40 border border-red-500/30 rounded-2xl p-5 text-left relative overflow-hidden backdrop-blur-md">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-[10px] font-bold uppercase tracking-wider text-red-400 bg-red-500/20 px-2.5 py-0.5 rounded-full border border-red-500/30">
+                    🍻 Penitencia de Castigo
+                  </span>
+                  <button id="btn-reroll-penalty" class="text-xs text-zinc-400 hover:text-white flex items-center gap-1 cursor-pointer">
+                    <span>Cambiar</span> 🎲
+                  </button>
+                </div>
+                <p id="penalty-text" class="text-white font-bold text-base md:text-lg leading-snug">
+                  Cargando castigo...
+                </p>
+              </div>
+
+              <!-- Marcador de Explosiones de la Sesión -->
+              <div class="w-full bg-white/5 border border-white/10 rounded-2xl p-4">
+                <div class="text-[10px] uppercase font-bold text-zinc-400 tracking-wider mb-2 flex items-center justify-between">
+                  <span>📊 Historial de Explosiones (Esta junta)</span>
+                  <span class="text-zinc-500 text-[10px]">Total rondas: <span id="round-counter">1</span></span>
+                </div>
+                <div id="scoreboard-list" class="flex flex-wrap gap-2 justify-center">
+                  <!-- Se llena dinámicamente -->
+                </div>
+              </div>
+
+              <!-- Botones de Acción Post-Ronda -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
+                <button 
+                  id="btn-play-again"
+                  class="py-4 px-6 rounded-2xl bg-gradient-to-r from-orange-500 to-red-600 text-white font-black text-base hover:brightness-110 active:scale-95 transition-all shadow-[0_0_25px_rgba(249,115,22,0.4)] cursor-pointer"
+                >
+                  🔥 Siguiente Ronda
+                </button>
+                <button 
+                  id="btn-back-setup"
+                  class="py-4 px-6 rounded-2xl bg-white/5 border border-white/10 text-zinc-300 hover:text-white hover:bg-white/10 font-bold text-base active:scale-95 transition-all cursor-pointer"
+                >
+                  ⚙️ Configurar
+                </button>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Modal Cómo Jugar -->
+  <dialog id="modal-info" class="bg-transparent backdrop:bg-black/80 backdrop:backdrop-blur-sm p-0 m-auto rounded-3xl w-full max-w-md border border-white/10 shadow-2xl">
+    <div class="glass-panel p-6 md:p-8 rounded-3xl flex flex-col w-full text-left relative bg-[#090d16]">
+      <button id="btn-close-info" class="absolute top-4 right-4 text-zinc-400 hover:text-white text-xl cursor-pointer">✕</button>
+      
+      <div class="flex items-center gap-2 mb-4">
+        <span class="text-2xl">💣</span>
+        <h3 class="text-xl font-black text-white">¿Cómo se juega?</h3>
+      </div>
+
+      <div class="space-y-4 text-zinc-300 text-xs md:text-sm leading-relaxed">
+        <div class="flex gap-3">
+          <div class="w-6 h-6 rounded-full bg-orange-500/20 text-orange-400 font-bold flex items-center justify-center shrink-0 text-xs">1</div>
+          <p><strong class="text-white">Aparece una Categoría:</strong> Se enciende la mecha con un tiempo secreto (nadie sabe cuándo explotará).</p>
+        </div>
+        <div class="flex gap-3">
+          <div class="w-6 h-6 rounded-full bg-orange-500/20 text-orange-400 font-bold flex items-center justify-center shrink-0 text-xs">2</div>
+          <p><strong class="text-white">Di una respuesta y pasa:</strong> El jugador con la bomba debe decir en voz alta una palabra válida de la categoría que no se haya dicho antes, presionar <em>"¡PASAR BOMBA!"</em> y pasarle el celular de inmediato al siguiente amigo.</p>
+        </div>
+        <div class="flex gap-3">
+          <div class="w-6 h-6 rounded-full bg-orange-500/20 text-orange-400 font-bold flex items-center justify-center shrink-0 text-xs">3</div>
+          <p><strong class="text-white">¡No dejes que te explote!</strong> El tic-tac se acelera sin avisar. Al que le explote la bomba en las manos pierde la ronda y debe cumplir el castigo.</p>
+        </div>
+      </div>
+
+      <div class="mt-6 pt-4 border-t border-white/10 flex justify-end">
+        <button id="btn-confirm-info" class="py-2.5 px-6 rounded-xl bg-orange-500 text-white font-bold text-xs hover:bg-orange-600 transition-colors cursor-pointer">
+          ¡Entendido, a jugar!
+        </button>
+      </div>
+    </div>
+  </dialog>
+</Layout>
+
+<style>
+  .mode-pill {
+    padding: 0.6rem 0.5rem;
+    border-radius: 0.85rem;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #a1a1aa;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    text-align: center;
+  }
+  .mode-pill:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+  }
+  .mode-pill.active {
+    background: rgba(249, 115, 22, 0.15);
+    border-color: #f97316;
+    color: #fff;
+    box-shadow: 0 0 15px rgba(249, 115, 22, 0.3);
+  }
+
+  @keyframes screenShake {
+    0% { transform: translate(0, 0) rotate(0deg); }
+    20% { transform: translate(-3px, 3px) rotate(-1deg); }
+    40% { transform: translate(3px, -2px) rotate(1deg); }
+    60% { transform: translate(-2px, -3px) rotate(-0.5deg); }
+    80% { transform: translate(2px, 2px) rotate(0.5deg); }
+    100% { transform: translate(0, 0) rotate(0deg); }
+  }
+
+  .shake-intense {
+    animation: screenShake 0.15s infinite;
+  }
+</style>
+
+<script define:vars={{ bombaData }}>
+  // Importamos gestión de jugadores
+  import { getPlayers, onPlayersChange } from '../../utils/players';
+
+  // Sonido Procedural con Web Audio API (100% offline, cero dependencias)
+  class BombSoundEngine {
+    constructor() {
+      this.ctx = null;
+      this.enabled = true;
+    }
+
+    init() {
+      if (!this.ctx) {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (AudioContext) {
+          this.ctx = new AudioContext();
+        }
+      }
+      if (this.ctx && this.ctx.state === 'suspended') {
+        this.ctx.resume();
+      }
+    }
+
+    playTick(urgency = 0) {
+      if (!this.enabled) return;
+      this.init();
+      if (!this.ctx) return;
+
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      // Frecuencia aumenta conforme se acerca a explotar
+      const baseFreq = 800 + (urgency * 600);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(baseFreq, now);
+      osc.frequency.exponentialRampToValueAtTime(baseFreq * 0.5, now + 0.04);
+
+      gain.gain.setValueAtTime(0.3 + (urgency * 0.4), now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+
+      osc.start(now);
+      osc.stop(now + 0.05);
+    }
+
+    playWhoosh() {
+      if (!this.enabled) return;
+      this.init();
+      if (!this.ctx) return;
+
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(250, now);
+      osc.frequency.exponentialRampToValueAtTime(650, now + 0.12);
+
+      gain.gain.setValueAtTime(0.2, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+
+      osc.start(now);
+      osc.stop(now + 0.13);
+    }
+
+    playExplosion() {
+      if (!this.enabled) return;
+      this.init();
+      if (!this.ctx) return;
+
+      const now = this.ctx.currentTime;
+
+      // 1. Noise Burst (Ruido blanco de la detonación)
+      const bufferSize = this.ctx.sampleRate * 1.5;
+      const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = Math.random() * 2 - 1;
+      }
+
+      const noise = this.ctx.createBufferSource();
+      noise.buffer = buffer;
+
+      const filter = this.ctx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(1200, now);
+      filter.frequency.exponentialRampToValueAtTime(80, now + 1.2);
+
+      const noiseGain = this.ctx.createGain();
+      noiseGain.gain.setValueAtTime(1.0, now);
+      noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 1.4);
+
+      noise.connect(filter);
+      filter.connect(noiseGain);
+      noiseGain.connect(this.ctx.destination);
+
+      noise.start(now);
+
+      // 2. Sub-bass thump (Golpe de grave)
+      const subOsc = this.ctx.createOscillator();
+      const subGain = this.ctx.createGain();
+
+      subOsc.type = 'sine';
+      subOsc.frequency.setValueAtTime(150, now);
+      subOsc.frequency.exponentialRampToValueAtTime(30, now + 0.8);
+
+      subGain.gain.setValueAtTime(1.0, now);
+      subGain.gain.exponentialRampToValueAtTime(0.001, now + 0.9);
+
+      subOsc.connect(subGain);
+      subGain.connect(this.ctx.destination);
+
+      subOsc.start(now);
+      subOsc.stop(now + 1.0);
+    }
+  }
+
+  const soundEngine = new BombSoundEngine();
+
+  // Estado del Juego
+  let playersList = [];
+  let currentTurnIndex = 0;
+  let activeMode = 'normal'; // normal (20-45s), fast (10-25s), chaos (15-60s)
+  let bombStartTime = 0;
+  let bombTotalDuration = 0;
+  let bombTimer = null;
+  let tickTimer = null;
+  let usedCategories = [];
+  let explosionStats = {}; // { 'Nombre': count }
+  let totalRoundsPlayed = 0;
+
+  // Elementos DOM
+  const screenSetup = document.getElementById('screen-setup');
+  const screenGame = document.getElementById('screen-game');
+  const screenExplosion = document.getElementById('screen-explosion');
+  const gameContainer = document.getElementById('game-container');
+
+  const partyCountBadge = document.getElementById('party-count-badge');
+  const partyNamesDisplay = document.getElementById('party-names-display');
+
+  const toggleSound = document.getElementById('toggle-sound');
+  const btnStartBomb = document.getElementById('btn-start-bomb');
+  const btnPassBomb = document.getElementById('btn-pass-bomb');
+  const btnPlayAgain = document.getElementById('btn-play-again');
+  const btnBackSetup = document.getElementById('btn-back-setup');
+  const btnRerollPenalty = document.getElementById('btn-reroll-penalty');
+
+  const currentPlayerNameEl = document.getElementById('current-player-name');
+  const nextPlayerNameEl = document.getElementById('next-player-name');
+  const categoryTagEl = document.getElementById('category-tag');
+  const categoryTextEl = document.getElementById('category-text');
+  const loserNameEl = document.getElementById('loser-name');
+  const penaltyTextEl = document.getElementById('penalty-text');
+  const scoreboardList = document.getElementById('scoreboard-list');
+  const roundCounterEl = document.getElementById('round-counter');
+
+  const bombSvg = document.getElementById('bomb-svg');
+  const bombAura = document.getElementById('bomb-aura');
+  const heartbeatIndicator = document.getElementById('heartbeat-indicator');
+
+  // Modal Info
+  const modalInfo = document.getElementById('modal-info');
+  const btnInfo = document.getElementById('btn-info');
+  const btnCloseInfo = document.getElementById('btn-close-info');
+  const btnConfirmInfo = document.getElementById('btn-confirm-info');
+
+  if (btnInfo && modalInfo) btnInfo.addEventListener('click', () => modalInfo.showModal());
+  if (btnCloseInfo && modalInfo) btnCloseInfo.addEventListener('click', () => modalInfo.close());
+  if (btnConfirmInfo && modalInfo) btnConfirmInfo.addEventListener('click', () => modalInfo.close());
+
+  // Configuración de Sonido
+  if (toggleSound) {
+    toggleSound.addEventListener('change', (e) => {
+      soundEngine.enabled = e.target.checked;
+    });
+  }
+
+  // Modos de tiempo
+  const modePills = document.querySelectorAll('.mode-pill');
+  modePills.forEach(pill => {
+    pill.addEventListener('click', () => {
+      modePills.forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      activeMode = pill.getAttribute('data-mode') || 'normal';
+    });
+  });
+
+  // Cargar y sincronizar jugadores
+  function updatePlayers() {
+    const raw = getPlayers();
+    if (raw && raw.length >= 2) {
+      playersList = [...raw];
+      partyCountBadge.textContent = playersList.length;
+      partyNamesDisplay.textContent = playersList.join(', ');
+    } else {
+      // Fallback si no hay jugadores en el gestor
+      playersList = ['Jugador 1', 'Jugador 2', 'Jugador 3', 'Jugador 4'];
+      partyCountBadge.textContent = '4 (Default)';
+      partyNamesDisplay.textContent = 'Usando nombres por defecto. ¡Añade los tuyos en "👥 Grupo"!';
+    }
+
+    // Inicializar stats de explosiones si faltan
+    playersList.forEach(p => {
+      if (explosionStats[p] === undefined) {
+        explosionStats[p] = 0;
+      }
+    });
+  }
+
+  updatePlayers();
+  onPlayersChange(() => {
+    updatePlayers();
+    renderScoreboard();
+  });
+
+  // Calcular duración aleatoria según modo
+  function getRandomDuration() {
+    let min = 20, max = 45;
+    if (activeMode === 'fast') {
+      min = 10;
+      max = 25;
+    } else if (activeMode === 'chaos') {
+      min = 15;
+      max = 60;
+    }
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  // Obtener categoría aleatoria sin repetir en la misma sesión
+  function getRandomCategory() {
+    const all = bombaData.categories;
+    let available = all.filter(c => !usedCategories.includes(c.text));
+    if (available.length === 0) {
+      usedCategories = [];
+      available = all;
+    }
+    const chosen = available[Math.floor(Math.random() * available.length)];
+    usedCategories.push(chosen.text);
+    return chosen;
+  }
+
+  // Obtener castigo aleatorio
+  function getRandomPenalty() {
+    const penalties = bombaData.penalties;
+    return penalties[Math.floor(Math.random() * penalties.length)];
+  }
+
+  // Actualizar Turno en Pantalla
+  function updateTurnDisplay() {
+    const current = playersList[currentTurnIndex];
+    const next = playersList[(currentTurnIndex + 1) % playersList.length];
+
+    currentPlayerNameEl.textContent = current;
+    nextPlayerNameEl.textContent = next;
+  }
+
+  // Iniciar Ronda
+  function startRound() {
+    updatePlayers();
+    soundEngine.init();
+
+    // Barajar orden de inicio aleatorio
+    currentTurnIndex = Math.floor(Math.random() * playersList.length);
+    updateTurnDisplay();
+
+    // Categoría
+    const cat = getRandomCategory();
+    categoryTagEl.textContent = cat.tag || 'Categoría';
+    categoryTextEl.textContent = cat.text;
+
+    // Duración secreta
+    bombTotalDuration = getRandomDuration() * 1000;
+    bombStartTime = Date.now();
+
+    // Pantallas
+    screenSetup.classList.add('hidden');
+    screenExplosion.classList.add('hidden');
+    screenGame.classList.remove('hidden');
+    screenGame.classList.add('flex');
+
+    gameContainer.classList.remove('shake-intense');
+
+    // Programar tick dinámico y explosión
+    scheduleNextTick();
+  }
+
+  // Loop de ticks que se acelera con el tiempo
+  function scheduleNextTick() {
+    if (tickTimer) clearTimeout(tickTimer);
+
+    const elapsed = Date.now() - bombStartTime;
+    const remaining = bombTotalDuration - elapsed;
+
+    if (remaining <= 0) {
+      explodeBomb();
+      return;
+    }
+
+    // Progreso de 0 a 1
+    const progress = Math.min(Math.max(elapsed / bombTotalDuration, 0), 1);
+    
+    // Intervalo de tick: empieza en ~1000ms y baja hasta ~120ms
+    const interval = Math.max(1000 - (progress * 880), 110);
+
+    // Reproducir tick auditivo y háptico
+    soundEngine.playTick(progress);
+    if (navigator.vibrate) {
+      navigator.vibrate(progress > 0.7 ? 40 : 20);
+    }
+
+    // Actualizaciones visuales según urgencia
+    if (progress > 0.75) {
+      gameContainer.classList.add('shake-intense');
+      bombAura.className = 'absolute inset-0 bg-red-600/40 rounded-full blur-2xl transition-all duration-100 animate-ping';
+      heartbeatIndicator.textContent = '🚨 ¡PELIGRO INMINENTE!';
+      heartbeatIndicator.className = 'absolute bottom-2 px-3 py-1 rounded-full bg-red-600/60 border border-red-400 text-[10px] font-mono text-white animate-pulse';
+    } else if (progress > 0.45) {
+      bombAura.className = 'absolute inset-0 bg-orange-600/30 rounded-full blur-2xl transition-all duration-200';
+      heartbeatIndicator.textContent = '⚠️ ¡SE ACELERA!';
+      heartbeatIndicator.className = 'absolute bottom-2 px-3 py-1 rounded-full bg-orange-600/40 border border-orange-400 text-[10px] font-mono text-orange-200';
+    } else {
+      bombAura.className = 'absolute inset-0 bg-orange-500/20 rounded-full blur-2xl transition-all duration-300';
+      heartbeatIndicator.textContent = '🔥 MECHA ENCENDIDA';
+      heartbeatIndicator.className = 'absolute bottom-2 px-3 py-1 rounded-full bg-black/60 border border-white/10 text-[10px] font-mono text-zinc-400';
+    }
+
+    // Pequeño bamboleo de la bomba con cada tick
+    const scale = 1 + (progress * 0.15);
+    const rot = (Math.random() * 8 - 4) * (progress * 1.5);
+    bombSvg.style.transform = `scale(${scale}) rotate(${rot}deg)`;
+
+    tickTimer = setTimeout(() => {
+      scheduleNextTick();
+    }, interval);
+  }
+
+  // Pasar Bomba al siguiente jugador
+  function passBomb() {
+    soundEngine.playWhoosh();
+    currentTurnIndex = (currentTurnIndex + 1) % playersList.length;
+    updateTurnDisplay();
+
+    // Animación de pase
+    currentPlayerNameEl.parentElement.classList.add('scale-105');
+    setTimeout(() => {
+      currentPlayerNameEl.parentElement.classList.remove('scale-105');
+    }, 150);
+  }
+
+  // ¡EXPLOSIÓN!
+  function explodeBomb() {
+    if (tickTimer) clearTimeout(tickTimer);
+
+    // Efectos de sonido y vibración masiva
+    soundEngine.playExplosion();
+    if (navigator.vibrate) {
+      navigator.vibrate([200, 100, 300, 100, 500]);
+    }
+
+    totalRoundsPlayed++;
+    const loser = playersList[currentTurnIndex];
+    explosionStats[loser] = (explosionStats[loser] || 0) + 1;
+
+    // Actualizar pantalla de explosión
+    loserNameEl.textContent = loser;
+    penaltyTextEl.textContent = getRandomPenalty();
+    roundCounterEl.textContent = totalRoundsPlayed;
+    renderScoreboard();
+
+    // Transición de pantalla
+    screenGame.classList.remove('flex');
+    screenGame.classList.add('hidden');
+    gameContainer.classList.remove('shake-intense');
+
+    screenExplosion.classList.remove('hidden');
+    screenExplosion.classList.add('flex');
+  }
+
+  // Renderizar Marcador de Explosiones
+  function renderScoreboard() {
+    if (!scoreboardList) return;
+    scoreboardList.innerHTML = '';
+
+    const sortedPlayers = [...playersList].sort((a, b) => (explosionStats[b] || 0) - (explosionStats[a] || 0));
+
+    sortedPlayers.forEach(p => {
+      const count = explosionStats[p] || 0;
+      const chip = document.createElement('div');
+      chip.className = `flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold border ${
+        count > 0 
+          ? 'bg-red-500/15 border-red-500/30 text-red-300' 
+          : 'bg-white/5 border-white/10 text-zinc-400'
+      }`;
+      chip.innerHTML = `
+        <span>${p}</span>
+        <span class="px-1.5 py-0.2 rounded-full bg-black/40 text-[10px] font-mono text-white">💥 ${count}</span>
+      `;
+      scoreboardList.appendChild(chip);
+    });
+  }
+
+  // Listeners
+  if (btnStartBomb) {
+    btnStartBomb.addEventListener('click', startRound);
+  }
+
+  if (btnPassBomb) {
+    btnPassBomb.addEventListener('click', passBomb);
+  }
+
+  if (btnPlayAgain) {
+    btnPlayAgain.addEventListener('click', startRound);
+  }
+
+  if (btnBackSetup) {
+    btnBackSetup.addEventListener('click', () => {
+      screenExplosion.classList.remove('flex');
+      screenExplosion.classList.add('hidden');
+      screenSetup.classList.remove('hidden');
+    });
+  }
+
+  if (btnRerollPenalty) {
+    btnRerollPenalty.addEventListener('click', () => {
+      penaltyTextEl.textContent = getRandomPenalty();
+    });
+  }
+
+  // Atajo de teclado: Barra espaciadora para pasar la bomba
+  window.addEventListener('keydown', (e) => {
+    if (e.code === 'Space' && !screenGame.classList.contains('hidden')) {
+      e.preventDefault();
+      passBomb();
+    }
+  });
+</script>

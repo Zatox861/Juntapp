@@ -78,8 +78,21 @@ import Logo from '../components/Logo.astro';
         </a>
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <!-- Card 1: El Impostor (Nuevo) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Card: Bomba de Tiempo (Nuevo) -->
+        <a href="/juegos/bomba" class="group relative bg-surface-container rounded-[24px] border border-orange-500/30 overflow-hidden hover:border-orange-500/70 transition-all duration-500 cursor-pointer h-[350px] flex flex-col justify-end shadow-[0_0_35px_rgba(249,115,22,0.2)]">
+          <img alt="Bomba de Tiempo neón con mecha encendida y chispas" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="/img/cover_bomba.webp">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-transparent"></div>
+          <div class="relative z-10 p-6">
+            <div class="bg-gradient-to-r from-orange-500/30 to-red-500/30 text-orange-300 w-max px-3 py-1 rounded-full font-label-sm text-[10px] mb-3 backdrop-blur-md border border-orange-500/40 uppercase tracking-widest font-black flex items-center gap-1">
+              <span>🔥</span> ¡Nuevo! Pánico Total
+            </div>
+            <h3 class="font-headline-md text-2xl font-bold text-on-background mb-1">Bomba de Tiempo</h3>
+            <p class="font-body-md text-on-surface-variant line-clamp-2">Di una palabra de la categoría y pásate el celular antes de que explote en tus manos.</p>
+          </div>
+        </a>
+
+        <!-- Card 1: El Impostor -->
         <a href="/juegos/el-impostor" class="group relative bg-surface-container rounded-[24px] border border-red-500/20 overflow-hidden hover:border-red-500/60 transition-all duration-500 cursor-pointer h-[350px] flex flex-col justify-end shadow-[0_0_30px_rgba(239,68,68,0.15)]">
           <img alt="Grupo de amigos jugando El Impostor en la noche con un teléfono" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="/img/cover_el_impostor.webp">
           <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-transparent"></div>
